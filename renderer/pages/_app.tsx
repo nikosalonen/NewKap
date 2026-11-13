@@ -1,10 +1,10 @@
-import {AppProps} from 'next/app';
+import type {AppProps} from 'next/app';
 import Head from 'next/head';
 import {useState, useEffect} from 'react';
+import classNames from 'classnames';
 import useDarkMode from '../hooks/dark-mode';
 import GlobalStyles from '../utils/global-styles';
 import {WindowStateProvider} from '../hooks/window-state';
-import classNames from 'classnames';
 
 const Kap = (props: AppProps) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -20,20 +20,16 @@ const Kap = (props: AppProps) => {
       console.error('[renderer] unhandled rejection', event.reason);
     };
 
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleRejection);
+    addEventListener('error', handleError);
+    addEventListener('unhandledrejection', handleRejection);
 
     return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleRejection);
+      removeEventListener('error', handleError);
+      removeEventListener('unhandledrejection', handleRejection);
     };
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
-
-  return <MainApp {...props}/>;
+  return isMounted ? <MainApp {...props}/> : null;
 };
 
 const MainApp = ({Component, pageProps}: AppProps) => {
@@ -45,7 +41,7 @@ const MainApp = ({Component, pageProps}: AppProps) => {
     <>
       <Head>
         <meta
-          httpEquiv="Content-Security-Policy"
+          httpEquiv='Content-Security-Policy'
           content={[
             'default-src ' + cspQuote + 'self' + cspQuote + ' file: data:',
             'base-uri ' + cspQuote + 'none' + cspQuote,
@@ -54,7 +50,7 @@ const MainApp = ({Component, pageProps}: AppProps) => {
             'style-src ' + cspQuote + 'self' + cspQuote + ' ' + cspQuote + 'unsafe-inline' + cspQuote,
             'img-src ' + cspQuote + 'self' + cspQuote + ' file: data:',
             'media-src file:',
-            'connect-src ' + cspQuote + 'self' + cspQuote + ' https: http://localhost:* ws://localhost:*'
+            'connect-src ' + cspQuote + 'self' + cspQuote + ' https: http://localhost:* ws://localhost:*',
           ].join('; ')}
         />
       </Head>

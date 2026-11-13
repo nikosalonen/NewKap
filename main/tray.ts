@@ -1,8 +1,8 @@
 'use strict';
 
 import {Tray, Menu} from 'electron';
-import {KeyboardEvent} from 'electron/main';
-import path from 'path';
+import type {KeyboardEvent} from 'electron/main';
+import path from 'node:path';
 import {buildBasicCogMenu, getCogMenuAsync} from './menus/cog';
 import {getRecordMenuTemplate} from './menus/record';
 import {openFiles} from './utils/open-files';
@@ -56,7 +56,7 @@ const openPausedContextMenu = () => {
 };
 
 export const initializeTray = (existingTray?: Tray) => {
-  tray = existingTray ? existingTray : new Tray(path.join(__dirname, '..', 'static', 'menubarDefaultTemplate.png'));
+  tray = existingTray ?? new Tray(path.join(__dirname, '..', 'static', 'menubarDefaultTemplate.png'));
 
   cachedCogMenu = Menu.buildFromTemplate(buildBasicCogMenu());
 

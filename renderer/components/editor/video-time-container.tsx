@@ -14,15 +14,17 @@ const useVideoTime = () => {
   };
 
   const videoProps = {
-    onLoadedMetadata: () => {
-      if (duration === 0) {
-        setDuration(videoRef.current?.duration);
-        setEndTime(videoRef.current?.duration);
+    onLoadedMetadata() {
+      if (duration !== 0) {
+        return;
       }
+
+      setDuration(videoRef.current?.duration);
+      setEndTime(videoRef.current?.duration);
     },
-    onEnded: () => {
+    onEnded() {
       setCurrentTime(endTime);
-    }
+    },
   };
 
   const updateTime = (time: number, ignoreElement = false) => {
@@ -36,19 +38,23 @@ const useVideoTime = () => {
   };
 
   const updateStartTime = (time: number) => {
-    if (time < endTime) {
-      videoRef.current.currentTime = time;
-      setStartTime(time);
-      setCurrentTime(time);
+    if (!(time < endTime)) {
+      return;
     }
+
+    videoRef.current.currentTime = time;
+    setStartTime(time);
+    setCurrentTime(time);
   };
 
   const updateEndTime = (time: number) => {
-    if (time > startTime) {
-      videoRef.current.currentTime = time;
-      setEndTime(time);
-      setCurrentTime(time);
+    if (!(time > startTime)) {
+      return;
     }
+
+    videoRef.current.currentTime = time;
+    setEndTime(time);
+    setCurrentTime(time);
   };
 
   useEffect(() => {
@@ -64,10 +70,12 @@ const useVideoTime = () => {
     };
 
     const stopSyncing = () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = 0;
+      if (!animationFrame) {
+        return;
       }
+
+      cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
     };
 
     const syncWhilePlaying = () => {
@@ -108,7 +116,7 @@ const useVideoTime = () => {
     updateStartTime,
     updateEndTime,
     setVideoRef,
-    videoProps
+    videoProps,
   };
 };
 

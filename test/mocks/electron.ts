@@ -1,6 +1,6 @@
+import path from 'node:path';
 import sinon from 'sinon';
 import tempy from 'tempy';
-import path from 'path';
 
 const temporaryDir = tempy.directory();
 
@@ -12,17 +12,17 @@ export const app = {
   isPackaged: false,
   getVersion: '',
   focus: sinon.fake(),
-  quit: sinon.fake()
+  quit: sinon.fake(),
 };
 
 export const shell = {
   showItemInFolder: sinon.fake(),
-  openExternal: sinon.fake.resolves(undefined)
+  openExternal: sinon.fake.resolves(undefined),
 };
 
 export const clipboard = {
   writeText: sinon.fake.resolves(undefined),
-  write: sinon.fake.resolves(undefined)
+  write: sinon.fake.resolves(undefined),
 };
 
 export class ClipboardItem {
@@ -31,15 +31,15 @@ export class ClipboardItem {
 
 export const systemPreferences = {
   getMediaAccessStatus: sinon.fake.returns('granted'),
-  askForMediaAccess: sinon.fake.resolves(true)
+  askForMediaAccess: sinon.fake.resolves(true),
 };
 
 export const dialog = {
-  showMessageBox: sinon.fake.resolves({response: 1})
+  showMessageBox: sinon.fake.resolves({response: 1}),
 };
 
 export const desktopCapturer = {
-  getSources: sinon.fake.resolves([])
+  getSources: sinon.fake.resolves([]),
 };
 
 export const remote = {};

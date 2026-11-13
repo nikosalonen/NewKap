@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/promise-function-async */
+/* eslint-disable @typescript-eslint/promise-function-async -- the bridge passes ipcRenderer promises through unchanged */
 import {contextBridge, ipcRenderer} from 'electron';
 
 const windowId = ipcRenderer.sendSync('kap:get-window-id') as number;
@@ -8,6 +8,7 @@ const getRendererSendChannel = (id: number, channel: string) => `%better-ipc-sen
 
 const serializeError = (value: any, seen = new WeakSet()): any => {
   if (!value || typeof value !== 'object') {
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- an anonymous function has an empty name
     return typeof value === 'function' ? `[Function: ${value.name || 'anonymous'}]` : value;
   }
 
@@ -42,6 +43,7 @@ const deserializeError = (value: any) => {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     Object.assign(error, value);
   } else {
+    // eslint-disable-next-line unicorn/no-error-property-assignment -- marks values that were thrown without being an Error
     error.name = 'NonError';
   }
 
@@ -112,39 +114,39 @@ contextBridge.exposeInMainWorld('kap', {
   app: {
     getInfo: () => ipcRenderer.sendSync('kap:app:get-info-sync'),
     getLoginItemSettings: () => invoke('kap:app:get-login-item-settings'),
-    setLoginItemSettings: (options: {openAtLogin: boolean}) => invoke('kap:app:set-login-item-settings', options)
+    setLoginItemSettings: (options: {openAtLogin: boolean}) => invoke('kap:app:set-login-item-settings', options),
   },
   cropper: {
     captureScreenshot: (bounds: {x: number; y: number; width: number; height: number}) => invoke('kap:cropper:capture-screenshot', bounds),
     controlsReady: (payload: {sessionId?: number}) => ipcRenderer.send('cropper-controls-ready', payload),
     rendererReady: (payload?: {sessionId?: number}) => ipcRenderer.send('cropper-renderer-ready', payload),
-    startRecording: (options: any) => invoke('kap:cropper:start-recording', options)
+    startRecording: (options: any) => invoke('kap:cropper:start-recording', options),
   },
   dialog: {
     showMessageBox: (options: Electron.MessageBoxOptions) => invoke('kap:dialog:show-message-box', options),
     showMessageBoxSync: (options: Electron.MessageBoxSyncOptions) => ipcRenderer.sendSync('kap:dialog:show-message-box-sync', options),
-    showOpenDialogSync: (options: Electron.OpenDialogSyncOptions) => ipcRenderer.sendSync('kap:dialog:show-open-dialog-sync', options)
+    showOpenDialogSync: (options: Electron.OpenDialogSyncOptions) => ipcRenderer.sendSync('kap:dialog:show-open-dialog-sync', options),
   },
   flags: {
     get: (key: string) => ipcRenderer.sendSync('kap:flags:get-sync', key),
-    set: (key: string, value: boolean) => invoke('kap:flags:set', {key, value})
+    set: (key: string, value: boolean) => invoke('kap:flags:set', {key, value}),
   },
   ipc: {
     answerMain,
     callMain,
     on,
-    send: (channel: string, data?: any) => ipcRenderer.send(channel, data)
+    send: (channel: string, data?: any) => ipcRenderer.send(channel, data),
   },
   menu: {
     popup: (template: any[], position?: {x?: number; y?: number}) => invoke('kap:menu:popup', {template, position}),
     popupCog: () => invoke('kap:menu:popup-cog'),
-    popupWindows: (selectedApp: string, position?: {x?: number; y?: number}) => invoke('kap:menu:popup-windows', {selectedApp, position})
+    popupWindows: (selectedApp: string, position?: {x?: number; y?: number}) => invoke('kap:menu:popup-windows', {selectedApp, position}),
   },
   nativeImage: {
-    createDataUrlThumbnail: (dataUrl: string, size: {width: number; height: number}) => invoke('kap:native-image:create-data-url-thumbnail', {dataUrl, size})
+    createDataUrlThumbnail: (dataUrl: string, size: {width: number; height: number}) => invoke('kap:native-image:create-data-url-thumbnail', {dataUrl, size}),
   },
   permissions: {
-    ensureMicrophonePermissions: () => invoke('kap:permissions:ensure-microphone')
+    ensureMicrophonePermissions: () => invoke('kap:permissions:ensure-microphone'),
   },
   plugins: {
     getInstalled: () => invoke('kap:plugins:get-installed'),
@@ -152,20 +154,20 @@ contextBridge.exposeInMainWorld('kap', {
     install: (name: string) => invoke('kap:plugins:install', name),
     uninstall: (name: string) => invoke('kap:plugins:uninstall', name),
     openPluginConfig: (name: string) => invoke('kap:plugins:open-config', name),
-    getPluginsDir: () => invoke('kap:plugins:get-dir')
+    getPluginsDir: () => invoke('kap:plugins:get-dir'),
   },
   pluginConfig: {
     load: (options: {pluginName: string; serviceTitle?: string}) => invoke('kap:plugin-config:load', options),
     set: (options: {pluginName: string; key: string; value?: any}) => invoke('kap:plugin-config:set', options),
     delete: (options: {pluginName: string; key: string}) => invoke('kap:plugin-config:delete', options),
     openInEditor: (pluginName: string) => invoke('kap:plugin-config:open-in-editor', pluginName),
-    viewOnGithub: (pluginName: string) => invoke('kap:plugin-config:view-on-github', pluginName)
+    viewOnGithub: (pluginName: string) => invoke('kap:plugin-config:view-on-github', pluginName),
   },
   settings: {
     get: (key: string, defaultValue?: any) => ipcRenderer.sendSync('kap:settings:get-sync', {key, defaultValue}),
     getAll: () => ipcRenderer.sendSync('kap:settings:get-all-sync'),
     getSelectedInputDeviceId: () => ipcRenderer.sendSync('kap:settings:get-selected-input-device-id-sync'),
-    onDidChange: (key: string, callback: (newValue: any, oldValue: any) => void) => {
+    onDidChange(key: string, callback: (newValue: any, oldValue: any) => void) {
       const subscriptionId = `${windowId}-${key}-${Date.now()}-${Math.random()}`;
       void invoke('kap:settings:subscribe', {key, subscriptionId});
       const unsubscribe = on(`kap:settings:changed:${subscriptionId}`, callback);
@@ -175,11 +177,11 @@ contextBridge.exposeInMainWorld('kap', {
         void invoke('kap:settings:unsubscribe', subscriptionId);
       };
     },
-    set: (key: string, value: any) => invoke('kap:settings:set', {key, value})
+    set: (key: string, value: any) => invoke('kap:settings:set', {key, value}),
   },
   shell: {
     openExternal: (url: string) => invoke('kap:shell:open-external', url),
-    openPath: (path: string) => invoke('kap:shell:open-path', path)
+    openPath: (path: string) => invoke('kap:shell:open-path', path),
   },
   system: {
     getAudioDevices: () => invoke('kap:system:get-audio-devices'),
@@ -190,10 +192,10 @@ contextBridge.exposeInMainWorld('kap', {
     onAccentColorChanged: (callback: (_event: unknown, accentColor: string) => void) => on('kap:system:accent-color-changed', callback),
     onAquaColorVariantChanged: (callback: () => void) => on('kap:system:aqua-color-variant-changed', callback),
     onNativeThemeUpdated: (callback: () => void) => on('kap:system:native-theme-updated', callback),
-    shouldUseDarkColors: () => ipcRenderer.sendSync('kap:system:should-use-dark-colors-sync')
+    shouldUseDarkColors: () => ipcRenderer.sendSync('kap:system:should-use-dark-colors-sync'),
   },
   updater: {
-    check: () => invoke('kap:updater:check')
+    check: () => invoke('kap:updater:check'),
   },
   window: {
     close: () => invoke('kap:window:close'),
@@ -202,6 +204,6 @@ contextBridge.exposeInMainWorld('kap', {
     minimize: () => invoke('kap:window:minimize'),
     setEditorConversionMode: (enabled: boolean) => invoke('kap:window:set-editor-conversion-mode', enabled),
     setIgnoreMouseEvents: (ignore: boolean) => invoke('kap:window:set-ignore-mouse-events', ignore),
-    toggleFullScreen: () => invoke('kap:window:toggle-full-screen')
-  }
+    toggleFullScreen: () => invoke('kap:window:toggle-full-screen'),
+  },
 });

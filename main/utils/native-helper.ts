@@ -1,16 +1,16 @@
-import path from 'path';
-import execa from 'execa';
+import path from 'node:path';
 import {app} from 'electron';
+import execa from 'execa';
 
 // Runs native/kap-helper.swift, built for Apple Silicon by `pnpm build-native`.
 
-export interface AudioInput {
+export type AudioInput = {
   id: string;
   name: string;
   isBuiltIn: boolean;
-}
+};
 
-export interface HelperWindow {
+export type HelperWindow = {
   pid: number;
   ownerName: string;
   name: string;
@@ -20,23 +20,26 @@ export interface HelperWindow {
   width: number;
   height: number;
   appPath?: string;
-}
+};
 
-export interface OpenWithApp {
+export type OpenWithApp = {
   url: string;
   isDefault: boolean;
-}
+};
 
 // Packaged builds ship the helper in Contents/Resources (see "extraResources" in package.json).
-const getHelperPath = () => app.isPackaged ?
-  path.join(process.resourcesPath, 'kap-helper') :
-  path.join(__dirname, '..', '..', 'native', 'build', 'kap-helper');
+const getHelperPath = () => app.isPackaged
+  ? path.join(process.resourcesPath, 'kap-helper')
+  : path.join(__dirname, '..', '..', 'native', 'build', 'kap-helper');
 
-const runHelper = async (args: string[]) => JSON.parse((await execa(getHelperPath(), args)).stdout);
+const runHelper = async (args: string[]) => {
+  const {stdout} = await execa(getHelperPath(), args);
+  return JSON.parse(stdout);
+};
 
 const runHelperSync = (args: string[]) => JSON.parse(execa.sync(getHelperPath(), args).stdout);
 
-export const sortAudioInputs = (devices: AudioInput[]) => [...devices].sort((a, b) => {
+export const sortAudioInputs = (devices: AudioInput[]) => devices.toSorted((a, b) => {
   if (a.isBuiltIn !== b.isBuiltIn) {
     return a.isBuiltIn ? -1 : 1;
   }
@@ -44,9 +47,9 @@ export const sortAudioInputs = (devices: AudioInput[]) => [...devices].sort((a, 
   return a.name.localeCompare(b.name);
 });
 
-const toAudioInputs = ({defaultId, devices}: {defaultId?: string | null; devices: AudioInput[]}) => ({
+const toAudioInputs = ({defaultId, devices}: {defaultId?: string | undefined; devices: AudioInput[]}) => ({
   defaultId: defaultId ?? undefined,
-  devices: sortAudioInputs(devices)
+  devices: sortAudioInputs(devices),
 });
 
 export const getAudioInputs = async () => toAudioInputs(await runHelper(['audio-inputs']));

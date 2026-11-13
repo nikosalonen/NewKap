@@ -22,23 +22,13 @@ type GithubRelease = {
 
 let isChecking = false;
 
-export const normalizeReleaseVersion = (version: string | undefined) => {
-  if (!version) {
-    return undefined;
-  }
-
-  return semver.valid(version) ?? semver.valid(version.replace(/^v/i, '')) ?? undefined;
-};
+export const normalizeReleaseVersion = (version: string | undefined) => version ? semver.valid(version) ?? semver.valid(version.replace(/^v/i, '')) ?? undefined : undefined;
 
 export const isReleaseNewer = (releaseVersion: string | undefined, currentVersion: string) => {
   const normalizedRelease = normalizeReleaseVersion(releaseVersion);
   const normalizedCurrent = normalizeReleaseVersion(currentVersion);
 
-  if (!normalizedRelease || !normalizedCurrent) {
-    return false;
-  }
-
-  return semver.gt(normalizedRelease, normalizedCurrent);
+  return !normalizedRelease || !normalizedCurrent ? false : semver.gt(normalizedRelease, normalizedCurrent);
 };
 
 export const getReleaseDownloadUrl = (release: GithubRelease, arch = process.arch) => {
@@ -55,10 +45,10 @@ const fetchLatestRelease = async () => {
   const response = await got(LATEST_RELEASE_API_URL, {
     headers: {
       accept: 'application/vnd.github+json',
-      'user-agent': `Kap/${app.getVersion()}`
+      'user-agent': `Kap/${app.getVersion()}`,
     },
     json: true,
-    timeout: 10_000
+    timeout: 10_000,
   }) as {body: GithubRelease};
 
   return response.body;
@@ -75,7 +65,7 @@ const showUpdateAvailableDialog = async (release: GithubRelease) => {
     defaultId: 1,
     cancelId: 0,
     message: 'Update Available',
-    detail: `Kap ${releaseVersion} is available. You have ${app.getVersion()}.`
+    detail: `Kap ${releaseVersion} is available. You have ${app.getVersion()}.`,
   });
 
   if (response === 1) {
@@ -103,7 +93,7 @@ export const checkForUpdates = async ({silent = true}: {silent?: boolean} = {}) 
       await dialog.showMessageBox({
         type: 'info',
         message: 'You’re up to date',
-        detail: `Kap ${app.getVersion()} is the latest version.`
+        detail: `Kap ${app.getVersion()} is the latest version.`,
       });
     }
   } catch (error) {
@@ -113,7 +103,7 @@ export const checkForUpdates = async ({silent = true}: {silent?: boolean} = {}) 
       await dialog.showMessageBox({
         type: 'error',
         message: 'Update Check Failed',
-        detail: (error as Error).message
+        detail: (error as Error).message,
       });
     }
   } finally {

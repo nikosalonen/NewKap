@@ -8,26 +8,26 @@ export const useEditorWindowSizeEffect = (isConversionWindowState: boolean) => {
   const previousWindowSizeRef = useRef<{width: number; height: number}>();
 
   useEffect(() => {
+    if (!previousWindowSizeRef.current) {
+      previousWindowSizeRef.current = {
+        width: DEFAULT_EDITOR_WIDTH,
+        height: DEFAULT_EDITOR_HEIGHT,
+      };
+      return;
+    }
+
     const updateWindowSize = async () => {
       if (isConversionWindowState) {
         const bounds = await kap.window.getEditorBounds();
         previousWindowSizeRef.current = {
           width: bounds.width,
-          height: bounds.height
+          height: bounds.height,
         };
         await kap.window.setEditorConversionMode(true);
       } else {
         await kap.window.setEditorConversionMode(false);
       }
     };
-
-    if (!previousWindowSizeRef.current) {
-      previousWindowSizeRef.current = {
-        width: DEFAULT_EDITOR_WIDTH,
-        height: DEFAULT_EDITOR_HEIGHT
-      };
-      return;
-    }
 
     updateWindowSize();
   }, [isConversionWindowState]);

@@ -1,9 +1,18 @@
-import ava, {TestFn} from 'ava';
+import fs from 'node:fs';
+import path from 'node:path';
+import ava from 'ava';
+import type {TestFn} from 'ava';
 import tempy from 'tempy';
-import fs from 'fs';
-import sinon, {SinonFakeTimers} from 'sinon';
-import path from 'path';
+import sinon from 'sinon';
+import type {SinonFakeTimers} from 'sinon';
+import type * as RecordingHistoryModule from '../main/recording-history';
+import type {Video} from '../main/video';
+import {windowManager} from './mocks/window-manager';
 import type {MockWindowManager} from './mocks/window-manager';
+import {mockImport, mockModule} from './helpers/mocks';
+import {shell} from './mocks/electron';
+import * as dialog from './mocks/dialog';
+import {plugins} from './mocks/plugins';
 
 const test = (ava as TestFn<{
   now: Date;
@@ -11,18 +20,8 @@ const test = (ava as TestFn<{
   paths?: string[];
 }>).serial;
 
-import {mockImport, mockModule} from './helpers/mocks';
-
 mockImport('./windows/manager', 'window-manager');
 mockImport('./plugins', 'plugins');
-
-import {shell} from './mocks/electron';
-import * as dialog from './mocks/dialog';
-import {plugins} from './mocks/plugins';
-import {windowManager} from './mocks/window-manager';
-
-import type * as RecordingHistoryModule from '../main/recording-history';
-import type {Video} from '../main/video';
 
 type PastRecording = RecordingHistoryModule.PastRecording;
 
@@ -36,7 +35,7 @@ const {
   setCurrentRecording,
   updatePluginState,
   stopCurrentRecording,
-  cleanPastRecordings
+  cleanPastRecordings,
 } = require('../main/recording-history') as typeof RecordingHistoryModule;
 
 const incomplete = path.resolve(__dirname, 'fixtures', 'incomplete.mp4');
@@ -58,9 +57,9 @@ test.beforeEach(() => {
 
 test.afterEach.always(t => {
   if (t.context.paths) {
-    for (const path of t.context.paths) {
-      if (fs.existsSync(path)) {
-        fs.unlinkSync(path);
+    for (const filePath of t.context.paths) {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
       }
     }
   }
@@ -86,12 +85,12 @@ test('`hasActiveRecording()` with no recording', async t => {
 test('`hasActiveRecording()` with playable recording', async t => {
   const fakeService = {
     title: 'Fake Service',
-    cleanUp: sinon.fake()
+    cleanUp: sinon.fake(),
   };
 
   const fakePlugin = {
     name: 'kap-fake-plugin',
-    recordServices: [fakeService]
+    recordServices: [fakeService],
   };
 
   plugins.recordingPlugins = [fakePlugin];
@@ -104,10 +103,10 @@ test('`hasActiveRecording()` with playable recording', async t => {
     plugins: {
       'kap-fake-plugin': {
         'Fake Service': {
-          some: 'state'
-        }
-      }
-    }
+          some: 'state',
+        },
+      },
+    },
   });
 
   const checkPromise = hasActiveRecording();
@@ -122,7 +121,7 @@ test('`hasActiveRecording()` with playable recording', async t => {
 
   const video = windowManager.editor.open.lastCall?.args?.[0] as Video;
   t.deepEqual(video?.filePath, incomplete);
-  t.deepEqual(video?.title, 'Incomplete');
+  t.is(video?.title, 'Incomplete');
 
   t.true(await checkPromise);
 
@@ -134,9 +133,9 @@ test('`hasActiveRecording()` with playable recording', async t => {
       {
         filePath: incomplete,
         name: 'Incomplete',
-        date: new Date().toISOString()
-      }
-    ]
+        date: new Date().toISOString(),
+      },
+    ],
   );
 });
 
@@ -146,7 +145,7 @@ test('`hasActiveRecording()` with known corrupt recording', async t => {
     name: 'Corrupt',
     date: new Date().toISOString(),
     apertureOptions: {},
-    plugins: {}
+    plugins: {},
   });
 
   const checkPromise = hasActiveRecording();
@@ -184,7 +183,7 @@ test('`hasActiveRecording()` with unknown corrupt recording', async t => {
     name: 'Bad',
     date: new Date().toISOString(),
     apertureOptions: {},
-    plugins: {}
+    plugins: {},
   });
 
   const checkPromise = hasActiveRecording();
@@ -211,7 +210,7 @@ test('`setCurrentRecording()`', t => {
   setCurrentRecording({
     filePath: 'some/path',
     apertureOptions: {some: 'options'} as any,
-    plugins: {some: 'plugins'} as any
+    plugins: {some: 'plugins'} as any,
   });
 
   t.deepEqual(recordingHistory.get('activeRecording'), {
@@ -219,7 +218,7 @@ test('`setCurrentRecording()`', t => {
     name: 'Kapture 2020-07-21 at 11.27.26',
     date: t.context.now.toISOString(),
     apertureOptions: {some: 'options'} as any,
-    plugins: {some: 'plugins'} as any
+    plugins: {some: 'plugins'} as any,
   });
 });
 
@@ -228,30 +227,30 @@ test('`updatePluginState()`', t => {
     name: 'Some name',
     plugins: {
       plugin1: {
-        service1: {some: 'state'}
+        service1: {some: 'state'},
       },
       plugin2: {
-        service2: {}
-      }
-    }
+        service2: {},
+      },
+    },
   });
 
   updatePluginState({
     plugin1: {
-      service1: {some: 'state'}
+      service1: {some: 'state'},
     },
     plugin2: {
-      service2: {some: 'other state'}
-    }
+      service2: {some: 'other state'},
+    },
   });
 
   t.deepEqual(recordingHistory.get('activeRecording.plugins'), {
     plugin1: {
-      service1: {some: 'state'}
+      service1: {some: 'state'},
     },
     plugin2: {
-      service2: {some: 'other state'}
-    }
+      service2: {some: 'other state'},
+    },
   });
 });
 
@@ -262,7 +261,7 @@ test('`stopCurrentRecording()`', t => {
 
   recordingHistory.set('activeRecording', {
     filePath,
-    name: 'some name'
+    name: 'some name',
   });
 
   stopCurrentRecording();
@@ -272,7 +271,7 @@ test('`stopCurrentRecording()`', t => {
 
   recordingHistory.set('activeRecording', {
     filePath,
-    name: 'some name'
+    name: 'some name',
   });
 
   stopCurrentRecording('new name');
@@ -280,7 +279,7 @@ test('`stopCurrentRecording()`', t => {
   t.false(recordingHistory.has('activeRecording'));
   t.deepEqual(recordingHistory.get('recordings'), [
     {filePath, name: 'new name', date: t.context.now.toISOString()},
-    {filePath, name: 'some name', date: t.context.now.toISOString()}
+    {filePath, name: 'some name', date: t.context.now.toISOString()},
   ]);
 });
 
@@ -292,7 +291,7 @@ test('`cleanPastRecordings()`', t => {
   recordingHistory.set('recordings', [
     {filePath},
     // Should ignore file that doesn't exist
-    {filePath: tempy.file({extension: 'mp4'})}
+    {filePath: tempy.file({extension: 'mp4'})},
   ]);
 
   cleanPastRecordings();

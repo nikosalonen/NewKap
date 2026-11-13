@@ -3,6 +3,7 @@ import {isSafeExternalUrl} from '../main/common/external-url';
 
 test('web and email links may open', t => {
   t.true(isSafeExternalUrl('https://github.com/wulkano/kap'));
+  // eslint-disable-next-line unicorn/prefer-https -- plain http links must still open
   t.true(isSafeExternalUrl('http://example.org'));
   t.true(isSafeExternalUrl('mailto:someone@example.org'));
 });

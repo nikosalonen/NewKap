@@ -29,7 +29,7 @@ export const resizeTo = (bounds, target) => {
     width: target.width,
     x: Math.min(x, screenWidth - target.width),
     height: target.height,
-    y: Math.min(y, screenHeight - target.height)
+    y: Math.min(y, screenHeight - target.height),
   };
 };
 
@@ -41,13 +41,13 @@ const handleWidthInput = _.debounce(({
   value,
   widthInput,
   heightInput,
-  ignoreEmpty = true
+  ignoreEmpty = true,
 }) => {
-  const target = {};
-
   if (value === '' && ignoreEmpty) {
     return;
   }
+
+  const target = {};
 
   if (/^\d+$/.test(value)) {
     const integer = Number.parseInt(value, 10);
@@ -88,13 +88,13 @@ const handleHeightInput = _.debounce(({
   value,
   widthInput,
   heightInput,
-  ignoreEmpty = true
+  ignoreEmpty = true,
 }) => {
-  const target = {};
-
   if (value === '' && ignoreEmpty) {
     return;
   }
+
+  const target = {};
 
   if (/^\d+$/.test(value)) {
     const integer = Number.parseInt(value, 10);
@@ -133,7 +133,7 @@ export const RATIOS = [
   '5:3',
   '4:3',
   '3:2',
-  '1:1'
+  '1:1',
 ];
 
 const buildAspectRatioMenu = ({setRatio, ratio}) => {
@@ -143,24 +143,26 @@ const buildAspectRatioMenu = ({setRatio, ratio}) => {
       label: r,
       type: 'radio',
       checked: r === selectedRatio,
-      click: () => setRatio(r.split(':').map(d => Number.parseInt(d, 10)))
+      click: () => setRatio(r.split(':').map(d => Number.parseInt(d, 10))),
     }
   ));
 
-  const customOption = RATIOS.includes(selectedRatio) ? {
-    label: 'Custom',
-    type: 'radio',
-    checked: false,
-    enabled: false
-  } : {
-    label: `Custom ${selectedRatio}`,
-    type: 'radio',
-    checked: true
-  };
+  const customOption = RATIOS.includes(selectedRatio)
+    ? {
+      label: 'Custom',
+      type: 'radio',
+      checked: false,
+      enabled: false,
+    }
+    : {
+      label: `Custom ${selectedRatio}`,
+      type: 'radio',
+      checked: true,
+    };
 
   template.push(customOption);
   return {
-    popup: position => popupMenu(template, position)
+    popup: position => popupMenu(template, position),
   };
 };
 
@@ -182,23 +184,23 @@ const handleInputKeyPress = (onChange, min, max) => event => {
 
   // Fake an onChange event
   if (event.key === 'ArrowUp') {
-    event.currentTarget.value = `${Math.min(parsedValue + multiplier, max)}`;
+    event.currentTarget.value = String(Math.min(parsedValue + multiplier, max));
     onChange(event);
   } else if (event.key === 'ArrowDown') {
-    event.currentTarget.value = `${Math.max(parsedValue - multiplier, min)}`;
+    event.currentTarget.value = String(Math.max(parsedValue - multiplier, min));
     onChange(event);
   }
 };
 
 const handleKeyboardActivation = (onClick, {isMenu} = {}) => event => {
-  if (
-    (isMenu && event.key === 'ArrowDown') ||
-    (!isMenu && ['Enter', ' '].includes(event.key))
-  ) {
-    event.preventDefault();
-    if (onClick) {
-      onClick(event);
-    }
+  if (!((isMenu && event.key === 'ArrowDown')
+    || (!isMenu && ['Enter', ' '].includes(event.key)))) {
+    return;
+  }
+
+  event.preventDefault();
+  if (onClick) {
+    onClick(event);
   }
 };
 
@@ -207,5 +209,5 @@ export {
   handleHeightInput,
   buildAspectRatioMenu,
   handleInputKeyPress,
-  handleKeyboardActivation
+  handleKeyboardActivation,
 };

@@ -1,6 +1,6 @@
-/* eslint-disable array-element-newline */
+/* eslint-disable @stylistic/array-element-newline -- each ffmpeg flag stays on one line with its value */
 
-import path from 'path';
+import path from 'node:path';
 import execa from 'execa';
 import tempy from 'tempy';
 import ffmpegPath from './ffmpeg-path';
@@ -10,7 +10,7 @@ export const getEncoding = async (filePath: string) => {
     await execa(ffmpegPath, ['-i', filePath]);
     return undefined;
   } catch (error) {
-    return /.*: Video: (.*?) \(.*/.exec((error as any)?.stderr)?.[1];
+    return /: Video: (.*?) \(/.exec((error as any)?.stderr)?.[1];
   }
 };
 
@@ -24,7 +24,7 @@ export const convertToH264 = async (inputPath: string) => {
     '-crf', '27',
     '-preset', 'veryfast',
     '-c:a', 'copy',
-    outputPath
+    outputPath,
   ]);
 
   return outputPath;

@@ -1,4 +1,4 @@
-import {ExportsListRemoteState} from 'common/types';
+import type {ExportsListRemoteState} from 'common/types';
 import createRemoteStateHook from 'hooks/use-remote-state';
 
 const useExportsList = createRemoteStateHook<ExportsListRemoteState>('exports-list');

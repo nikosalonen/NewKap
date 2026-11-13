@@ -1,19 +1,19 @@
 import nearestNormalAspectRatio from 'nearest-normal-aspect-ratio';
 import {Container} from 'unstated';
 import kap from '../utils/kap';
-
-import {minHeight, minWidth, resizeTo, setScreenSize} from '../utils/inputs';
+import {
+  minHeight,
+  minWidth,
+  resizeTo,
+  setScreenSize,
+} from '../utils/inputs';
 
 const getLargestCommonDivisor = (first, second) => {
   if (!first) {
     return 1;
   }
 
-  if (!second) {
-    return first;
-  }
-
-  return getLargestCommonDivisor(second, first % second);
+  return second ? getLargestCommonDivisor(second, first % second) : first;
 };
 
 const getSimplestRatio = (width, height) => {
@@ -27,11 +27,7 @@ const getSimplestRatio = (width, height) => {
 export const findRatioForSize = (width, height) => {
   const ratio = nearestNormalAspectRatio(width, height);
 
-  if (ratio) {
-    return ratio.split(':').map(part => Number.parseInt(part, 10));
-  }
-
-  return getSimplestRatio(width, height);
+  return ratio ? ratio.split(':').map(part => Number.parseInt(part, 10)) : getSimplestRatio(width, height);
 };
 
 export default class CropperContainer extends Container {
@@ -62,7 +58,7 @@ export default class CropperContainer extends Container {
       recordAudio: this.settings.get('recordAudio'),
       audioInputDeviceId: this.settings.getSelectedInputDeviceId(),
       countdown: false,
-      countdownValue: 0
+      countdownValue: 0,
     };
 
     this.settings.onDidChange('recordAudio', recordAudio => {
@@ -84,9 +80,8 @@ export default class CropperContainer extends Container {
     original: null,
     offsetX: null,
     offsetY: null,
-    showHandles: true
+    showHandles: true,
   });
-
   removeInteractionObservers = () => {
     if (!this.cursorContainer) {
       return;
@@ -96,18 +91,15 @@ export default class CropperContainer extends Container {
     this.cursorContainer.removeCursorObserver(this.resize);
     this.cursorContainer.removeCursorObserver(this.move);
   };
-
   resetInteractionState = (reason = 'unknown') => {
     console.log('[cropper] cleanup interaction state', {reason});
     this.removeInteractionObservers();
     this.setState(this.getInteractionResetState());
   };
-
   isValidPress = event => {
     const button = event?.button;
     return this.state.isReady && this.state.isActive && (button === undefined || button === 0);
   };
-
   endInteraction = (reason = 'unknown') => {
     if (!this.state.isPointerDown && !this.state.isMoving && !this.state.isResizing && !this.state.isPicking) {
       return;
@@ -115,14 +107,13 @@ export default class CropperContainer extends Container {
 
     console.log('[cropper] drag end', {
       reason,
-      activeGesture: this.state.activeGesture
+      activeGesture: this.state.activeGesture,
     });
 
     this.stopMoving();
     this.stopResizing();
     this.stopPicking({closeIfPicking: reason === 'mouse-up'});
   };
-
   setDisplay = (display, {isReady = true} = {}) => {
     const {width: screenWidth, height: screenHeight, isActive, id, cropper = {}} = display;
     const {x, y, width, height, ratio = [4, 3]} = cropper;
@@ -144,11 +135,10 @@ export default class CropperContainer extends Container {
       ratio,
       isRecording: false,
       countdown: false,
-      countdownValue: 0
+      countdownValue: 0,
     });
     this.actionBarContainer?.setInputValues({width, height});
   };
-
   setReady = isReady => {
     if (isReady) {
       console.log('[cropper] renderer ready');
@@ -156,15 +146,12 @@ export default class CropperContainer extends Container {
 
     this.setState({isReady});
   };
-
   willStartRecording = () => {
     this.setState({willStartRecording: true});
   };
-
   setRecording = () => {
     this.setState({isRecording: true, countdown: false, countdownValue: 0});
   };
-
   setActive = isActive => {
     const updates = {isActive};
 
@@ -182,7 +169,6 @@ export default class CropperContainer extends Container {
 
     this.setState(updates);
   };
-
   updateSettings = updates => {
     const {x, y, width, height, ratio, displayId} = this.state;
 
@@ -193,11 +179,10 @@ export default class CropperContainer extends Container {
       height,
       ratio,
       ...updates,
-      displayId
+      displayId,
     });
     this.setState(updates);
   };
-
   setSize = ({width: defaultWidth, height: defaultHeight}) => {
     let {width, height} = this.state;
     width = width || defaultWidth;
@@ -207,15 +192,12 @@ export default class CropperContainer extends Container {
     this.setState(updates);
     this.actionBarContainer?.setInputValues(updates);
   };
-
   bindCursor = cursorContainer => {
     this.cursorContainer = cursorContainer;
   };
-
   bindActionBar = actionBarContainer => {
     this.actionBarContainer = actionBarContainer;
   };
-
   setBounds = (bounds, {save = true, ignoreRatioLocked} = {}) => {
     if (bounds) {
       const updates = bounds;
@@ -238,7 +220,6 @@ export default class CropperContainer extends Container {
       this.actionBarContainer?.setInputValues({});
     }
   };
-
   setRatio = ratio => {
     const {x, y, width, screenHeight} = this.state;
     const target = {width};
@@ -257,12 +238,11 @@ export default class CropperContainer extends Container {
     this.actionBarContainer?.setInputValues(updates);
     this.actionBarContainer?.toggleRatioLock(true);
   };
-
   swapDimensions = () => {
     const {x, y, width, height, ratio, screenHeight} = this.state;
     const target = {
       width: height,
-      height: Math.min(width, screenHeight)
+      height: Math.min(width, screenHeight),
     };
 
     this.unselectApp();
@@ -271,28 +251,26 @@ export default class CropperContainer extends Container {
       target.width = Math.ceil(target.height * ratio[1] / ratio[0]);
     }
 
-    const updates = {ratio: ratio.reverse(), ...resizeTo({x, y}, target)};
+    const updates = {ratio: ratio.toReversed(), ...resizeTo({x, y}, target)};
 
     this.updateSettings(updates);
     this.actionBarContainer?.setInputValues(updates);
   };
-
   selectApp = app => {
     const {x, y, width, height, ownerName} = app;
     this.setState({selectedApp: ownerName});
-    this.setBounds({x, y, width, height}, {ignoreRatioLocked: true});
+    this.setBounds({
+      x, y, width, height,
+    }, {ignoreRatioLocked: true});
   };
-
   unselectApp = () => {
     if (this.state.selectedApp) {
       this.setState({selectedApp: ''});
     }
   };
-
   toggleResizeFromCenter = resizeFromCenter => {
     this.setState({resizeFromCenter});
   };
-
   enterFullscreen = () => {
     const {x, y, width, height, screenWidth, screenHeight} = this.state;
     this.unselectApp();
@@ -303,15 +281,15 @@ export default class CropperContainer extends Container {
       width: screenWidth,
       height: screenHeight,
       showHandles: false,
-      original: {x, y, width, height}
+      original: {
+        x, y, width, height,
+      },
     });
   };
-
   exitFullscreen = () => {
     const {original} = this.state;
     this.setState({isFullscreen: false, showHandles: true, ...original});
   };
-
   startPicking = event => {
     const {pageX, pageY} = event;
 
@@ -322,10 +300,11 @@ export default class CropperContainer extends Container {
     console.log('[cropper] pointer down', {gesture: 'picking', pageX, pageY});
     this.unselectApp();
     this.removeInteractionObservers();
-    this.setState({isPicking: true, isPointerDown: true, activeGesture: 'picking', original: {pageX, pageY}});
+    this.setState({
+      isPicking: true, isPointerDown: true, activeGesture: 'picking', original: {pageX, pageY},
+    });
     this.cursorContainer.addCursorObserver(this.pick);
   };
-
   pick = ({pageX, pageY}) => {
     const {original, isPicking, isPointerDown, activeGesture} = this.state;
     if (!isPointerDown || activeGesture !== 'picking' || !isPicking || !original) {
@@ -334,27 +313,30 @@ export default class CropperContainer extends Container {
 
     const width = Math.abs(original.pageX - pageX);
     const height = Math.abs(original.pageY - pageY);
-    if (width > 0 || height > 0) {
-      this.cursorContainer.removeCursorObserver(this.pick);
-      const top = pageY < original.pageY;
-      const left = pageX < original.pageX;
-      console.log('[cropper] drag start', {gesture: 'picking', pageX, pageY});
-      this.setState({
-        x: Math.min(pageX, original.pageX),
-        y: Math.min(pageY, original.pageY),
-        width,
-        height,
-        isResizing: true,
-        isPicking: false,
-        activeGesture: 'resizing',
-        currentHandle: {top, bottom: !top, left, right: !left}
-      });
-
-      this.setOriginal();
-      this.cursorContainer.addCursorObserver(this.resize);
+    if (!(width > 0 || height > 0)) {
+      return;
     }
-  };
 
+    this.cursorContainer.removeCursorObserver(this.pick);
+    const top = pageY < original.pageY;
+    const left = pageX < original.pageX;
+    console.log('[cropper] drag start', {gesture: 'picking', pageX, pageY});
+    this.setState({
+      x: Math.min(pageX, original.pageX),
+      y: Math.min(pageY, original.pageY),
+      width,
+      height,
+      isResizing: true,
+      isPicking: false,
+      activeGesture: 'resizing',
+      currentHandle: {
+        top, bottom: !top, left, right: !left,
+      },
+    });
+
+    this.setOriginal();
+    this.cursorContainer.addCursorObserver(this.resize);
+  };
   stopPicking = ({closeIfPicking = true} = {}) => {
     if (this.state.isPicking) {
       this.removeInteractionObservers();
@@ -362,7 +344,7 @@ export default class CropperContainer extends Container {
         isPicking: false,
         isPointerDown: false,
         activeGesture: null,
-        original: null
+        original: null,
       });
 
       if (closeIfPicking) {
@@ -372,99 +354,107 @@ export default class CropperContainer extends Container {
       this.cursorContainer.removeCursorObserver(this.pick);
     }
   };
-
   setOriginal = () => {
     const {x, y, width, height} = this.state;
-    this.setState({original: {x, y, width, height}});
+    this.setState({
+      original: {
+        x, y, width, height,
+      },
+    });
   };
-
   startResizing = (currentHandle, event) => {
-    if (!this.state.isFullscreen && this.isValidPress(event)) {
-      console.log('[cropper] pointer down', {gesture: 'resizing', currentHandle});
-      this.unselectApp();
-      this.removeInteractionObservers();
-      this.setOriginal();
-      this.setState({currentHandle, isResizing: true, isPointerDown: true, activeGesture: 'resizing'});
-      console.log('[cropper] drag start', {gesture: 'resizing', currentHandle});
-      this.cursorContainer.addCursorObserver(this.resize);
+    if (this.state.isFullscreen || !this.isValidPress(event)) {
+      return;
     }
-  };
 
+    console.log('[cropper] pointer down', {gesture: 'resizing', currentHandle});
+    this.unselectApp();
+    this.removeInteractionObservers();
+    this.setOriginal();
+    this.setState({
+      currentHandle, isResizing: true, isPointerDown: true, activeGesture: 'resizing',
+    });
+    console.log('[cropper] drag start', {gesture: 'resizing', currentHandle});
+    this.cursorContainer.addCursorObserver(this.resize);
+  };
   stopResizing = () => {
-    if (!this.state.isFullscreen && this.state.isResizing) {
-      const {x, y, width, height, ratio} = this.state;
-      this.setState({
-        currentHandle: null,
-        isResizing: false,
-        showHandles: true,
-        isPicking: false,
-        isPointerDown: false,
-        activeGesture: null,
-        original: null
-      });
-      this.cursorContainer.removeCursorObserver(this.resize);
-      this.setBounds({
-        ...resizeTo({x, y}, {
-          width: Math.max(minWidth, width),
-          height: Math.max(minHeight, height)
-        }),
-        ratio
-      });
+    if (this.state.isFullscreen || !this.state.isResizing) {
+      return;
     }
-  };
 
+    const {x, y, width, height, ratio} = this.state;
+    this.setState({
+      currentHandle: null,
+      isResizing: false,
+      showHandles: true,
+      isPicking: false,
+      isPointerDown: false,
+      activeGesture: null,
+      original: null,
+    });
+    this.cursorContainer.removeCursorObserver(this.resize);
+    this.setBounds({
+      ...resizeTo({x, y}, {
+        width: Math.max(minWidth, width),
+        height: Math.max(minHeight, height),
+      }),
+      ratio,
+    });
+  };
   startMoving = event => {
     const {pageX, pageY} = event;
 
-    if (!this.state.isFullscreen && this.isValidPress(event)) {
-      console.log('[cropper] pointer down', {gesture: 'moving', pageX, pageY});
-      this.unselectApp();
-      this.removeInteractionObservers();
-      this.setState({isMoving: true, isPointerDown: true, activeGesture: 'moving', showHandles: false, offsetX: pageX, offsetY: pageY});
-      console.log('[cropper] drag start', {gesture: 'moving', pageX, pageY});
-      this.cursorContainer.addCursorObserver(this.move);
+    if (this.state.isFullscreen || !this.isValidPress(event)) {
+      return;
     }
-  };
 
+    console.log('[cropper] pointer down', {gesture: 'moving', pageX, pageY});
+    this.unselectApp();
+    this.removeInteractionObservers();
+    this.setState({
+      isMoving: true, isPointerDown: true, activeGesture: 'moving', showHandles: false, offsetX: pageX, offsetY: pageY,
+    });
+    console.log('[cropper] drag start', {gesture: 'moving', pageX, pageY});
+    this.cursorContainer.addCursorObserver(this.move);
+  };
   stopMoving = () => {
-    if (!this.state.isFullscreen && this.state.isMoving) {
-      const {x, y, width, height} = this.state;
-      this.setBounds({x, y, width, height});
-      this.setState({
-        isMoving: false,
-        isPointerDown: false,
-        activeGesture: null,
-        showHandles: true,
-        offsetX: null,
-        offsetY: null
-      });
-      this.cursorContainer.removeCursorObserver(this.move);
-      this.updateSettings({x, y});
+    if (this.state.isFullscreen || !this.state.isMoving) {
+      return;
     }
-  };
 
+    const {x, y, width, height} = this.state;
+    this.setBounds({
+      x, y, width, height,
+    });
+    this.setState({
+      isMoving: false,
+      isPointerDown: false,
+      activeGesture: null,
+      showHandles: true,
+      offsetX: null,
+      offsetY: null,
+    });
+    this.cursorContainer.removeCursorObserver(this.move);
+    this.updateSettings({x, y});
+  };
   move = ({pageX, pageY}) => {
     const {x, y, offsetX, offsetY, width, height, screenWidth, screenHeight, isPointerDown, activeGesture, isMoving} = this.state;
     if (!isPointerDown || activeGesture !== 'moving' || !isMoving) {
       return;
     }
 
+    const newX = x + pageX - offsetX;
+    const newY = y + pageY - offsetY;
     const updates = {
       offsetY: pageY,
-      offsetX: pageX
+      offsetX: pageX,
+      ...((newY + height <= screenHeight && newY >= 0) && {y: newY}),
+      ...((newX + width <= screenWidth && newX >= 0) && {x: newX}),
     };
-
-    if (y + pageY - offsetY + height <= screenHeight && y + pageY - offsetY >= 0) {
-      updates.y = y + pageY - offsetY;
-    }
-
-    if (x + pageX - offsetX + width <= screenWidth && x + pageX - offsetX >= 0) {
-      updates.x = x + pageX - offsetX;
-    }
 
     this.setBounds(updates, {save: false});
   };
-
+  /* eslint-disable max-depth -- the ratio-locked resize math */
   // eslint-disable-next-line complexity
   resize = ({pageX, pageY}) => {
     const {currentHandle, x, y, width, height, original, ratio, screenWidth, screenHeight, resizeFromCenter, isPointerDown, activeGesture, isResizing} = this.state;
@@ -474,7 +464,11 @@ export default class CropperContainer extends Container {
 
     const {top, bottom, left, right} = currentHandle;
     const {ratioLocked} = this.actionBarContainer?.state ?? {};
-    const updates = {currentHandle: {top, bottom, right, left}};
+    const updates = {
+      currentHandle: {
+        top, bottom, right, left,
+      },
+    };
 
     if (top) {
       updates.y = pageY;
@@ -528,7 +522,9 @@ export default class CropperContainer extends Container {
 
     if (ratioLocked) {
       if (updates.width < 0 && updates.height < 0) {
-        updates.currentHandle = {bottom: !bottom, top: !top, left: !left, right: !right};
+        updates.currentHandle = {
+          bottom: !bottom, top: !top, left: !left, right: !right,
+        };
       }
 
       if (
@@ -632,7 +628,7 @@ export default class CropperContainer extends Container {
 
     this.setBounds(updates, {save: false});
   };
-
+  /* eslint-enable max-depth */
   startCountdown = () => {
     if (this.state.countdown || this.state.isRecording) {
       return;
@@ -665,7 +661,6 @@ export default class CropperContainer extends Container {
 
     setTimeout(tick, 1000);
   };
-
   doStartRecording = () => {
     const {x, y, width, height, screenWidth, screenHeight, displayId} = this.state;
 
@@ -676,9 +671,11 @@ export default class CropperContainer extends Container {
     this.willStartRecording();
 
     kap.cropper.startRecording({
-      cropperBounds: {x, y, width, height},
+      cropperBounds: {
+        x, y, width, height,
+      },
       screenBounds: {width: screenWidth, height: screenHeight},
-      displayId
+      displayId,
     });
   };
 }

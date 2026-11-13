@@ -10,9 +10,9 @@ const formatDuration = (seconds: number, showMilliseconds = false) => {
   const wholeSeconds = Math.floor(totalMilliseconds / 1000) % 60;
   const hundredths = Math.floor((totalMilliseconds % 1000) / 10);
 
-  const clock = seconds >= 3600 ?
-    `${padNumber(hours)}:${padNumber(minutes)}:${padNumber(wholeSeconds)}` :
-    `${minutes}:${padNumber(wholeSeconds)}`;
+  const clock = seconds >= 3600
+    ? `${padNumber(hours)}:${padNumber(minutes)}:${padNumber(wholeSeconds)}`
+    : `${minutes}:${padNumber(wholeSeconds)}`;
 
   return showMilliseconds ? `${clock}.${padNumber(hundredths)}` : clock;
 };

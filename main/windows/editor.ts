@@ -1,11 +1,11 @@
-import {EditorWindowState} from '../common/types';
-import type {Video} from '../video';
-import KapWindow from './kap-window';
-import {MenuItemId} from '../menus/utils';
 import {BrowserWindow, dialog} from 'electron';
+import fs from 'node:fs';
 import {is} from 'electron-util';
-import fs from 'fs';
+import type {EditorWindowState} from '../common/types';
+import type {Video} from '../video';
+import {MenuItemId} from '../menus/utils';
 import {saveSnapshot} from '../utils/image-preview';
+import KapWindow from './kap-window';
 import {windowManager} from './manager';
 
 const OPTIONS_BAR_HEIGHT = 48;
@@ -39,7 +39,7 @@ const open = async (video: Video) => {
     backgroundColor: '#222222',
     dock: true,
     webPreferences: {
-      webSecurity: !is.development // Disable webSecurity in dev to load video over file:// protocol while serving over insecure http, this is not needed in production where we use file:// protocol for html serving.
+      webSecurity: !is.development, // Disable webSecurity in dev to load video over file:// protocol while serving over insecure http, this is not needed in production where we use file:// protocol for html serving.
     },
     frame: false,
     transparent: true,
@@ -49,32 +49,35 @@ const open = async (video: Video) => {
       previewFilePath: video.previewPath!,
       filePath: video.filePath,
       fps: video.fps!,
-      title: video.title
+      title: video.title,
     },
-    menu: defaultMenu => {
+    menu(defaultMenu) {
       if (!video.isNewRecording) {
         return;
       }
 
       const fileMenu = defaultMenu.find(item => item.id === MenuItemId.file);
 
-      if (fileMenu) {
-        const submenu = fileMenu.submenu as Electron.MenuItemConstructorOptions[];
-
-        const index = submenu.findIndex(item => item.id === MenuItemId.openVideo);
-
-        if (index > -1) {
-          submenu.splice(index + 1, 0, {
-            type: 'separator'
-          }, {
-            label: 'Save Original…',
-            id: MenuItemId.saveOriginal,
-            accelerator: 'Command+S',
-            click: async () => saveOriginal(video)
-          });
-        }
+      if (!fileMenu) {
+        return;
       }
-    }
+
+      const submenu = fileMenu.submenu as Electron.MenuItemConstructorOptions[];
+      const index = submenu.findIndex(item => item.id === MenuItemId.openVideo);
+
+      if (index === -1) {
+        return;
+      }
+
+      submenu.splice(index + 1, 0, {
+        type: 'separator',
+      }, {
+        label: 'Save Original…',
+        id: MenuItemId.saveOriginal,
+        accelerator: 'Command+S',
+        click: async () => saveOriginal(video),
+      });
+    },
   });
 
   const editorWindow = editorKapWindow.browserWindow;
@@ -89,12 +92,12 @@ const open = async (video: Video) => {
         type: 'question',
         buttons: [
           'Discard',
-          'Cancel'
+          'Cancel',
         ],
         defaultId: 0,
         cancelId: 1,
         message: 'Are you sure that you want to discard this recording?',
-        detail: 'You will no longer be able to edit and export the original recording.'
+        detail: 'You will no longer be able to edit and export the original recording.',
       });
 
       if (buttonIndex === 1) {
@@ -124,7 +127,7 @@ const open = async (video: Video) => {
 
 const saveOriginal = async (video: Video) => {
   const {filePath} = await dialog.showSaveDialog(BrowserWindow.getFocusedWindow()!, {
-    defaultPath: `${video.title}.mp4`
+    defaultPath: `${video.title}.mp4`,
   });
 
   if (filePath) {
@@ -144,5 +147,5 @@ const areAnyBlocking = () => {
 
 windowManager.setEditor({
   open,
-  areAnyBlocking
+  areAnyBlocking,
 });

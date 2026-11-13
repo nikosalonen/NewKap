@@ -1,22 +1,22 @@
+import useEditorWindowState from 'hooks/editor/use-editor-window-state';
+import {useState} from 'react';
 import TrafficLights from '../traffic-lights';
 import VideoPlayer from './video-player';
 import Options from './options';
-import useEditorWindowState from 'hooks/editor/use-editor-window-state';
 import Timeline from './timeline';
-import {useState} from 'react';
 
 const EditorPreview = () => {
   const {title = 'Editor'} = useEditorWindowState();
   const [isEditorVisible, setIsEditorVisible] = useState(true);
 
   return (
-    <div className="preview-container">
-      <div className="preview-hover-container">
-        <div className="title-bar-hover-zone">
-          <div className="title-bar">
-            <div className="title-bar-container">
+    <div className='preview-container'>
+      <div className='preview-hover-container'>
+        <div className='title-bar-hover-zone'>
+          <div className='title-bar'>
+            <div className='title-bar-container'>
               <TrafficLights/>
-              <div className="title">{title}</div>
+              <div className='title'>{title}</div>
             </div>
           </div>
         </div>

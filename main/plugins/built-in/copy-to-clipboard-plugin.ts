@@ -1,4 +1,4 @@
-import {ShareServiceContext} from '../service-context';
+import type {ShareServiceContext} from '../service-context';
 import {copyFilesToClipboard} from '../../utils/clipboard';
 
 const action = async (context: ShareServiceContext) => {
@@ -12,9 +12,9 @@ const copyToClipboard = {
   formats: [
     'gif',
     'apng',
-    'mp4'
+    'mp4',
   ],
-  action
+  action,
 };
 
 export const shareServices = [copyToClipboard];

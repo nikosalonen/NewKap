@@ -1,7 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import {createHash} from 'crypto';
-import {systemPreferences, shell, dialog, app, desktopCapturer} from 'electron';
+import {
+  systemPreferences,
+  shell,
+  dialog,
+  app,
+  desktopCapturer,
+} from 'electron';
 
 let isDialogShowing = false;
 
@@ -9,7 +15,7 @@ const getSystemSettingsUrl = (privacySection: string) => `x-apple.systempreferen
 
 export const openSystemPreferences = async (privacySection: string) => shell.openExternal(getSystemSettingsUrl(privacySection));
 
-const promptSystemPreferences = (options: {message: string; detail: string; systemPreferencesPath: string; quitAfterOpening: boolean}) => async ({hasAsked}: {hasAsked?: boolean} = {}) => {
+const promptSystemPreferences = (options: {message: string; detail: string; systemPreferencesPath: string; quitAfterOpening: boolean}) => async ({hasAsked = false}: {hasAsked?: boolean} = {}) => {
   if (hasAsked || isDialogShowing) {
     return false;
   }
@@ -23,7 +29,7 @@ const promptSystemPreferences = (options: {message: string; detail: string; syst
       defaultId: 0,
       message: options.message,
       detail: options.detail,
-      cancelId: 1
+      cancelId: 1,
     });
     if (response === 0) {
       await openSystemPreferences(options.systemPreferencesPath);
@@ -46,9 +52,10 @@ const getMicrophoneAccess = () => systemPreferences.getMediaAccessStatus('microp
 // A microphone grant applies right away, so Kap keeps running.
 const microphoneFallback = promptSystemPreferences({
   message: 'Kap cannot access the microphone.',
-  detail: 'Kap requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. If the setting is locked, Screen Time or your organization manages it.',
+  detail: 'Kap requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. '
+    + 'If the setting is locked, Screen Time or your organization manages it.',
   systemPreferencesPath: 'Privacy_Microphone',
-  quitAfterOpening: false
+  quitAfterOpening: false,
 });
 
 export const ensureMicrophonePermissions = async (fallback = microphoneFallback) => {
@@ -61,12 +68,8 @@ export const ensureMicrophonePermissions = async (fallback = microphoneFallback)
   if (access === 'not-determined' || access === 'unknown') {
     const granted = await systemPreferences.askForMediaAccess('microphone');
 
-    if (granted) {
-      return true;
-    }
-
     // The user just answered the macOS prompt, so the default fallback stays quiet.
-    return fallback({hasAsked: true});
+    return granted || fallback({hasAsked: true});
   }
 
   // 'denied' or 'restricted': macOS will not ask again, so explain what to do.
@@ -125,7 +128,7 @@ const screenCaptureFallback = promptSystemPreferences({
   message: 'Kap cannot record the screen.',
   detail: 'Kap requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. Afterwards, relaunch Kap.',
   systemPreferencesPath: 'Privacy_ScreenCapture',
-  quitAfterOpening: true
+  quitAfterOpening: true,
 });
 
 export const hasScreenCaptureAccess = () => systemPreferences.getMediaAccessStatus('screen') === 'granted';

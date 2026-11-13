@@ -1,8 +1,9 @@
 'use strict';
 
-import {BrowserWindow, Rectangle} from 'electron';
+import {BrowserWindow} from 'electron';
+import type {Rectangle} from 'electron';
+import path from 'node:path';
 import {ipcMain as ipc} from 'electron-better-ipc';
-import path from 'path';
 import {loadRoute} from '../utils/routes';
 import {windowManager} from './manager';
 
@@ -28,8 +29,8 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '..', 'preload.js')
-    }
+      preload: path.join(__dirname, '..', 'preload.js'),
+    },
   });
 
   loadRoute(dialogWindow, 'dialog');
@@ -39,13 +40,7 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
 
   const updateUi = async (newOptions: DialogOptions) => {
     wasActionTaken = true;
-    buttons = newOptions.buttons.map((button: any) => {
-      if (typeof button === 'string') {
-        return {label: button};
-      }
-
-      return button;
-    });
+    buttons = newOptions.buttons.map((button: any) => typeof button === 'string' ? {label: button} : button);
 
     const cancelButton = buttons.findIndex(({label}) => label === 'Cancel');
 
@@ -54,7 +49,7 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
       ...options,
       ...newOptions,
       buttons: buttons.map(({label, activeLabel}) => ({label, activeLabel})),
-      id: dialogWindow.id
+      id: dialogWindow.id,
     });
 
     const bounds = dialogWindow.getBounds();
@@ -62,24 +57,23 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
 
     dialogWindow.setBounds({
       width: Math.max(width, bounds.width, DIALOG_MIN_WIDTH),
-      height: Math.max(height + titleBarHeight, bounds.height, DIALOG_MIN_HEIGHT)
+      height: Math.max(height + titleBarHeight, bounds.height, DIALOG_MIN_HEIGHT),
     });
   };
 
   const unsubscribe = ipc.answerRenderer(`dialog-action-${dialogWindow.id}`, async (index: number) => {
-    if (buttons[index]) {
-      if (buttons[index].action) {
-        wasActionTaken = false;
-        await buttons[index].action(cleanup, updateUi);
+    const button = buttons[index];
 
-        if (!wasActionTaken) {
-          cleanup(index);
-        }
-      } else {
-        cleanup(index);
-      }
-    } else {
-      cleanup();
+    if (!button?.action) {
+      cleanup(button ? index : undefined);
+      return;
+    }
+
+    wasActionTaken = false;
+    await button.action(cleanup, updateUi);
+
+    if (!wasActionTaken) {
+      cleanup(index);
     }
   });
 
@@ -97,5 +91,5 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
 });
 
 windowManager.setDialog({
-  open: showDialog
+  open: showDialog,
 });

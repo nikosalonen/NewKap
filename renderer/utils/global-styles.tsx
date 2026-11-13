@@ -13,13 +13,11 @@ const GlobalStyles = () => {
       .join('\n');
   }, [isDarkMode]);
 
-  const updateAccentColor = (_, accentColor) => {
-    setAccentColor(accentColor);
+  const updateAccentColor = (_, newAccentColor) => {
+    setAccentColor(newAccentColor);
   };
 
-  useEffect(() => {
-    return kap.system.onAccentColorChanged(updateAccentColor);
-  }, []);
+  useEffect(() => kap.system.onAccentColorChanged(updateAccentColor), []);
 
   return (
     <style jsx global>{`
@@ -240,5 +238,5 @@ const systemColorNames = [
   'unemphasized-selected-text-background',
   'unemphasized-selected-text',
   'window-background',
-  'window-frame-text'
+  'window-frame-text',
 ];

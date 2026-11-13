@@ -26,8 +26,8 @@ const handlers = new Map<string, () => void>([
   ['triggerCropper', startOrOpenRecording],
   ['stopRecording', stopCurrentRecording],
   ['pauseRecording', togglePauseCurrentRecording],
-  ['captureScreenshot', () => windowManager.cropper?.open()],
-  ['captureScreenshotClipboard', () => windowManager.cropper?.open()]
+  ['captureScreenshot', async () => windowManager.cropper?.open()],
+  ['captureScreenshotClipboard', async () => windowManager.cropper?.open()],
 ]);
 
 const registerShortcut = (shortcut: string, action: () => void) => {
@@ -42,21 +42,23 @@ const registerShortcut = (shortcut: string, action: () => void) => {
 };
 
 export const setCropperShortcutAction = (action = startOrOpenRecording) => {
-  if (settings.get('enableShortcuts') && settings.get('shortcuts.triggerCropper')) {
-    handlers.set('triggerCropper', action);
-
-    const shortcut = settings.get<string, string>('shortcuts.triggerCropper');
-    if (globalShortcut.isRegistered(shortcut)) {
-      globalShortcut.unregister(shortcut);
-    }
-
-    registerShortcut(shortcut, action);
+  if (!(settings.get('enableShortcuts') && settings.get('shortcuts.triggerCropper'))) {
+    return;
   }
+
+  handlers.set('triggerCropper', action);
+
+  const shortcut = settings.get<string, string>('shortcuts.triggerCropper');
+  if (globalShortcut.isRegistered(shortcut)) {
+    globalShortcut.unregister(shortcut);
+  }
+
+  registerShortcut(shortcut, action);
 };
 
 const registerFromStore = () => {
   if (settings.get('enableShortcuts')) {
-    for (const [setting, action] of handlers.entries()) {
+    for (const [setting, action] of handlers) {
       const shortcut = settings.get<string, string>(`shortcuts.${setting}`);
       if (shortcut) {
         registerShortcut(shortcut, action);

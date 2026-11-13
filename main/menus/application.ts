@@ -1,16 +1,23 @@
 import {appMenu} from 'electron-util';
-import {getAboutMenuItem, getExportHistoryMenuItem, getOpenFileMenuItem, getPreferencesMenuItem, getSendFeedbackMenuItem} from './common';
-import {MenuItemId, MenuOptions} from './utils';
+import {
+  getAboutMenuItem,
+  getExportHistoryMenuItem,
+  getOpenFileMenuItem,
+  getPreferencesMenuItem,
+  getSendFeedbackMenuItem,
+} from './common';
+import {MenuItemId} from './utils';
+import type {MenuOptions} from './utils';
 
 const getAppMenuItem = () => {
   const appMenuItem = appMenu([getPreferencesMenuItem()]);
 
-  // @ts-expect-error
+  // @ts-expect-error -- appMenu() types submenu as a Menu or a template array
   appMenuItem.submenu[0] = getAboutMenuItem();
   return {...appMenuItem, id: MenuItemId.app};
 };
 
-// eslint-disable-next-line unicorn/prevent-abbreviations
+// eslint-disable-next-line unicorn/name-replacements
 export const defaultApplicationMenu = (): MenuOptions => [
   getAppMenuItem(),
   {
@@ -19,48 +26,48 @@ export const defaultApplicationMenu = (): MenuOptions => [
     submenu: [
       getOpenFileMenuItem(),
       {
-        type: 'separator'
+        type: 'separator',
       },
       {
-        role: 'close'
-      }
-    ]
+        role: 'close',
+      },
+    ],
   },
   {
     role: 'editMenu',
-    id: MenuItemId.edit
+    id: MenuItemId.edit,
   },
   {
     role: 'windowMenu',
     id: MenuItemId.window,
     submenu: [
       {
-        role: 'minimize'
+        role: 'minimize',
       },
       {
-        role: 'zoom'
+        role: 'zoom',
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       getExportHistoryMenuItem(),
       {
-        type: 'separator'
+        type: 'separator',
       },
       {
-        role: 'front'
-      }
-    ]
+        role: 'front',
+      },
+    ],
   },
   {
     id: MenuItemId.help,
     label: 'Help',
     role: 'help',
-    submenu: [getSendFeedbackMenuItem()]
-  }
+    submenu: [getSendFeedbackMenuItem()],
+  },
 ];
 
-// eslint-disable-next-line unicorn/prevent-abbreviations
+// eslint-disable-next-line unicorn/name-replacements
 export const customApplicationMenu = (modifier: (defaultMenu: ReturnType<typeof defaultApplicationMenu>) => void) => {
   const menu = defaultApplicationMenu();
   modifier(menu);

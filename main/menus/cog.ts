@@ -1,16 +1,25 @@
 import {app, Menu} from 'electron';
-import path from 'path';
-import {MenuItemId, MenuOptions} from './utils';
-import {getAboutMenuItem, getCheckForUpdatesMenuItem, getExportHistoryMenuItem, getOpenFileMenuItem, getPreferencesMenuItem, getSendFeedbackMenuItem} from './common';
+import path from 'node:path';
 import {getAudioDevices, getDefaultInputDevice} from '../utils/devices';
 import {settings} from '../common/settings';
 import {defaultInputDeviceId} from '../common/constants';
 import {hasMicrophoneAccess} from '../common/system-permissions';
 import {getSelectedAudioInput} from '../common/audio-input';
 import {recordingHistory} from '../recording-history';
+import type {Video} from '../video';
 import {windowManager} from '../windows/manager';
+import {
+  getAboutMenuItem,
+  getCheckForUpdatesMenuItem,
+  getExportHistoryMenuItem,
+  getOpenFileMenuItem,
+  getPreferencesMenuItem,
+  getSendFeedbackMenuItem,
+} from './common';
+import {MenuItemId} from './utils';
+import type {MenuOptions} from './utils';
 
-const menuAccelerator = (shortcut: string) => shortcut ? shortcut : undefined;
+const menuAccelerator = (shortcut: string) => shortcut || undefined;
 
 const startOrOpenRecording = () => {
   if (windowManager.cropper?.isOpen()) {
@@ -25,7 +34,7 @@ const getStartRecordingItem = (): MenuOptions[number] => ({
   id: MenuItemId.startRecording,
   label: 'Start Recording',
   accelerator: menuAccelerator(settings.get('shortcuts.triggerCropper')),
-  click: startOrOpenRecording
+  click: startOrOpenRecording,
 });
 
 const getScreenshotItem = (): MenuOptions[number] => {
@@ -36,7 +45,7 @@ const getScreenshotItem = (): MenuOptions[number] => {
     label: 'Take Screenshot',
     accelerator: menuAccelerator(shortcut),
     toolTip: shortcut ? `Take a screenshot (${shortcut})` : 'Take a screenshot. Configure its keybind in Preferences → Keybinds.',
-    click: () => windowManager.cropper?.open()
+    click: async () => windowManager.cropper?.open(),
   };
 };
 
@@ -56,18 +65,18 @@ const getCountdownItem = (): MenuOptions[number] => {
         label: 'None',
         type: 'radio',
         checked: countdownDuration === 0,
-        click: () => setCountdownDuration(0)
+        click: () => setCountdownDuration(0),
       },
       {
-        type: 'separator'
+        type: 'separator',
       },
       ...[3, 5, 10].map(duration => ({
         label: `${duration} seconds`,
         type: 'radio' as const,
         checked: countdownDuration === duration,
-        click: () => setCountdownDuration(duration)
-      }))
-    ]
+        click: () => setCountdownDuration(duration),
+      })),
+    ],
   };
 };
 
@@ -75,12 +84,12 @@ const getCursorItem = (): MenuOptions[number] => ({
   label: 'Show Cursor',
   type: 'checkbox',
   checked: settings.get('showCursor'),
-  click: menuItem => {
+  click(menuItem) {
     settings.set('showCursor', menuItem.checked);
     if (!menuItem.checked) {
       settings.set('highlightClicks', false);
     }
-  }
+  },
 });
 
 const getRecentRecordingsItem = (): MenuOptions[number] => {
@@ -88,14 +97,16 @@ const getRecentRecordingsItem = (): MenuOptions[number] => {
 
   return {
     label: 'Recent Recordings',
-    submenu: recordings.length > 0 ? recordings.map(recording => ({
-      label: recording.name || path.basename(recording.filePath),
-      click: async () => {
-        windowManager.cropper?.close();
-        const {Video} = require('../video');
-        await Video.getOrCreate({filePath: recording.filePath, title: recording.name}).openEditorWindow();
-      }
-    })) : [{label: 'No Recent Recordings', enabled: false}]
+    submenu: recordings.length > 0
+      ? recordings.map(recording => ({
+        label: recording.name || path.basename(recording.filePath),
+        async click() {
+          windowManager.cropper?.close();
+          const videoModule: {Video: typeof Video} = require('../video');
+          await videoModule.Video.getOrCreate({filePath: recording.filePath, title: recording.name}).openEditorWindow();
+        },
+      }))
+      : [{label: 'No Recent Recordings', enabled: false}],
   };
 };
 
@@ -107,13 +118,13 @@ const getBasicAudioItem = (): MenuOptions[number] => ({
       label: 'None',
       type: 'radio',
       checked: !settings.get('recordAudio'),
-      click: () => settings.set('recordAudio', false)
+      click: () => settings.set('recordAudio', false),
     },
     {
       label: 'Choose in Preferences…',
-      click: () => windowManager.preferences?.open()
-    }
-  ]
+      click: async () => windowManager.preferences?.open(),
+    },
+  ],
 });
 
 const getQuickSettings = (): MenuOptions => [
@@ -123,7 +134,7 @@ const getQuickSettings = (): MenuOptions => [
   getCountdownItem(),
   getCursorItem(),
   getBasicAudioItem(),
-  getRecentRecordingsItem()
+  getRecentRecordingsItem(),
 ];
 
 export const buildBasicCogMenu = (): MenuOptions => [
@@ -137,7 +148,7 @@ export const buildBasicCogMenu = (): MenuOptions => [
   getCheckForUpdatesMenuItem(),
   getSendFeedbackMenuItem(),
   {type: 'separator'},
-  {label: 'Quit Kap', accelerator: 'Command+Q', click: () => app.quit()}
+  {label: 'Quit Kap', accelerator: 'Command+Q', click: () => app.quit()},
 ];
 
 const getMicrophoneItem = async (): Promise<MenuOptions[number]> => {
@@ -149,7 +160,7 @@ const getMicrophoneItem = async (): Promise<MenuOptions[number]> => {
   const {selectedId: audioInputDeviceId, shouldResetSaved} = getSelectedAudioInput({
     savedId: settings.get('audioInputDeviceId'),
     devices,
-    canRecordAudio
+    canRecordAudio,
   });
   if (shouldResetSaved) {
     settings.set('audioInputDeviceId', defaultInputDeviceId);
@@ -163,28 +174,30 @@ const getMicrophoneItem = async (): Promise<MenuOptions[number]> => {
         label: 'None',
         type: 'radio',
         checked: !isRecordAudioEnabled,
-        click: () => {
+        click() {
           settings.set('recordAudio', false);
-        }
+        },
       },
       ...[
         {name: `System Default${currentDefaultDevice ? ` (${currentDefaultDevice.name})` : ''}`, id: defaultInputDeviceId},
-        ...devices
+        ...devices,
       ].map(device => ({
         label: device.name,
         type: 'radio' as const,
         checked: isRecordAudioEnabled && (audioInputDeviceId === device.id),
-        click: () => {
+        click() {
           settings.set('recordAudio', true);
           settings.set('audioInputDeviceId', device.id);
-        }
+        },
       })),
-      ...(canRecordAudio ? [] : [{
-        label: 'Choose in Preferences…',
-        click: () => windowManager.preferences?.open()
-      }])
+      ...(canRecordAudio
+        ? []
+        : [{
+          label: 'Choose in Preferences…',
+          click: async () => windowManager.preferences?.open(),
+        }]),
     ],
-    visible: true
+    visible: true,
   };
 };
 
@@ -195,15 +208,15 @@ const getPluginsItem = (): MenuOptions[number] => {
       label: service.title,
       type: 'checkbox' as const,
       checked: service.isEnabled,
-      click: async () => service.setEnabled(!service.isEnabled)
-    }))
+      click: async () => service.setEnabled(!service.isEnabled),
+    })),
   );
 
   return {
     id: MenuItemId.plugins,
     label: 'Plugins',
     submenu: items,
-    visible: items.length > 0
+    visible: items.length > 0,
   };
 };
 
@@ -225,9 +238,7 @@ const getCogMenuTemplate = async (): Promise<MenuOptions> => [
   getCheckForUpdatesMenuItem(),
   getSendFeedbackMenuItem(),
   {type: 'separator'},
-  {label: 'Quit Kap', accelerator: 'Command+Q', click: () => app.quit()}
+  {label: 'Quit Kap', accelerator: 'Command+Q', click: () => app.quit()},
 ];
 
-export const getCogMenuAsync = async () => {
-  return Menu.buildFromTemplate(await getCogMenuTemplate());
-};
+export const getCogMenuAsync = async () => Menu.buildFromTemplate(await getCogMenuTemplate());

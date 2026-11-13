@@ -6,10 +6,4 @@ export const getSelectedAudioInput = ({savedId, devices, canRecordAudio}: {
   savedId?: string;
   devices: Array<{id: string}>;
   canRecordAudio: boolean;
-}) => {
-  if (devices.some(device => device.id === savedId)) {
-    return {selectedId: savedId, shouldResetSaved: false};
-  }
-
-  return {selectedId: defaultInputDeviceId, shouldResetSaved: canRecordAudio};
-};
+}) => devices.some(device => device.id === savedId) ? {selectedId: savedId, shouldResetSaved: false} : {selectedId: defaultInputDeviceId, shouldResetSaved: canRecordAudio};

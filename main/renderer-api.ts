@@ -1,10 +1,23 @@
-/* eslint-disable @typescript-eslint/promise-function-async, unicorn/no-array-callback-reference */
-import {app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, nativeImage, nativeTheme, shell, systemPreferences} from 'electron';
+/* eslint-disable @typescript-eslint/promise-function-async, unicorn/no-array-callback-reference -- IPC handlers pass promises through unchanged and map with the serializers below */
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  MenuItem,
+  nativeImage,
+  nativeTheme,
+  shell,
+  systemPreferences,
+
+} from 'electron';
 import type {MenuItemConstructorOptions} from 'electron';
 import {settings} from './common/settings';
 import {ensureMicrophonePermissions} from './common/system-permissions';
 import {plugins} from './plugins';
-import {InstalledPlugin, NpmPlugin} from './plugins/plugin';
+import {InstalledPlugin} from './plugins/plugin';
+import type {NpmPlugin} from './plugins/plugin';
 import {getAudioDevices, getDefaultInputDevice, getSelectedInputDeviceId} from './utils/devices';
 import {showError} from './utils/errors';
 import {activateApp, getWindowList} from './utils/windows';
@@ -25,11 +38,11 @@ const settingsSubscriptions = new Map<string, () => void>();
 
 const resizeKeepingCenter = (
   bounds: Electron.Rectangle,
-  size: {width: number; height: number}
+  size: {width: number; height: number},
 ) => ({
   ...size,
   x: Math.round(bounds.x + ((bounds.width - size.width) / 2)),
-  y: Math.round(bounds.y + ((bounds.height - size.height) / 2))
+  y: Math.round(bounds.y + ((bounds.height - size.height) / 2)),
 });
 
 const getSenderWindow = (event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent) => {
@@ -54,7 +67,7 @@ const serializePlugin = (plugin: InstalledPlugin | NpmPlugin) => ({
   macosVersion: plugin.macosVersion,
   name: plugin.name,
   prettyName: plugin.prettyName,
-  version: plugin.version
+  version: plugin.version,
 });
 
 const serializeValidationErrors = (errors: any) => {
@@ -64,15 +77,15 @@ const serializeValidationErrors = (errors: any) => {
 
   return errors.map((error: any) => ({
     dataPath: error.dataPath,
-    message: error.message
+    message: error.message,
   }));
 };
 
 const loadPluginConfig = ({pluginName, serviceTitle}: {pluginName: string; serviceTitle?: string}) => {
   const plugin = new InstalledPlugin(pluginName);
-  const validators = serviceTitle ?
-    plugin.config.validators.filter(({title}) => title === serviceTitle) :
-    plugin.config.validators;
+  const validators = serviceTitle
+    ? plugin.config.validators.filter(({title}) => title === serviceTitle)
+    : plugin.config.validators;
 
   for (const validator of validators) {
     validator.validate(plugin.config.store);
@@ -85,8 +98,8 @@ const loadPluginConfig = ({pluginName, serviceTitle}: {pluginName: string; servi
       config: validator.config,
       description: validator.description,
       errors: serializeValidationErrors(validator.validate.errors),
-      title: validator.title
-    }))
+      title: validator.title,
+    })),
   };
 };
 
@@ -95,25 +108,21 @@ const sanitizeMenuTemplate = (template: any[]): MenuItemConstructorOptions[] => 
     return {type: 'separator'};
   }
 
-  const sanitized: MenuItemConstructorOptions = {
+  const submenu = item.submenu ?? item.subMenu;
+
+  return {
     checked: item.checked,
     enabled: item.enabled,
     label: item.label,
     type: item.type,
-    click: item.actionId ? (menuItem, browserWindow) => {
-      (browserWindow as BrowserWindow | undefined)?.webContents.send('kap:menu:action', item.actionId, {checked: menuItem.checked, index});
-    } : undefined
+    click: item.actionId
+      ? (menuItem, browserWindow) => {
+        (browserWindow as BrowserWindow | undefined)?.webContents.send('kap:menu:action', item.actionId, {checked: menuItem.checked, index});
+      }
+      : undefined,
+    ...(item.iconDataUrl && {icon: nativeImage.createFromDataURL(item.iconDataUrl)}),
+    ...(submenu && {submenu: sanitizeMenuTemplate(submenu)}),
   };
-
-  if (item.iconDataUrl) {
-    sanitized.icon = nativeImage.createFromDataURL(item.iconDataUrl);
-  }
-
-  if (item.submenu ?? item.subMenu) {
-    sanitized.submenu = sanitizeMenuTemplate(item.submenu ?? item.subMenu);
-  }
-
-  return sanitized;
 });
 
 export const setupRendererApi = () => {
@@ -124,13 +133,13 @@ export const setupRendererApi = () => {
   ipcMain.handle('kap:app:get-info', () => ({
     isPackaged: app.isPackaged,
     name: app.name,
-    version: app.getVersion()
+    version: app.getVersion(),
   }));
   ipcMain.on('kap:app:get-info-sync', event => {
     event.returnValue = {
       isPackaged: app.isPackaged,
       name: app.name,
-      version: app.getVersion()
+      version: app.getVersion(),
     };
   });
   ipcMain.handle('kap:app:get-login-item-settings', () => app.getLoginItemSettings());
@@ -158,11 +167,12 @@ export const setupRendererApi = () => {
   ipcMain.handle('kap:menu:popup', (event, {template, position}: {template: any[]; position?: {x?: number; y?: number}}) => {
     Menu.buildFromTemplate(sanitizeMenuTemplate(template)).popup({
       window: getSenderWindow(event),
-      ...position
+      ...position,
     });
   });
   ipcMain.handle('kap:menu:popup-cog', async event => {
-    (await getCogMenuAsync()).popup({window: getSenderWindow(event)});
+    const cogMenu = await getCogMenuAsync();
+    cogMenu.popup({window: getSenderWindow(event)});
   });
   ipcMain.handle('kap:menu:popup-windows', async (event, {selectedApp, position}: {selectedApp: string; position?: {x?: number; y?: number}}) => {
     const menu = new Menu();
@@ -174,7 +184,7 @@ export const setupRendererApi = () => {
         icon: win.icon ? nativeImage.createFromDataURL(win.icon) : undefined,
         type: 'checkbox',
         checked: win.ownerName === selectedApp,
-        click: () => activateApp(win)
+        click: () => activateApp(win),
       });
       menu.append(item);
     }
@@ -182,16 +192,20 @@ export const setupRendererApi = () => {
     menu.popup({window: getSenderWindow(event), ...position});
   });
 
-  ipcMain.handle('kap:native-image:create-data-url-thumbnail', (_event, {dataUrl, size}: {dataUrl: string; size: {width: number; height: number}}) => {
-    return nativeImage.createFromDataURL(dataUrl).resize(size).toDataURL();
-  });
+  ipcMain.handle(
+    'kap:native-image:create-data-url-thumbnail',
+    (_event, {dataUrl, size}: {dataUrl: string; size: {width: number; height: number}}) => nativeImage.createFromDataURL(dataUrl).resize(size).toDataURL(),
+  );
 
   ipcMain.handle('kap:permissions:ensure-microphone', () => ensureMicrophonePermissions());
   ipcMain.handle('kap:plugins:get-installed', () => {
-    void plugins.allPlugins;
-    return plugins.installedPlugins.sort((a, b) => a.prettyName.localeCompare(b.prettyName)).map(serializePlugin);
+    plugins.ensureLoaded();
+    return plugins.installedPlugins.toSorted((a, b) => a.prettyName.localeCompare(b.prettyName)).map(serializePlugin);
   });
-  ipcMain.handle('kap:plugins:get-from-npm', async () => (await plugins.getFromNpm()).map(serializePlugin));
+  ipcMain.handle('kap:plugins:get-from-npm', async () => {
+    const npmPlugins = await plugins.getFromNpm();
+    return npmPlugins.map(serializePlugin);
+  });
   ipcMain.handle('kap:plugins:install', async (_event, name: string) => {
     const plugin = await plugins.install(name);
     return plugin ? serializePlugin(plugin) : undefined;
@@ -299,7 +313,7 @@ export const setupRendererApi = () => {
     return {
       closable: window.closable,
       maximizable: window.maximizable,
-      minimizable: window.minimizable
+      minimizable: window.minimizable,
     };
   });
   ipcMain.handle('kap:window:get-editor-bounds', event => getSenderWindow(event).getBounds());
@@ -325,5 +339,5 @@ export const setupRendererApi = () => {
     window.setFullScreen(!window.isFullScreen());
   });
 
-  process.on('uncaughtException', error => showError(error as any));
+  process.on('uncaughtException', error => showError(error));
 };

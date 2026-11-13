@@ -1,20 +1,20 @@
 import {dialog, nativeImage, shell} from 'electron';
+import fs from 'node:fs';
 import {copyImageToClipboard} from '../utils/clipboard';
-import fs from 'fs';
 import KapWindow from './kap-window';
 
-interface ScreenshotState {
+type ScreenshotState = {
   filePath: string;
-}
+};
 
-interface ScreenshotExport {
+type ScreenshotExport = {
   dataUrl: string;
   format: 'png' | 'jpeg' | 'webp';
-}
+};
 
-interface ScreenshotSaveResult {
+type ScreenshotSaveResult = {
   filePath?: string;
-}
+};
 
 const open = async (filePath: string) => {
   const kapWindow = new KapWindow<ScreenshotState>({
@@ -27,7 +27,7 @@ const open = async (filePath: string) => {
     dock: true,
     frame: false,
     route: 'screenshot-preview',
-    initialState: {filePath}
+    initialState: {filePath},
   });
 
   kapWindow.answerRenderer('screenshot-copy-clipboard', async ({dataUrl}: ScreenshotExport) => {
@@ -38,7 +38,7 @@ const open = async (filePath: string) => {
     const extension = format === 'jpeg' ? 'jpg' : format;
     const {filePath: outputPath} = await dialog.showSaveDialog(kapWindow.browserWindow, {
       defaultPath: `Screenshot-${Date.now()}.${extension}`,
-      filters: [{name: format.toUpperCase(), extensions: [extension]}]
+      filters: [{name: format.toUpperCase(), extensions: [extension]}],
     });
 
     if (!outputPath) {
@@ -51,8 +51,8 @@ const open = async (filePath: string) => {
     return {filePath: outputPath};
   });
 
-  kapWindow.answerRenderer('screenshot-show-in-folder', ({filePath}: {filePath: string}) => {
-    shell.showItemInFolder(filePath);
+  kapWindow.answerRenderer('screenshot-show-in-folder', ({filePath: shownFilePath}: {filePath: string}) => {
+    shell.showItemInFolder(shownFilePath);
   });
 
   return kapWindow;

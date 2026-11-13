@@ -1,5 +1,6 @@
-import React, {FunctionComponent, useRef} from 'react';
-import {SvgProps} from 'vectors/svg';
+import React, {useRef} from 'react';
+import type {FunctionComponent} from 'react';
+import type {SvgProps} from 'vectors/svg';
 import {popupMenu} from '../utils/menu-actions';
 
 type MenuProps = {
@@ -15,27 +16,27 @@ type IconMenuProps = SvgProps & MenuProps & {
 
 const IconMenu: FunctionComponent<IconMenuProps> = props => {
   const {icon: Icon, fillParent, ...iconProps} = props;
-  const container = useRef(null);
+  const containerRef = useRef(null);
 
   const openMenu = () => {
-    const boundingRect = container.current.children[0].getBoundingClientRect();
+    const boundingRect = containerRef.current.firstElementChild.getBoundingClientRect();
     const {bottom, left} = boundingRect;
 
     if ('onOpen' in props) {
       props.onOpen({
         x: Math.round(left),
-        y: Math.round(bottom)
+        y: Math.round(bottom),
       });
     } else {
       void popupMenu(props.template, {
         x: Math.round(left),
-        y: Math.round(bottom)
+        y: Math.round(bottom),
       });
     }
   };
 
   return (
-    <div ref={container} onClick={openMenu}>
+    <div ref={containerRef} onClick={openMenu}>
       <Icon {...iconProps}/>
       <style jsx>{`
           display: flex;

@@ -1,31 +1,29 @@
-/* eslint-disable array-element-newline */
+/* eslint-disable @stylistic/array-element-newline -- each ffmpeg flag stays on one line with its value */
 'use strict';
 
 import {shell, clipboard} from 'electron';
-import fs from 'fs';
+import fs from 'node:fs';
 import Store from 'electron-store';
 import execa from 'execa';
 import tempy from 'tempy';
-import {SetOptional} from 'type-fest';
-
+import type {SetOptional} from 'type-fest';
 import {windowManager} from './windows/manager';
 import {plugins} from './plugins';
 import {generateTimestampedName} from './utils/timestamped-name';
 import {Video} from './video';
-import {ApertureOptions} from './common/types';
-
+import type {ApertureOptions} from './common/types';
 import ffmpegPath from './utils/ffmpeg-path';
 
-export interface PastRecording {
+export type PastRecording = {
   filePath: string;
   name: string;
   date: string;
-}
+};
 
-export interface ActiveRecording extends PastRecording {
+export type ActiveRecording = {
   apertureOptions: ApertureOptions;
   plugins: Record<string, Record<string, any>>;
-}
+} & PastRecording;
 
 export const recordingHistory = new Store<{
   activeRecording: ActiveRecording;
@@ -37,21 +35,21 @@ export const recordingHistory = new Store<{
       type: 'object',
       properties: {
         filePath: {
-          type: 'string'
+          type: 'string',
         },
         name: {
-          type: 'string'
+          type: 'string',
         },
         date: {
-          type: 'string'
+          type: 'string',
         },
         apertureOptions: {
-          type: 'object'
+          type: 'object',
         },
         plugins: {
-          type: 'object'
-        }
-      }
+          type: 'object',
+        },
+      },
     },
     recordings: {
       type: 'array',
@@ -60,18 +58,18 @@ export const recordingHistory = new Store<{
         type: 'object',
         properties: {
           filePath: {
-            type: 'string'
+            type: 'string',
           },
           name: {
-            type: 'string'
+            type: 'string',
           },
           date: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
 });
 
 export const setCurrentRecording = ({
@@ -79,14 +77,14 @@ export const setCurrentRecording = ({
   name = generateTimestampedName(),
   date = new Date().toISOString(),
   apertureOptions,
-  plugins = {}
+  plugins: pluginState,
 }: SetOptional<ActiveRecording, 'name' | 'date'>) => {
   recordingHistory.set('activeRecording', {
     filePath,
     name,
     date,
     apertureOptions,
-    plugins
+    plugins: pluginState,
   });
 };
 
@@ -99,7 +97,7 @@ export const stopCurrentRecording = (recordingName?: string) => {
   addRecording({
     filePath,
     name: recordingName ?? name,
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
   });
   recordingHistory.delete('activeRecording');
 };
@@ -140,9 +138,9 @@ export const cleanPastRecordings = () => {
 export const cleanUpRecordingPlugins = (usedPlugins: ActiveRecording['plugins']) => {
   const {recordingPlugins} = plugins;
 
-  for (const pluginName of Object.keys(usedPlugins)) {
+  for (const [pluginName, services] of Object.entries(usedPlugins)) {
     const plugin = recordingPlugins.find(p => p.name === pluginName);
-    for (const [serviceTitle, persistedState] of Object.entries(usedPlugins[pluginName])) {
+    for (const [serviceTitle, persistedState] of Object.entries(services)) {
       const service = plugin?.recordServices.find(s => s.title === serviceTitle);
 
       if (service?.cleanUp) {
@@ -162,7 +160,7 @@ export const handleIncompleteRecording = async (recording: ActiveRecording) => {
       '-v', 'error',
       // Force file type to null (we don't want to actually generate a file)
       // https://trac.ffmpeg.org/wiki/Null
-      '-f', 'null', '-'
+      '-f', 'null', '-',
     ]);
   } catch (error) {
     return handleCorruptRecording(recording, (error as any).stderr);
@@ -175,7 +173,7 @@ const handleRecording = async (recording: ActiveRecording) => {
   addRecording({
     filePath: recording.filePath,
     name: recording.name,
-    date: recording.date
+    date: recording.date,
   });
 
   return windowManager.dialog?.open({
@@ -185,21 +183,21 @@ const handleRecording = async (recording: ActiveRecording) => {
       'Close',
       {
         label: 'Show in Finder',
-        action: () => {
+        action() {
           shell.showItemInFolder(recording.filePath);
-        }
+        },
       },
       {
         label: 'Show in Editor',
-        action: async () => Video.getOrCreate({filePath: recording.filePath, title: recording.name}).openEditorWindow()
-      }
-    ]
+        action: async () => Video.getOrCreate({filePath: recording.filePath, title: recording.name}).openEditorWindow(),
+      },
+    ],
   });
 };
 
 const knownErrors = [{
   test: (error: string) => error.includes('moov atom not found'),
-  fix: async (filePath: string): Promise<string | void> => {
+  async fix(filePath: string): Promise<string | void> {
     try {
       const outputPath = tempy.file({extension: 'mp4'});
 
@@ -214,14 +212,14 @@ const knownErrors = [{
         // Attempt to move the moov atom to the start of the file
         '-movflags',
         'faststart',
-        outputPath
+        outputPath,
       ]);
 
       return outputPath;
     } catch (error) {
       console.error('[recording-history] failed to repair recording', {filePath, error});
     }
-  }
+  },
 }];
 
 const handleCorruptRecording = async (recording: ActiveRecording, error: string) => {
@@ -234,17 +232,17 @@ const handleCorruptRecording = async (recording: ActiveRecording, error: string)
       'Close',
       {
         label: 'Copy Error',
-        action: () => {
+        action() {
           clipboard.writeText(error);
-        }
+        },
       },
       {
         label: 'Show in Finder',
-        action: () => {
+        action() {
           shell.showItemInFolder(recording.filePath);
-        }
-      }
-    ]
+        },
+      },
+    ],
   };
 
   const applicableErrors = knownErrors.filter(({test}) => test(error));
@@ -258,7 +256,7 @@ const handleCorruptRecording = async (recording: ActiveRecording, error: string)
   options.buttons.push({
     label: 'Attempt to Fix',
     activeLabel: 'Attempting to Fix…',
-    action: async (_: any, updateUi: any) => {
+    async action(_: any, updateUi: any) {
       for (const {fix} of applicableErrors) {
         const outputPath = await fix(recording.filePath);
 
@@ -266,7 +264,7 @@ const handleCorruptRecording = async (recording: ActiveRecording, error: string)
           addRecording({
             filePath: outputPath,
             name: recording.name,
-            date: new Date().toISOString()
+            date: new Date().toISOString(),
           });
 
           return updateUi({
@@ -276,15 +274,15 @@ const handleCorruptRecording = async (recording: ActiveRecording, error: string)
               'Close',
               {
                 label: 'Show in Finder',
-                action: () => {
+                action() {
                   shell.showItemInFolder(outputPath);
-                }
+                },
               },
               {
                 label: 'Show in Editor',
-                action: async () => Video.getOrCreate({filePath: outputPath, title: recording.name}).openEditorWindow()
-              }
-            ]
+                action: async () => Video.getOrCreate({filePath: outputPath, title: recording.name}).openEditorWindow(),
+              },
+            ],
           });
         }
       }
@@ -296,19 +294,19 @@ const handleCorruptRecording = async (recording: ActiveRecording, error: string)
           'Close',
           {
             label: 'Copy Error',
-            action: () => {
+            action() {
               clipboard.writeText(error);
-            }
+            },
           },
           {
             label: 'Show in Finder',
-            action: () => {
+            action() {
               shell.showItemInFolder(recording.filePath);
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
-    }
+    },
   });
 
   return windowManager.dialog?.open(options);

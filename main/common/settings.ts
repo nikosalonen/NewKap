@@ -4,25 +4,25 @@ import {homedir} from 'os';
 import Store from 'electron-store';
 import {Format} from './types';
 
-const {defaultInputDeviceId} = require('./constants');
 const shortcutToAccelerator = require('../utils/shortcut-to-accelerator');
+const {defaultInputDeviceId} = require('./constants');
 
 export const shortcuts = {
   triggerCropper: 'Start Recording',
   stopRecording: 'Stop Recording',
   pauseRecording: 'Pause Recording',
   captureScreenshot: 'Capture Screenshot',
-  captureScreenshotClipboard: 'Capture Screenshot to Clipboard'
+  captureScreenshotClipboard: 'Capture Screenshot to Clipboard',
 };
 
 export type RecordingQuality = 'standard' | 'high' | 'maximum';
 
 const shortcutSchema = {
   type: 'string' as const,
-  default: ''
+  default: '',
 };
 
-interface Settings {
+type Settings = {
   kapturesDir: string;
   showCursor: boolean;
   highlightClicks: boolean;
@@ -64,161 +64,161 @@ interface Settings {
     advanced?: boolean;
   };
   version: string;
-}
+};
 
 export const settings = new Store<Settings>({
   schema: {
     kapturesDir: {
       type: 'string',
-      default: `${homedir()}/Movies/Kaptures`
+      default: `${homedir()}/Movies/Kaptures`,
     },
     showCursor: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     highlightClicks: {
       type: 'boolean',
-      default: false
+      default: false,
     },
     record60fps: {
       type: 'boolean',
-      default: false
+      default: false,
     },
     loopExports: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     recordKeyboardShortcut: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     recordAudio: {
       type: 'boolean',
-      default: false
+      default: false,
     },
     showCountdown: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     countdownDuration: {
       type: 'integer',
       minimum: 0,
       maximum: 60,
-      default: 3
+      default: 3,
     },
     audioInputDeviceId: {
       type: [
         'string',
-        'null'
+        'null',
       ],
-      default: defaultInputDeviceId
+      default: defaultInputDeviceId,
     },
     recordingQuality: {
       type: 'string',
       enum: ['standard', 'high', 'maximum'],
-      default: 'standard'
+      default: 'standard',
     },
     defaultExportFormat: {
       type: 'string',
       enum: ['mp4', 'hevc', 'av1', 'gif', 'apng', 'webm'],
-      default: Format.mp4
+      default: Format.mp4,
     },
     showNotifications: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     playNotificationSound: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     cropperShortcut: {
       type: 'object',
       properties: {
         metaKey: {
           type: 'boolean',
-          default: true
+          default: true,
         },
         altKey: {
           type: 'boolean',
-          default: false
+          default: false,
         },
         ctrlKey: {
           type: 'boolean',
-          default: false
+          default: false,
         },
         shiftKey: {
           type: 'boolean',
-          default: true
+          default: true,
         },
         character: {
           type: 'string',
-          default: '5'
-        }
-      }
+          default: '5',
+        },
+      },
     },
     lossyCompression: {
       type: 'boolean',
-      default: false
+      default: false,
     },
     enableShortcuts: {
       type: 'boolean',
-      default: true
+      default: true,
     },
     shortcuts: {
       type: 'object',
       properties: Object.fromEntries(Object.keys(shortcuts).map(key => [key, shortcutSchema])),
-      default: {}
+      default: {},
     },
     cropper: {
       type: 'object',
       default: {},
       properties: {
         x: {
-          type: 'number'
+          type: 'number',
         },
         y: {
-          type: 'number'
+          type: 'number',
         },
         width: {
-          type: 'number'
+          type: 'number',
         },
         height: {
-          type: 'number'
+          type: 'number',
         },
         ratio: {
           type: 'array',
           items: {
-            type: 'number'
-          }
+            type: 'number',
+          },
         },
         displayId: {
-          type: 'number'
-        }
-      }
+          type: 'number',
+        },
+      },
     },
     actionBar: {
       type: 'object',
       default: {},
       properties: {
         x: {
-          type: 'number'
+          type: 'number',
         },
         y: {
-          type: 'number'
+          type: 'number',
         },
         ratioLocked: {
-          type: 'boolean'
+          type: 'boolean',
         },
         advanced: {
-          type: 'boolean'
-        }
-      }
+          type: 'boolean',
+        },
+      },
     },
     version: {
       type: 'string',
-      default: ''
-    }
-  }
+      default: '',
+    },
+  },
 });
 
 if (settings.has('recordKeyboardShortcut')) {

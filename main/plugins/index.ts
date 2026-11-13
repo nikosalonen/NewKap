@@ -1,14 +1,14 @@
 import {app} from 'electron';
-import {EventEmitter} from 'events';
-import path from 'path';
-import fs from 'fs';
+import {EventEmitter} from 'node:events';
+import path from 'node:path';
+import fs from 'node:fs';
 import execa from 'execa';
-import {InstalledPlugin, NpmPlugin} from './plugin';
-import {showError} from '../utils/errors';
-import {notify} from '../utils/notifications';
 import packageJson from 'package-json';
-import {NormalizedPackageJson} from 'read-pkg';
+import type {NormalizedPackageJson} from 'read-pkg';
+import {notify} from '../utils/notifications';
+import {showError} from '../utils/errors';
 import {windowManager} from '../windows/manager';
+import {InstalledPlugin, NpmPlugin} from './plugin';
 
 const got = require('got');
 
@@ -26,7 +26,7 @@ export class Plugins extends EventEmitter {
   builtInPlugins = [
     new InstalledPlugin('_copyToClipboard', path.resolve(this.builtInDir, 'copy-to-clipboard-plugin')),
     new InstalledPlugin('_saveToDisk', path.resolve(this.builtInDir, 'save-file-plugin')),
-    new InstalledPlugin('_openWith', path.resolve(this.builtInDir, 'open-with-plugin'))
+    new InstalledPlugin('_openWith', path.resolve(this.builtInDir, 'open-with-plugin')),
   ];
 
   private _loaded = false;
@@ -35,9 +35,7 @@ export class Plugins extends EventEmitter {
     this.ensureLoaded();
 
     this.modifyMainPackageJson(pkg => {
-      if (!pkg.dependencies) {
-        pkg.dependencies = {};
-      }
+      pkg.dependencies ??= {};
 
       pkg.dependencies[name] = 'latest';
     });
@@ -52,27 +50,29 @@ export class Plugins extends EventEmitter {
         try {
           await plugin.content.didInstall?.(plugin.config);
         } catch (error) {
-          showError(error as any, {plugin} as any);
+          showError(error as any, {plugin});
         }
       }
 
       const {isValid, hasConfig} = plugin;
 
       // Const openConfig = () => openPrefsWindow({target: {name, action: 'configure'}});
-      const openConfig = () => plugin.openConfig();
+      const openConfig = async () => plugin.openConfig();
 
-      const options = (isValid && !hasConfig) ? {
-        title: 'Plugin installed',
-        body: `"${plugin.prettyName}" is ready for use`
-      } : {
-        title: plugin.isValid ? 'Plugin installed' : 'Configure plugin',
-        body: `"${plugin.prettyName}" ${plugin.isValid ? 'can be configured' : 'requires configuration'}`,
-        click: openConfig,
-        actions: [
-          {type: 'button' as const, text: 'Configure', action: openConfig},
-          {type: 'button' as const, text: 'Later'}
-        ]
-      };
+      const options = (isValid && !hasConfig)
+        ? {
+          title: 'Plugin installed',
+          body: `"${plugin.prettyName}" is ready for use`,
+        }
+        : {
+          title: plugin.isValid ? 'Plugin installed' : 'Configure plugin',
+          body: `"${plugin.prettyName}" ${plugin.isValid ? 'can be configured' : 'requires configuration'}`,
+          click: openConfig,
+          actions: [
+            {type: 'button' as const, text: 'Configure', action: openConfig},
+            {type: 'button' as const, text: 'Later'},
+          ],
+        };
 
       notify(options);
 
@@ -105,11 +105,11 @@ export class Plugins extends EventEmitter {
       try {
         await plugin.content.willUninstall?.(plugin.config);
       } catch (error) {
-        showError(error as any, {plugin} as any);
+        showError(error as any, {plugin});
       }
     }
 
-    this.installedPlugins = this.installedPlugins.filter(plugin => plugin.name !== name);
+    this.installedPlugins = this.installedPlugins.filter(installedPlugin => installedPlugin.name !== name);
     plugin.config.clear();
     this.emit('uninstalled', name);
 
@@ -117,7 +117,7 @@ export class Plugins extends EventEmitter {
 
     return new NpmPlugin(json, {
       version: json.kapVersion,
-      ...json.kap
+      ...json.kap,
     });
   }
 
@@ -143,7 +143,7 @@ export class Plugins extends EventEmitter {
         return new NpmPlugin(x, {
           // Keeping for backwards compatibility
           version: kapVersion,
-          ...kap
+          ...kap,
         });
       }));
   }
@@ -152,7 +152,7 @@ export class Plugins extends EventEmitter {
     this.ensureLoaded();
     return [
       ...this.installedPlugins,
-      ...this.builtInPlugins
+      ...this.builtInPlugins,
     ];
   }
 
@@ -168,23 +168,25 @@ export class Plugins extends EventEmitter {
     return this.allPlugins.filter(plugin => plugin.recordServices.length > 0);
   }
 
-  openPluginConfig = async (pluginName: string) => {
-    return windowManager.config?.open(pluginName);
-  };
+  openPluginConfig = async (pluginName: string) => windowManager.config?.open(pluginName);
 
-  private ensureLoaded() {
-    if (!this._loaded) {
-      this._loaded = true;
-      this.makePluginsDir();
-      this.loadPlugins();
+  ensureLoaded() {
+    if (this._loaded) {
+      return;
     }
+
+    this._loaded = true;
+    this.makePluginsDir();
+    this.loadPlugins();
   }
 
   private makePluginsDir() {
-    if (!fs.existsSync(this.packageJsonPath)) {
-      fs.mkdirSync(this.pluginsDir, {recursive: true});
-      fs.writeFileSync(this.packageJsonPath, JSON.stringify({dependencies: {}}, null, 2));
+    if (fs.existsSync(this.packageJsonPath)) {
+      return;
     }
+
+    fs.mkdirSync(this.pluginsDir, {recursive: true});
+    fs.writeFileSync(this.packageJsonPath, JSON.stringify({dependencies: {}}, null, 2));
   }
 
   private modifyMainPackageJson(modifier: (pkg: PackageJson) => void) {
@@ -197,15 +199,17 @@ export class Plugins extends EventEmitter {
     await execa(process.execPath, [this.yarnBin, ...args], {
       cwd: this.pluginsDir,
       env: {
+        /* eslint-disable @typescript-eslint/naming-convention -- environment variable names */
         ELECTRON_RUN_AS_NODE: '1',
-        NODE_ENV: 'development'
-      }
+        NODE_ENV: 'development',
+        /* eslint-enable @typescript-eslint/naming-convention */
+      },
     });
   }
 
   private get pluginNames() {
     const pkg = fs.readFileSync(this.packageJsonPath, 'utf8');
-    return Object.keys(JSON.parse(pkg).dependencies || {});
+    return Object.keys(JSON.parse(pkg).dependencies ?? {});
   }
 
   private async yarnInstall() {

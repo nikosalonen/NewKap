@@ -1,16 +1,12 @@
 import {shell} from 'electron';
-import {ExportsRemoteState, RemoteStateHandler} from '../common/types';
+import type {ExportsRemoteState, RemoteStateHandler} from '../common/types';
 import Export from '../export';
 
 const exportsRemoteState: RemoteStateHandler<ExportsRemoteState> = sendUpdate => {
   const getState = (exportId: string) => {
     const exportInstance = Export.fromId(exportId);
 
-    if (!exportInstance) {
-      return;
-    }
-
-    return exportInstance.data;
+    return exportInstance ? exportInstance.data : undefined;
   };
 
   const subscribe = (exportId: string) => {
@@ -31,19 +27,19 @@ const exportsRemoteState: RemoteStateHandler<ExportsRemoteState> = sendUpdate =>
   };
 
   const actions = {
-    cancel: (exportId: string) => {
+    cancel(exportId: string) {
       Export.fromId(exportId)?.cancel();
     },
-    copy: (exportId: string) => {
+    copy(exportId: string) {
       Export.fromId(exportId)?.conversion?.copy();
     },
-    retry: (exportId: string) => {
+    retry(exportId: string) {
       Export.fromId(exportId)?.retry();
     },
-    openInEditor: (exportId: string) => {
+    openInEditor(exportId: string) {
       Export.fromId(exportId)?.video?.openEditorWindow?.();
     },
-    showInFolder: (exportId: string) => {
+    showInFolder(exportId: string) {
       const exportInstance = Export.fromId(exportId);
 
       if (!exportInstance) {
@@ -53,13 +49,13 @@ const exportsRemoteState: RemoteStateHandler<ExportsRemoteState> = sendUpdate =>
       if (exportInstance.finalFilePath && !exportInstance.data.disableOutputActions) {
         shell.showItemInFolder(exportInstance.finalFilePath);
       }
-    }
+    },
   } as any;
 
   return {
     subscribe,
     getState,
-    actions
+    actions,
   };
 };
 

@@ -6,9 +6,8 @@ export default class PreferencesContainer extends Container {
   state = {
     category: 'general',
     tab: 'discover',
-    isMounted: false
+    isMounted: false,
   };
-
   mount = async setOverlay => {
     this.setOverlay = setOverlay;
     this.settings = kap.settings;
@@ -22,12 +21,13 @@ export default class PreferencesContainer extends Container {
     this.fetchFromNpm();
 
     const currentSettings = this.settings.getAll();
+    const loginItemSettings = await kap.app.getLoginItemSettings();
 
     this.setState({
       shortcuts: {},
       ...currentSettings,
       countdownDuration: currentSettings.showCountdown ? currentSettings.countdownDuration : 0,
-      openOnStartup: (await kap.app.getLoginItemSettings()).openAtLogin,
+      openOnStartup: loginItemSettings.openAtLogin,
       pluginsInstalled,
       isMounted: true,
       shortcutMap: {
@@ -35,15 +35,14 @@ export default class PreferencesContainer extends Container {
         stopRecording: 'Stop Recording',
         pauseRecording: 'Pause Recording',
         captureScreenshot: 'Capture Screenshot',
-        captureScreenshotClipboard: 'Capture Screenshot to Clipboard'
-      }
+        captureScreenshotClipboard: 'Capture Screenshot to Clipboard',
+      },
     });
 
     if (currentSettings.recordAudio) {
       this.getAudioDevices();
     }
   };
-
   getAudioDevices = async () => {
     const {audioInputDeviceId} = this.settings.getAll();
     const {name: currentDefaultName} = await kap.system.getDefaultInputDevice() || {};
@@ -52,28 +51,26 @@ export default class PreferencesContainer extends Container {
     const updates = {
       audioDevices: [
         {name: `System Default${currentDefaultName ? ` (${currentDefaultName})` : ''}`, id: this.defaultInputDeviceId},
-        ...audioDevices
+        ...audioDevices,
       ],
-      audioInputDeviceId
+      audioInputDeviceId,
     };
 
-    if (!audioDevices.some(device => device.id === audioInputDeviceId)) {
+    if (audioDevices.every(device => device.id !== audioInputDeviceId)) {
       updates.audioInputDeviceId = this.defaultInputDeviceId;
       this.settings.set('audioInputDeviceId', this.defaultInputDeviceId);
     }
 
     this.setState(updates);
   };
-
   scrollIntoView = (tabId, pluginId) => {
     const plugin = document.querySelector(`#${tabId} #${pluginId}`).parentElement;
     plugin.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
-      inline: 'nearest'
+      inline: 'nearest',
     });
   };
-
   openTarget = target => {
     const isInstalled = this.state.pluginsInstalled.some(plugin => plugin.name === target.name);
     const isFromNpm = this.state.pluginsFromNpm && this.state.pluginsFromNpm.some(plugin => plugin.name === target.name);
@@ -90,11 +87,11 @@ export default class PreferencesContainer extends Container {
           type: 'question',
           buttons: [
             'Install',
-            'Cancel'
+            'Cancel',
           ],
           defaultId: 0,
           cancelId: 1,
-          message: `Do you want to install the “${target.name}” plugin?`
+          message: `Do you want to install the “${target.name}” plugin?`,
         });
 
         if (buttonIndex === 0) {
@@ -109,7 +106,6 @@ export default class PreferencesContainer extends Container {
       this.setState({category: 'plugins'});
     }
   };
-
   setNavigation = ({category, tab, target}) => {
     if (target) {
       if (this.state.isMounted) {
@@ -121,19 +117,12 @@ export default class PreferencesContainer extends Container {
       this.setState({category, tab});
     }
   };
-
   fetchFromNpm = async () => {
     try {
       const plugins = await this.plugins.getFromNpm();
       this.setState({
         npmError: false,
-        pluginsFromNpm: plugins.sort((a, b) => {
-          if (a.isCompatible !== b.isCompatible) {
-            return b.isCompatible - a.isCompatible;
-          }
-
-          return a.prettyName.localeCompare(b.prettyName);
-        })
+        pluginsFromNpm: plugins.toSorted((a, b) => a.isCompatible === b.isCompatible ? a.prettyName.localeCompare(b.prettyName) : b.isCompatible - a.isCompatible),
       });
 
       if (this.state.target) {
@@ -145,7 +134,6 @@ export default class PreferencesContainer extends Container {
       this.setState({npmError: true});
     }
   };
-
   togglePlugin = plugin => {
     if (plugin.isInstalled) {
       this.uninstall(plugin.name);
@@ -153,7 +141,6 @@ export default class PreferencesContainer extends Container {
       this.install(plugin.name);
     }
   };
-
   install = async name => {
     const {pluginsInstalled, pluginsFromNpm} = this.state;
 
@@ -164,15 +151,14 @@ export default class PreferencesContainer extends Container {
       this.setState({
         pluginBeingInstalled: undefined,
         pluginsFromNpm: pluginsFromNpm.filter(p => p.name !== name),
-        pluginsInstalled: [result, ...pluginsInstalled].sort((a, b) => a.prettyName.localeCompare(b.prettyName))
+        pluginsInstalled: [result, ...pluginsInstalled].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName)),
       });
     } else {
       this.setState({
-        pluginBeingInstalled: undefined
+        pluginBeingInstalled: undefined,
       });
     }
   };
-
   uninstall = async name => {
     const {pluginsInstalled, pluginsFromNpm} = this.state;
 
@@ -180,15 +166,14 @@ export default class PreferencesContainer extends Container {
       const plugin = await this.plugins.uninstall(name);
       this.setState({
         pluginsInstalled: pluginsInstalled.filter(p => p.name !== name),
-        pluginsFromNpm: [plugin, ...pluginsFromNpm].sort((a, b) => a.prettyName.localeCompare(b.prettyName)),
+        pluginsFromNpm: [plugin, ...pluginsFromNpm].toSorted((a, b) => a.prettyName.localeCompare(b.prettyName)),
         pluginBeingUninstalled: null,
-        onTransitionEnd: null
+        onTransitionEnd: null,
       });
     };
 
     this.setState({pluginBeingUninstalled: name, onTransitionEnd});
   };
-
   openPluginsConfig = async name => {
     this.scrollIntoView('installed', name);
     this.setState({category: 'plugins'});
@@ -197,91 +182,83 @@ export default class PreferencesContainer extends Container {
     ipc.callMain('refresh-usage');
     this.setOverlay(false);
   };
-
   openPluginsFolder = async () => kap.shell.openPath(await this.plugins.getPluginsDir());
-
   selectCategory = category => {
     this.setState({category});
   };
-
   selectTab = tab => {
     this.setState({tab});
   };
-
   toggleSetting = (setting, value) => {
-    const newValue = value === undefined ? !this.state[setting] : value;
+    const currentValue = this.state[setting];
+    const newValue = value === undefined ? !currentValue : value;
     this.setState({[setting]: newValue});
     this.settings.set(setting, newValue);
   };
-
   setCountdownDuration = value => {
     const duration = Math.max(0, Math.min(60, Number.parseInt(value || 0, 10) || 0));
 
     this.setState({
       countdownDuration: duration,
-      showCountdown: duration > 0
+      showCountdown: duration > 0,
     });
     this.settings.set('countdownDuration', duration);
     this.settings.set('showCountdown', duration > 0);
   };
-
   toggleRecordAudio = async () => {
     const newValue = !this.state.recordAudio;
 
-    if (!newValue || await this.systemPermissions.ensureMicrophonePermissions()) {
-      if (newValue) {
-        try {
-          await this.getAudioDevices();
-        } catch (error) {
-          this.showError(error);
-        }
-      }
-
-      this.setState({recordAudio: newValue});
-      this.settings.set('recordAudio', newValue);
+    if (newValue && !await this.systemPermissions.ensureMicrophonePermissions()) {
+      return;
     }
-  };
 
+    if (newValue) {
+      try {
+        await this.getAudioDevices();
+      } catch (error) {
+        this.showError(error);
+      }
+    }
+
+    this.setState({recordAudio: newValue});
+    this.settings.set('recordAudio', newValue);
+  };
   toggleShortcuts = async () => {
     const setting = 'enableShortcuts';
-    const newValue = !this.state[setting];
+    const newValue = !this.state.enableShortcuts;
     this.toggleSetting(setting, newValue);
     await ipc.callMain('toggle-shortcuts', {enabled: newValue});
   };
-
   updateShortcut = async (setting, shortcut) => {
     try {
       await ipc.callMain('update-shortcut', {setting, shortcut});
       this.setState({
         shortcuts: {
           ...this.state.shortcuts,
-          [setting]: shortcut
-        }
+          [setting]: shortcut,
+        },
       });
     } catch (error) {
       console.warn('Error updating shortcut', error);
     }
   };
-
   setOpenOnStartup = value => {
     const openOnStartup = typeof value === 'boolean' ? value : !this.state.openOnStartup;
     this.setState({openOnStartup});
     kap.app.setLoginItemSettings({openAtLogin: openOnStartup});
   };
-
   pickKapturesDir = () => {
     const directories = kap.dialog.showOpenDialogSync({
       properties: [
         'openDirectory',
-        'createDirectory'
-      ]
+        'createDirectory',
+      ],
     });
 
     if (directories) {
       this.toggleSetting('kapturesDir', directories[0]);
     }
   };
-
   setAudioInputDeviceId = id => {
     this.setState({audioInputDeviceId: id});
     this.settings.set('audioInputDeviceId', id);

@@ -1,52 +1,51 @@
 import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {connect, PreferencesContainer} from '../../containers';
 import {SettingsIcon, PluginsIcon, TuneIcon} from '../../vectors';
-
 import {handleKeyboardActivation} from '../../utils/inputs';
 
 const CATEGORIES = [
   {
     name: 'general',
-    icon: SettingsIcon
+    icon: SettingsIcon,
   }, {
     name: 'keybinds',
-    icon: TuneIcon
+    icon: TuneIcon,
   }, {
     name: 'plugins',
-    icon: PluginsIcon
-  }
+    icon: PluginsIcon,
+  },
 ];
 
 class PreferencesNavigation extends React.Component {
   static defaultProps = {
-    category: 'general'
+    category: 'general',
   };
 
   render() {
     const {selectCategory, category} = this.props;
 
     return (
-      <nav className="prefs-nav">
+      <nav className='prefs-nav'>
         {
           CATEGORIES.map(
             ({name, icon: Icon}) => (
               <div
                 key={name}
+                role='button'
                 tabIndex={0}
                 className={classNames('nav-item', {active: category === name})}
                 onClick={() => selectCategory(name)}
                 onKeyDown={handleKeyboardActivation(() => selectCategory(name))}
               >
                 <Icon
-                  size="2.4rem"
+                  size='2.4rem'
                   active={category === name}
                 />
                 <span>{name}</span>
               </div>
-            )
+            ),
           )
         }
         <style jsx>{`
@@ -109,11 +108,11 @@ class PreferencesNavigation extends React.Component {
 
 PreferencesNavigation.propTypes = {
   category: PropTypes.string,
-  selectCategory: PropTypes.func.isRequired
+  selectCategory: PropTypes.func.isRequired,
 };
 
 export default connect(
   [PreferencesContainer],
   ({category}) => ({category}),
-  ({selectCategory}) => ({selectCategory})
+  ({selectCategory}) => ({selectCategory}),
 )(PreferencesNavigation);

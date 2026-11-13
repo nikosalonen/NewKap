@@ -19,7 +19,7 @@ export const addPluginPromise = (plugin: string, resolveFunction: (path: string)
   pluginPromises.set(plugin, resolveFunction);
 };
 
-const triggerPluginAction = (action: string) => (name: string) => windowManager.preferences?.open({target: {name, action}});
+const triggerPluginAction = (action: string) => async (name: string) => windowManager.preferences?.open({target: {name, action}});
 
 const showPermissionError = async () => {
   const {response} = await dialog.showMessageBox({
@@ -27,10 +27,10 @@ const showPermissionError = async () => {
     buttons: ['Open System Settings', 'OK'],
     defaultId: 0,
     message: 'Screen Recording permission required',
-    detail: 'Kap needs Screen Recording permission.\n\n' +
-      '1. Open System Settings > Privacy & Security > Screen Recording\n' +
-      '2. Toggle Kap ON\n' +
-      '3. Quit and relaunch Kap'
+    detail: 'Kap needs Screen Recording permission.\n\n'
+      + '1. Open System Settings > Privacy & Security > Screen Recording\n'
+      + '2. Toggle Kap ON\n'
+      + '3. Quit and relaunch Kap',
   });
 
   if (response === 0) {
@@ -49,15 +49,17 @@ const handleRecordFullScreen = async () => {
 
     const {startRecording} = require('../aperture');
     await startRecording({
-      cropperBounds: {x: 0, y: 0, width, height},
+      cropperBounds: {
+        x: 0, y: 0, width, height,
+      },
       screenBounds: {width, height},
-      displayId: display.id
+      displayId: display.id,
     });
 
     console.log(`Full-screen recording started on display ${display.id} (${width}x${height})`);
   } catch (error: any) {
     console.error('Failed to start full-screen recording:', error);
-    const errorString = String(error?.message || error);
+    const errorString = String(error?.message ?? error);
     if (errorString.includes('Cannot Record') || errorString.includes('-11805') || errorString.includes('not authorized')) {
       await showPermissionError();
     }
@@ -78,11 +80,11 @@ const routes = new Map<string, (path: string) => void | Promise<void>>([
   ['plugins', handlePluginsDeepLink],
   ['install-plugin', triggerPluginAction('install')],
   ['configure-plugin', triggerPluginAction('configure')],
-  ['record', handleRecordFullScreen as any],
-  ['stop', handleStopRecording as any]
+  ['record', handleRecordFullScreen],
+  ['stop', handleStopRecording],
 ]);
 
-export const handleDeepLink = (url: string) => {
+export const handleDeepLink = async (url: string) => {
   const {host, pathname} = new URL(url);
 
   if (routes.has(host)) {

@@ -1,7 +1,13 @@
-import {app, BrowserWindow, Tray, Menu, dialog} from 'electron';
-import path from 'path';
-import fs from 'fs';
-import {setTimeout as delay} from 'timers/promises';
+import {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  dialog,
+} from 'electron';
+import path from 'node:path';
+import fs from 'node:fs';
+import {setTimeout as delay} from 'node:timers/promises';
 import {mark} from './utils/perf';
 import {setupRendererApi} from './renderer-api';
 
@@ -28,39 +34,27 @@ if (process.platform === 'darwin') {
   });
 }
 
+const isMoveToAppsFolderPrompt = (text?: string) => text?.includes('Applications folder') ?? false;
+
 const _origShowMessageBoxSync = dialog.showMessageBoxSync;
 dialog.showMessageBoxSync = ((...args: any[]) => {
   const options: any = args.length === 1 ? args[0] : args[1];
-  if (options?.message?.includes('Move to Applications folder') || options?.message?.includes('Applications folder')) {
-    return 1;
-  }
-
-  return _origShowMessageBoxSync.apply(dialog, args as any);
+  return isMoveToAppsFolderPrompt(options?.message) ? 1 : _origShowMessageBoxSync.apply(dialog, args as any);
 }) as any;
 
 const _origShowMessageBox = dialog.showMessageBox;
 dialog.showMessageBox = (async (...args: any[]) => {
   const options: any = args.length === 1 ? args[0] : args[1];
-  if (options?.message?.includes('Move to Applications folder') || options?.message?.includes('Applications folder')) {
-    return Promise.resolve({response: 1, checkboxChecked: false});
-  }
-
-  return _origShowMessageBox.apply(dialog, args as any);
+  return isMoveToAppsFolderPrompt(options?.message) ? {response: 1, checkboxChecked: false} : _origShowMessageBox.apply(dialog, args as any);
 }) as any;
 
 const _origShowErrorBox = dialog.showErrorBox;
-dialog.showErrorBox = ((title: string, content: string) => {
-  if (title?.includes('Move to Applications folder') || title?.includes('Applications folder')) {
-    return;
-  }
-
-  return _origShowErrorBox.call(dialog, title, content);
-}) as any;
+dialog.showErrorBox = ((title: string, content: string) => isMoveToAppsFolderPrompt(title) ? undefined : _origShowErrorBox.call(dialog, title, content));
 
 Object.defineProperty(app, 'isInApplicationsFolder', {
   value: () => true,
   writable: true,
-  configurable: true
+  configurable: true,
 });
 
 const filesToOpen: string[] = [];
@@ -83,11 +77,13 @@ let deepLinkReady = false;
 
 export const markDeepLinkReady = () => {
   deepLinkReady = true;
-  if (pendingDeepLink) {
-    const url = pendingDeepLink;
-    pendingDeepLink = undefined;
-    require('./utils/deep-linking').handleDeepLink(url);
+  if (!pendingDeepLink) {
+    return;
   }
+
+  const url = pendingDeepLink;
+  pendingDeepLink = undefined;
+  require('./utils/deep-linking').handleDeepLink(url);
 };
 
 app.on('will-finish-launching', () => {
@@ -119,7 +115,7 @@ app.on('window-all-closed', () => {
   app.setAboutPanelOptions({
     applicationName: 'Kap',
     applicationVersion: app.getVersion(),
-    copyright: 'Copyright © Kap Contributors'
+    copyright: 'Copyright © Kap Contributors',
   });
 
   const tray = new Tray(path.join(__dirname, '..', 'static', 'menubarDefaultTemplate.png'));
@@ -141,7 +137,7 @@ app.on('window-all-closed', () => {
   tray.on('right-click', () => {
     if (!trayReady) {
       tray.popUpContextMenu(Menu.buildFromTemplate([
-        {label: 'Kap is loading…', enabled: false}
+        {label: 'Kap is loading…', enabled: false},
       ]));
     }
   });
@@ -179,8 +175,8 @@ app.on('window-all-closed', () => {
           webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
-            preload: path.join(__dirname, 'preload.js')
-          }
+            preload: path.join(__dirname, 'preload.js'),
+          },
         });
         await preloadWin.loadURL('http://localhost:8000/cropper');
         preloadWin.destroy();
@@ -289,29 +285,29 @@ const performQuitCleanup = async () => {
 };
 
 app.on('before-quit', (event: any) => {
-  if (!onExitCleanupComplete) {
-    event.preventDefault();
-
-    const forceQuit = setTimeout(() => {
-      console.log('Force quitting after timeout');
-      onExitCleanupComplete = true;
-      app.exit(0);
-    }, QUIT_TIMEOUT_MS);
-
-    performQuitCleanup().finally(() => {
-      clearTimeout(forceQuit);
-      onExitCleanupComplete = true;
-      app.quit();
-    });
+  if (onExitCleanupComplete) {
+    return;
   }
-});
 
-const handleSignal = (signal: 'SIGTERM' | 'SIGINT') => {
-  return () => {
-    console.log(`Received ${signal}, quitting...`);
+  event.preventDefault();
+
+  const forceQuit = setTimeout(() => {
+    console.log('Force quitting after timeout');
     onExitCleanupComplete = true;
     app.exit(0);
-  };
+  }, QUIT_TIMEOUT_MS);
+
+  performQuitCleanup().finally(() => {
+    clearTimeout(forceQuit);
+    onExitCleanupComplete = true;
+    app.quit();
+  });
+});
+
+const handleSignal = (signal: 'SIGTERM' | 'SIGINT') => () => {
+  console.log(`Received ${signal}, quitting...`);
+  onExitCleanupComplete = true;
+  app.exit(0);
 };
 
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 'use strict';
 
-const {execFileSync} = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const {execFileSync} = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const setPlistString = (plistPath, key, value) => {
   execFileSync('/usr/bin/plutil', ['-replace', key, '-string', value, plistPath]);
 };
 
-module.exports = async context => {
+const patchPackagedMetadata = async context => {
   if (context.electronPlatformName !== 'darwin') {
     return;
   }
@@ -32,21 +32,26 @@ module.exports = async context => {
     const helperName = helperBundle.slice(0, -'.app'.length);
     const helperContentsDir = path.join(frameworksDir, helperBundle, 'Contents');
     const helperPlist = path.join(helperContentsDir, 'Info.plist');
-    const helperResourcesDir = path.join(helperContentsDir, 'Resources');
 
     if (!fs.existsSync(helperPlist)) {
       continue;
     }
 
+    const helperResourcesDir = path.join(helperContentsDir, 'Resources');
+
     setPlistString(helperPlist, 'CFBundleName', helperName);
     setPlistString(helperPlist, 'CFBundleDisplayName', helperName);
 
-    if (fs.existsSync(appIconPath)) {
-      fs.mkdirSync(helperResourcesDir, {recursive: true});
-      fs.copyFileSync(appIconPath, path.join(helperResourcesDir, 'icon.icns'));
-      setPlistString(helperPlist, 'CFBundleIconFile', 'icon.icns');
+    if (!fs.existsSync(appIconPath)) {
+      continue;
     }
+
+    fs.mkdirSync(helperResourcesDir, {recursive: true});
+    fs.copyFileSync(appIconPath, path.join(helperResourcesDir, 'icon.icns'));
+    setPlistString(helperPlist, 'CFBundleIconFile', 'icon.icns');
   }
 
   console.log(`[packaging] patched Kap metadata for ${helperBundles.length} helper apps`);
 };
+
+module.exports = patchPackagedMetadata;

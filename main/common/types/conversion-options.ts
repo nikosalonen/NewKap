@@ -1,4 +1,4 @@
-import {App, Format} from './base';
+import type {App, Format} from './base';
 
 export type CreateExportOptions = {
   filePath: string;
@@ -46,5 +46,5 @@ export enum ExportStatus {
   inProgress = 'inProgress',
   failed = 'failed',
   canceled = 'canceled',
-  completed = 'completed'
+  completed = 'completed',
 }

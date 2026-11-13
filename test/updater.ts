@@ -15,19 +15,21 @@ test('isReleaseNewer compares normalized release tags', t => {
 });
 
 test('getReleaseDownloadUrl chooses the matching mac dmg for the current architecture', t => {
+  /* eslint-disable @typescript-eslint/naming-convention -- GitHub API field names */
   const release = {
     tag_name: 'v5.1.0',
     assets: [
       {
         name: 'Kap-5.1.0-mac-x64.dmg',
-        browser_download_url: 'https://example.com/x64.dmg'
+        browser_download_url: 'https://example.com/x64.dmg',
       },
       {
         name: 'Kap-5.1.0-mac-arm64.dmg',
-        browser_download_url: 'https://example.com/arm64.dmg'
-      }
-    ]
+        browser_download_url: 'https://example.com/arm64.dmg',
+      },
+    ],
   };
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   t.is(getReleaseDownloadUrl(release, 'arm64'), 'https://example.com/arm64.dmg');
   t.is(getReleaseDownloadUrl(release, 'x64'), 'https://example.com/x64.dmg');

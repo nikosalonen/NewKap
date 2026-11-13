@@ -8,11 +8,11 @@ test('saved cropper bounds are restored when valid for the active display', t =>
     y: 80,
     width: 640,
     height: 360,
-    ratio: [16, 9]
+    ratio: [16, 9],
   }, {
     id: 7,
     width: 1440,
-    height: 900
+    height: 900,
   });
 
   t.deepEqual(cropper, {
@@ -21,7 +21,7 @@ test('saved cropper bounds are restored when valid for the active display', t =>
     y: 80,
     width: 640,
     height: 360,
-    ratio: [16, 9]
+    ratio: [16, 9],
   });
 });
 
@@ -32,11 +32,11 @@ test('saved cropper bounds are clamped to current display size', t => {
     y: 800,
     width: 900,
     height: 500,
-    ratio: [16, 9]
+    ratio: [16, 9],
   }, {
     id: 7,
     width: 1440,
-    height: 900
+    height: 900,
   });
 
   t.deepEqual(cropper, {
@@ -45,7 +45,7 @@ test('saved cropper bounds are clamped to current display size', t => {
     y: 400,
     width: 900,
     height: 500,
-    ratio: [16, 9]
+    ratio: [16, 9],
   });
 });
 
@@ -55,11 +55,11 @@ test('saved cropper bounds are ignored for a different display or invalid dimens
     x: 10,
     y: 10,
     width: 100,
-    height: 100
+    height: 100,
   }, {
     id: 2,
     width: 800,
-    height: 600
+    height: 600,
   }), undefined);
 
   t.is(validateCropperBounds({
@@ -67,10 +67,10 @@ test('saved cropper bounds are ignored for a different display or invalid dimens
     x: 10,
     y: 10,
     width: 0,
-    height: 100
+    height: 100,
   }, {
     id: 2,
     width: 800,
-    height: 600
+    height: 600,
   }), undefined);
 });

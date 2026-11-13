@@ -1,4 +1,5 @@
-import {DependencyList, useEffect, useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
+import type {DependencyList} from 'react';
 
 export const useKeyboardAction = (keyOrFilter: string | ((key: string, eventType: string) => boolean), action: () => void, deps: DependencyList = []) => {
   const isArgFilter = typeof keyOrFilter === 'function';
@@ -20,10 +21,12 @@ export const useKeyboardAction = (keyOrFilter: string | ((key: string, eventType
     return () => {
       document.removeEventListener('keyup', handler);
 
-      if (isArgFilter) {
-        document.removeEventListener('keypress', handler);
-        document.removeEventListener('keydown', handler);
+      if (!isArgFilter) {
+        return;
       }
+
+      document.removeEventListener('keypress', handler);
+      document.removeEventListener('keydown', handler);
     };
   }, [...deps, filter, action]);
 };

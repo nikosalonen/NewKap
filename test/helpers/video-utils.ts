@@ -4,29 +4,28 @@ import {timestampToMilliseconds} from '../../main/common/time';
 const ffmpegPath = require('ffmpeg-static');
 
 const getDuration = (text: string): number => {
-  const durationString = /Duration: ([\d:.]*)/.exec(text)?.[1];
+  const durationString = /Duration: ([\d.:]*)/.exec(text)?.[1];
   return timestampToMilliseconds(durationString) / 1000;
 };
 
-const getEncoding = (text: string) => /Stream.*Video: (.*?)[, ]/.exec(text)?.[1];
+const getEncoding = (text: string) => /Stream.*Video: (.*?)[ ,]/.exec(text)?.[1];
 
 const getFps = (text: string) => {
-  const fpsString = /([\d.]*) fps/.exec(text)?.[1];
+  const fpsString = /, ([\d.]+) fps/.exec(text)?.[1];
   return Number.parseFloat(fpsString!);
 };
 
 const getSize = (text: string) => {
-  const sizeText = /Video:.*?, (\d*x\d*)/.exec(text)?.[1]!;
+  const sizeText = /Video:.*?, (\d*x\d*)/.exec(text)?.[1] ?? '';
   const parts = sizeText.split('x');
   return {
     width: Number.parseFloat(parts[0]),
-    height: Number.parseFloat(parts[1])
+    height: Number.parseFloat(parts[1]),
   };
 };
 
 const getHasAudio = (text: string) => /Stream #.*: Audio/.test(text);
 
-// @ts-expect-error
 export const getVideoMetadata = async (path: string): Promise<{
   duration: number;
   encoding: string;
@@ -41,9 +40,12 @@ export const getVideoMetadata = async (path: string): Promise<{
     return {
       duration: getDuration(stderr),
       encoding: getEncoding(stderr)!,
-      fps: getFps(stderr)!,
-      size: getSize(stderr) as {width: number; height: number},
-      hasAudio: getHasAudio(stderr)!
+      fps: getFps(stderr),
+      size: getSize(stderr),
+      hasAudio: getHasAudio(stderr),
     };
   }
+
+  // `ffmpeg -i` with no output file always exits with an error.
+  throw new Error('Expected ffmpeg to fail without an output file');
 };

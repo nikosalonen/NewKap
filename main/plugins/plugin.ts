@@ -1,19 +1,19 @@
 import {app, shell} from 'electron';
+import path from 'node:path';
+import fs from 'node:fs';
 import semver from 'semver';
+import readPkg from 'read-pkg';
+import Store from 'electron-store';
 import {isMacosVersion} from '../utils/system-version';
 import {isSafeExternalUrl} from '../common/external-url';
-import path from 'path';
-import fs from 'fs';
-import readPkg from 'read-pkg';
-import {RecordService, ShareService, EditService} from './service';
 import {showError} from '../utils/errors';
-import PluginConfig from './config';
-import Store from 'electron-store';
 import {windowManager} from '../windows/manager';
+import type {RecordService, ShareService, EditService} from './service';
+import PluginConfig from './config';
 
 export const recordPluginServiceState = new Store<Record<string, boolean>>({
   name: 'record-plugin-state',
-  defaults: {}
+  defaults: {},
 });
 
 class BasePlugin {
@@ -60,7 +60,7 @@ class BasePlugin {
   }
 }
 
-export interface KapPlugin<Config extends Record<string, any> = any> {
+export type KapPlugin<Config extends Record<string, any> = any> = {
   shareServices?: Array<ShareService<Config>>;
   editServices?: Array<EditService<Config>>;
   recordServices?: Array<RecordService<Config>>;
@@ -68,7 +68,7 @@ export interface KapPlugin<Config extends Record<string, any> = any> {
   didConfigChange?: (newValue: Readonly<any> | undefined, oldValue: Readonly<any> | undefined, config: Store<Config>) => void | Promise<void>;
   didInstall?: (config: Store<Config>) => void | Promise<void>;
   willUninstall?: (config: Store<Config>) => void | Promise<void>;
-}
+};
 
 export class InstalledPlugin extends BasePlugin {
   isInstalled = true;
@@ -102,7 +102,7 @@ export class InstalledPlugin extends BasePlugin {
       this.hasConfig = this.allServices.some(({config = {}}) => Object.keys(config).length > 0);
 
       if (this.content.didConfigChange && typeof this.content.didConfigChange === 'function') {
-        this.config.onDidAnyChange((newValue, oldValue) => this.content.didConfigChange?.(newValue, oldValue, this.config));
+        this.config.onDidAnyChange(async (newValue, oldValue) => this.content.didConfigChange?.(newValue, oldValue, this.config));
       }
     } catch (error) {
       showError(error as any, {title: `Something went wrong while loading “${pluginName}”`, plugin: this});
@@ -133,7 +133,7 @@ export class InstalledPlugin extends BasePlugin {
     return [
       ...this.shareServices,
       ...this.editServices,
-      ...this.recordServices
+      ...this.recordServices,
     ];
   }
 
@@ -145,7 +145,7 @@ export class InstalledPlugin extends BasePlugin {
     return this.recordServices.map(service => ({
       ...service,
       isEnabled: recordPluginServiceState.get(this.getRecordServiceKey(service), false),
-      setEnabled: this.getSetEnableFunction(service)
+      setEnabled: this.getSetEnableFunction(service),
     }));
   }
 
@@ -153,11 +153,9 @@ export class InstalledPlugin extends BasePlugin {
     recordPluginServiceState.set(this.getRecordServiceKey(service), true);
   };
 
-  openConfig = () => windowManager.config?.open(this.name);
+  openConfig = async () => windowManager.config?.open(this.name);
 
-  openConfigInEditor = () => {
-    return this.config.openInEditor();
-  };
+  openConfigInEditor = () => this.config.openInEditor();
 
   private readonly getSetEnableFunction = (service: RecordService) => async (enabled: boolean) => {
     const isEnabled = recordPluginServiceState.get(this.getRecordServiceKey(service), false);

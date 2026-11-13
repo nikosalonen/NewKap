@@ -1,9 +1,9 @@
 'use strict';
 
 import {BrowserWindow} from 'electron';
+import {once} from 'node:events';
+import path from 'node:path';
 import {ipcMain as ipc} from 'electron-better-ipc';
-import {once} from 'events';
-import path from 'path';
 import {loadRoute} from '../utils/routes';
 import {windowManager} from './manager';
 
@@ -24,8 +24,8 @@ const openConfigWindow = async (pluginName: string) => {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '..', 'preload.js')
-    }
+      preload: path.join(__dirname, '..', 'preload.js'),
+    },
   });
 
   loadRoute(configWindow, 'config');
@@ -54,8 +54,8 @@ const openEditorConfigWindow = async (pluginName: string, serviceTitle: string, 
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '..', 'preload.js')
-    }
+      preload: path.join(__dirname, '..', 'preload.js'),
+    },
   });
 
   loadRoute(configWindow, 'config');
@@ -68,10 +68,8 @@ const openEditorConfigWindow = async (pluginName: string, serviceTitle: string, 
   await once(configWindow, 'closed');
 };
 
-ipc.answerRenderer('open-edit-config', async ({pluginName, serviceTitle}, window) => {
-  return openEditorConfigWindow(pluginName, serviceTitle, window);
-});
+ipc.answerRenderer('open-edit-config', async ({pluginName, serviceTitle}, window) => openEditorConfigWindow(pluginName, serviceTitle, window));
 
 windowManager.setConfig({
-  open: openConfigWindow
+  open: openConfigWindow,
 });

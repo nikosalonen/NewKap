@@ -1,4 +1,4 @@
-import {Rectangle} from 'electron';
+import type {Rectangle} from 'electron';
 
 export enum Format {
   gif = 'gif',
@@ -6,16 +6,16 @@ export enum Format {
   mp4 = 'mp4',
   webm = 'webm',
   apng = 'apng',
-  av1 = 'av1'
+  av1 = 'av1',
 }
 
 export enum Encoding {
   h264 = 'h264',
   hevc = 'hevc',
-  // eslint-disable-next-line unicorn/prevent-abbreviations
+  // eslint-disable-next-line unicorn/name-replacements
   proRes422 = 'proRes422',
-  // eslint-disable-next-line unicorn/prevent-abbreviations
-  proRes4444 = 'proRes4444'
+  // eslint-disable-next-line unicorn/name-replacements
+  proRes4444 = 'proRes4444',
 }
 
 export type App = {
@@ -25,7 +25,7 @@ export type App = {
   name: string;
 };
 
-export interface ApertureOptions {
+export type ApertureOptions = {
   fps: number;
   cropArea: Rectangle;
   showCursor: boolean;
@@ -33,10 +33,10 @@ export interface ApertureOptions {
   screenId: number;
   audioDeviceId?: string;
   videoCodec?: Encoding;
-}
+};
 
-export interface StartRecordingOptions {
+export type StartRecordingOptions = {
   cropperBounds: Rectangle;
   screenBounds: Rectangle;
   displayId: number;
-}
+};

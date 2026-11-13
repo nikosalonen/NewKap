@@ -3,8 +3,8 @@ import {useRef, useState, useEffect} from 'react';
 
 const useVideoControls = () => {
   const videoRef = useRef<HTMLVideoElement>();
-  const wasPaused = useRef(true);
-  const transitioningPauseState = useRef<Promise<void>>();
+  const wasPausedRef = useRef(true);
+  const transitioningPauseStateRef = useRef<Promise<void>>();
 
   const [hasStarted, setHasStarted] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -12,9 +12,9 @@ const useVideoControls = () => {
 
   const play = async () => {
     if (videoRef.current?.paused) {
-      transitioningPauseState.current = videoRef.current.play();
+      transitioningPauseStateRef.current = videoRef.current.play();
       try {
-        await transitioningPauseState.current;
+        await transitioningPauseStateRef.current;
         setIsPaused(false);
       } catch {}
     } else if (videoRef.current) {
@@ -34,7 +34,7 @@ const useVideoControls = () => {
 
     if (!videoRef.current.paused) {
       try {
-        await transitioningPauseState.current;
+        await transitioningPauseStateRef.current;
       } catch {} finally {
         videoRef.current.pause();
         setIsPaused(true);
@@ -78,37 +78,36 @@ const useVideoControls = () => {
   };
 
   const videoProps = {
-    onCanPlayThrough: hasStarted ? undefined : () => {
-      setHasStarted(true);
-      if (document.hasFocus()) {
-        play();
-      }
-    },
-    onLoadedData: () => {
-      const hasAudio = (videoRef.current as any).webkitAudioDecodedByteCount > 0 || Boolean(
-        (videoRef.current as any).audioTracks &&
-        (videoRef.current as any).audioTracks.length > 0
-      );
+    onCanPlayThrough: hasStarted
+      ? undefined
+      : () => {
+        setHasStarted(true);
+        if (document.hasFocus()) {
+          play();
+        }
+      },
+    onLoadedData() {
+      const hasAudio = (videoRef.current as any).webkitAudioDecodedByteCount > 0 || (videoRef.current as any).audioTracks?.length > 0;
 
       if (!hasAudio) {
         mute();
       }
     },
-    onEnded: () => {
+    onEnded() {
       setIsPaused(true);
-    }
+    },
   };
 
   useEffect(() => {
     const blurListener = () => {
-      wasPaused.current = videoRef.current?.paused;
-      if (!wasPaused.current) {
+      wasPausedRef.current = videoRef.current?.paused;
+      if (!wasPausedRef.current) {
         pause();
       }
     };
 
     const focusListener = () => {
-      if (!wasPaused.current) {
+      if (!wasPausedRef.current) {
         play();
       }
     };
@@ -132,7 +131,7 @@ const useVideoControls = () => {
     resumeAfterHold,
     mute,
     unmute,
-    videoProps
+    videoProps,
   };
 };
 

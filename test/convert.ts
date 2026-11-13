@@ -1,17 +1,19 @@
-import ava, {TestFn} from 'ava';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import ava from 'ava';
+import type {TestFn} from 'ava';
 import sinon from 'sinon';
 import uniqueString from 'unique-string';
+import type {Except, SetOptional} from 'type-fest';
+import {getFormatExtension} from '../main/common/constants';
+import {Format} from '../main/common/types';
+import type * as ConvertersModule from '../main/converters';
+import type {ConvertOptions} from '../main/converters/utils';
+import {mockImport} from './helpers/mocks';
+import {almostEquals} from './helpers/assertions';
+import {getVideoMetadata} from './helpers/video-utils';
 
 const test = (ava as TestFn<{outputPath: string}>).serial;
-
-import {getVideoMetadata} from './helpers/video-utils';
-import {almostEquals} from './helpers/assertions';
-import {getFormatExtension} from '../main/common/constants';
-import {Except, SetOptional} from 'type-fest';
-import {mockImport} from './helpers/mocks';
-import {Format} from '../main/common/types';
 
 const getRandomFileName = (ext: Format = Format.mp4) => `${uniqueString()}.${getFormatExtension(ext)}`;
 
@@ -21,9 +23,6 @@ const retinaInput = path.resolve(__dirname, 'fixtures', 'input@2x.mp4');
 mockImport('../plugins/service-context', 'service-context');
 mockImport('../plugins', 'plugins');
 const {settings} = mockImport('../common/settings', 'settings');
-
-import type * as ConvertersModule from '../main/converters';
-import type {ConvertOptions} from '../main/converters/utils';
 
 // Use require so the converters load after the mocks above. Import statements
 // are hoisted and would load them first.
@@ -35,15 +34,13 @@ test.afterEach.always(t => {
   }
 });
 
-const convert = async (format: Format, options: SetOptional<Except<ConvertOptions, 'outputPath'>, 'onCancel' | 'onProgress' | 'shouldMute'>) => {
-  return convertTo(format, {
-    defaultFileName: getRandomFileName(format),
-    onProgress: sinon.fake(),
-    onCancel: sinon.fake(),
-    shouldMute: true,
-    ...options
-  });
-};
+const convert = async (format: Format, options: SetOptional<Except<ConvertOptions, 'outputPath'>, 'onCancel' | 'onProgress' | 'shouldMute'>) => convertTo(format, {
+  defaultFileName: getRandomFileName(format),
+  onProgress: sinon.fake(),
+  onCancel: sinon.fake(),
+  shouldMute: true,
+  ...options,
+});
 
 // MP4
 
@@ -59,7 +56,7 @@ test('mp4: retina with sound', async t => {
     startTime: 30,
     endTime: 43.5,
     shouldCrop: true,
-    onProgress
+    onProgress,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -87,7 +84,7 @@ test('mp4: retina without sound', async t => {
     height: 83,
     startTime: 0,
     endTime: 5,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -105,7 +102,7 @@ test('mp4: non-retina', async t => {
     startTime: 11.5,
     endTime: 27,
     // Should resize even though this is false, because dimensions are odd
-    shouldCrop: false
+    shouldCrop: false,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -135,7 +132,7 @@ test('webm: retina with sound', async t => {
     startTime: 30,
     endTime: 43.5,
     shouldCrop: true,
-    onProgress
+    onProgress,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -162,7 +159,7 @@ test('webm: retina without sound', async t => {
     height: 83,
     startTime: 0,
     endTime: 5,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -179,7 +176,7 @@ test('webm: non-retina', async t => {
     height: 143,
     startTime: 11.5,
     endTime: 27,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -208,7 +205,7 @@ test('apng: retina', async t => {
     startTime: 30,
     endTime: 43.5,
     shouldCrop: true,
-    onProgress
+    onProgress,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -234,7 +231,7 @@ test('apng: non-retina', async t => {
     height: 143,
     startTime: 11.5,
     endTime: 27,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -262,7 +259,7 @@ test('gif: retina', async t => {
     startTime: 0,
     endTime: 8.5,
     shouldCrop: true,
-    onProgress
+    onProgress,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -289,7 +286,7 @@ test('gif: non-retina', async t => {
     height: 143,
     startTime: 11.5,
     endTime: 27,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -314,7 +311,7 @@ test('gif: lossy', async t => {
     height: 286,
     startTime: 1,
     endTime: 10,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   settings.setMock('lossyCompression', true);
@@ -326,12 +323,12 @@ test('gif: lossy', async t => {
     height: 286,
     startTime: 1,
     endTime: 10,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   t.true(
-    fs.statSync(regular).size >=
-    fs.statSync(lossy).size
+    fs.statSync(regular).size
+    >= fs.statSync(lossy).size,
   );
 });
 
@@ -349,7 +346,7 @@ test('av1: retina with sound', async t => {
     startTime: 30,
     endTime: 35.5,
     shouldCrop: true,
-    onProgress
+    onProgress,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -377,7 +374,7 @@ test('av1: retina without sound', async t => {
     height: 200,
     startTime: 0,
     endTime: 4,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -394,7 +391,7 @@ test('av1: non-retina', async t => {
     height: 143,
     startTime: 11.5,
     endTime: 16,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -424,7 +421,7 @@ test('HEVC: retina', async t => {
     startTime: 30,
     endTime: 43.5,
     shouldCrop: true,
-    onProgress
+    onProgress,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);
@@ -451,7 +448,7 @@ test('HEVC: non-retina', async t => {
     height: 143,
     startTime: 11.5,
     endTime: 27,
-    shouldCrop: true
+    shouldCrop: true,
   });
 
   const meta = await getVideoMetadata(t.context.outputPath);

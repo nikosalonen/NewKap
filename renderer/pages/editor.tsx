@@ -1,12 +1,12 @@
 // Import EditorPreview from '../components/editor/editor-preview';
+import useEditorWindowState from 'hooks/editor/use-editor-window-state';
+import {ConversionIdContextProvider} from 'hooks/editor/use-conversion-id';
+import Editor from 'components/editor';
 import combineUnstatedContainers from '../utils/combine-unstated-containers';
 import VideoMetadataContainer from '../components/editor/video-metadata-container';
 import VideoTimeContainer from '../components/editor/video-time-container';
 import VideoControlsContainer from '../components/editor/video-controls-container';
 import OptionsContainer from '../components/editor/options-container';
-import useEditorWindowState from 'hooks/editor/use-editor-window-state';
-import {ConversionIdContextProvider} from 'hooks/editor/use-conversion-id';
-import Editor from 'components/editor';
 import TimelineContainer from '../components/editor/timeline-container';
 
 const ContainerProvider = combineUnstatedContainers([
@@ -14,7 +14,7 @@ const ContainerProvider = combineUnstatedContainers([
   OptionsContainer,
   VideoMetadataContainer,
   VideoTimeContainer,
-  VideoControlsContainer
+  VideoControlsContainer,
 ]) as any;
 
 const EditorPage = () => {
@@ -25,7 +25,7 @@ const EditorPage = () => {
   }
 
   return (
-    <div className="cover-window">
+    <div className='cover-window'>
       <ConversionIdContextProvider>
         <ContainerProvider>
           <Editor/>

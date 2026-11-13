@@ -1,20 +1,19 @@
 import LeftOptions from './left';
 import RightOptions from './right';
 
-interface OptionsProps {
+type OptionsProps = {
   isEditorVisible: boolean;
   onToggleEditor: () => void;
-}
+};
 
-const Options = ({isEditorVisible, onToggleEditor}: OptionsProps) => {
-  return (
-    <div className="container">
-      <LeftOptions/>
-      <button type="button" className="editor-toggle" aria-pressed={isEditorVisible} onClick={onToggleEditor}>
-        Editor {isEditorVisible ? 'On' : 'Off'}
-      </button>
-      <RightOptions/>
-      <style jsx>{`
+const Options = ({isEditorVisible, onToggleEditor}: OptionsProps) => (
+  <div className='container'>
+    <LeftOptions/>
+    <button type='button' className='editor-toggle' aria-pressed={isEditorVisible} onClick={onToggleEditor}>
+      Editor {isEditorVisible ? 'On' : 'Off'}
+    </button>
+    <RightOptions/>
+    <style jsx>{`
           .container {
             display: flex;
             flex: 1;
@@ -47,8 +46,7 @@ const Options = ({isEditorVisible, onToggleEditor}: OptionsProps) => {
             outline: none;
           }
         `}</style>
-    </div>
-  );
-};
+  </div>
+);
 
 export default Options;

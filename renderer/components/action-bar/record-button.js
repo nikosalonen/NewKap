@@ -1,11 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
 import {connect, CropperContainer} from '../../containers';
 import {handleKeyboardActivation} from '../../utils/inputs';
 import kap from '../../utils/kap';
 import {startAudioLevelMeter} from '../../utils/audio-level-meter';
+
+const CameraIcon = () => (
+  <svg viewBox='0 0 24 24' aria-hidden='true'>
+    {/* eslint-disable-next-line @stylistic/max-len -- SVG path data */}
+    <path d='M8.2 6 9.6 4h4.8l1.4 2H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.2Zm3.8 10.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm0-1.8a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z'/>
+  </svg>
+);
 
 const RecordButton = ({
   cropperExists,
@@ -15,7 +21,7 @@ const RecordButton = ({
   cropperX,
   cropperY,
   cropperWidth,
-  cropperHeight
+  cropperHeight,
 }) => {
   const [showFirstRipple, setShowFirstRipple] = useState(false);
   const [showSecondRipple, setShowSecondRipple] = useState(false);
@@ -29,7 +35,7 @@ const RecordButton = ({
 
     const meter = startAudioLevelMeter({
       deviceId: audioInputDeviceId,
-      onLevel: level => {
+      onLevel(level) {
         if (level >= 36) {
           setShowFirstRipple(true);
           setShowSecondRipple(true);
@@ -38,9 +44,9 @@ const RecordButton = ({
           setShouldStop(true);
         }
       },
-      onError: error => {
+      onError(error) {
         console.error('An error occurred when trying to get audio levels:', error);
-      }
+      },
     });
 
     return meter.stop;
@@ -66,7 +72,9 @@ const RecordButton = ({
     }
 
     if (mode === 'screenshot') {
-      kap.cropper.captureScreenshot({x: cropperX, y: cropperY, width: cropperWidth, height: cropperHeight});
+      kap.cropper.captureScreenshot({
+        x: cropperX, y: cropperY, width: cropperWidth, height: cropperHeight,
+      });
     } else {
       startCountdown();
     }
@@ -77,26 +85,21 @@ const RecordButton = ({
     setMode(currentMode => currentMode === 'record' ? 'screenshot' : 'record');
   };
 
-  const CameraIcon = () => (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M8.2 6 9.6 4h4.8l1.4 2H19a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.2Zm3.8 10.2a4.2 4.2 0 1 0 0-8.4 4.2 4.2 0 0 0 0 8.4Zm0-1.8a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z"/>
-    </svg>
-  );
-
   return (
     <div
       className={classNames('container', {'cropper-exists': cropperExists})}
+      role='button'
       tabIndex={cropperExists ? 0 : -1}
       onKeyDown={handleKeyboardActivation(handlePrimaryAction)}
     >
       <div className={classNames('outer', {camera: mode === 'screenshot'})} title={mode === 'screenshot' ? 'Take screenshot' : 'Start recording'} onMouseDown={handlePrimaryAction}>
-        <div className="inner">
-          {mode === 'screenshot' ? <CameraIcon/> : (!cropperExists && <div className="fill"/>)}
+        <div className='inner'>
+          {mode === 'screenshot' ? <CameraIcon/> : (!cropperExists && <div className='fill'/>)}
         </div>
-        {showFirstRipple && <div className="ripple first" onAnimationIteration={shouldFirstStop}/>}
-        {showSecondRipple && <div className="ripple second" onAnimationIteration={shouldSecondStop}/>}
+        {showFirstRipple && <div className='ripple first' onAnimationIteration={shouldFirstStop}/>}
+        {showSecondRipple && <div className='ripple second' onAnimationIteration={shouldSecondStop}/>}
       </div>
-      <button type="button" className={classNames('mode-toggle', {record: mode === 'screenshot'})} title={mode === 'record' ? 'Switch to screenshot' : 'Switch to recording'} onMouseDown={toggleMode}>
+      <button type='button' className={classNames('mode-toggle', {record: mode === 'screenshot'})} title={mode === 'record' ? 'Switch to screenshot' : 'Switch to recording'} onMouseDown={toggleMode}>
         {mode === 'record' ? <CameraIcon/> : <span/>}
       </button>
       <style jsx>{`
@@ -244,11 +247,13 @@ RecordButton.propTypes = {
   cropperX: PropTypes.number,
   cropperY: PropTypes.number,
   cropperWidth: PropTypes.number,
-  cropperHeight: PropTypes.number
+  cropperHeight: PropTypes.number,
 };
 
 export default connect(
   [CropperContainer],
-  ({recordAudio, audioInputDeviceId, x, y, width, height}) => ({recordAudio, audioInputDeviceId, cropperX: x, cropperY: y, cropperWidth: width, cropperHeight: height}),
-  ({startCountdown}) => ({startCountdown})
+  ({recordAudio, audioInputDeviceId, x, y, width, height}) => ({
+    recordAudio, audioInputDeviceId, cropperX: x, cropperY: y, cropperWidth: width, cropperHeight: height,
+  }),
+  ({startCountdown}) => ({startCountdown}),
 )(RecordButton);

@@ -1,6 +1,7 @@
-import {spawn, ChildProcess} from 'child_process';
-import path from 'path';
-import os from 'os';
+import {spawn} from 'node:child_process';
+import type {ChildProcess} from 'node:child_process';
+import path from 'node:path';
+import os from 'node:os';
 import {nativeImage} from 'electron';
 import {copyImageToClipboard} from './utils/clipboard';
 import {openScreenshotPreview} from './windows/screenshot';
@@ -18,26 +19,28 @@ export const captureScreenshot = (bounds?: {x: number; y: number; width: number;
   }
 
   const filePath = getScreenshotPath();
-  const args = bounds ?
-    [
+  const args = bounds
+    ? [
       '-R',
       `${Math.round(bounds.x)},${Math.round(bounds.y)},${Math.round(bounds.width)},${Math.round(bounds.height)}`,
       '-x',
-      filePath
-    ] :
-    ['-i', '-x', filePath];
+      filePath,
+    ]
+    : ['-i', '-x', filePath];
 
   activeCapture = spawn('/usr/sbin/screencapture', args, {stdio: 'ignore'});
 
   activeCapture.once('exit', code => {
     activeCapture = undefined;
 
-    if (code === 0) {
-      copyImageToClipboard(nativeImage.createFromPath(filePath)).catch(error => {
-        console.error('Could not copy the screenshot to the clipboard:', error);
-      });
-      openScreenshotPreview(filePath);
+    if (code !== 0) {
+      return;
     }
+
+    copyImageToClipboard(nativeImage.createFromPath(filePath)).catch((error: unknown) => {
+      console.error('Could not copy the screenshot to the clipboard:', error);
+    });
+    openScreenshotPreview(filePath);
   });
 };
 
@@ -47,9 +50,9 @@ export const captureScreenshotToClipboard = (bounds?: {x: number; y: number; wid
   }
 
   const filePath = getScreenshotPath();
-  const args = bounds ?
-    ['-R', `${Math.round(bounds.x)},${Math.round(bounds.y)},${Math.round(bounds.width)},${Math.round(bounds.height)}`, '-x', filePath] :
-    ['-x', filePath];
+  const args = bounds
+    ? ['-R', `${Math.round(bounds.x)},${Math.round(bounds.y)},${Math.round(bounds.width)},${Math.round(bounds.height)}`, '-x', filePath]
+    : ['-x', filePath];
 
   activeCapture = spawn('/usr/sbin/screencapture', args, {stdio: 'ignore'});
 
@@ -57,7 +60,7 @@ export const captureScreenshotToClipboard = (bounds?: {x: number; y: number; wid
     activeCapture = undefined;
 
     if (code === 0) {
-      copyImageToClipboard(nativeImage.createFromPath(filePath)).catch(error => {
+      copyImageToClipboard(nativeImage.createFromPath(filePath)).catch((error: unknown) => {
         console.error('Could not copy the screenshot to the clipboard:', error);
       });
     }

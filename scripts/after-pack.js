@@ -1,12 +1,12 @@
 'use strict';
 
-const path = require('path');
+const path = require('node:path');
 const {Arch} = require('builder-util');
 const patchPackagedMetadata = require('./patch-packaged-metadata');
 const {keepOnlyArm64} = require('./arm64-only');
 
 // Runs after electron-builder copies the app and before it signs it.
-module.exports = async context => {
+const afterPack = async context => {
   if (context.electronPlatformName !== 'darwin') {
     return;
   }
@@ -25,3 +25,5 @@ module.exports = async context => {
     throw new Error(`These binaries have no arm64 code and need Rosetta to run:\n${missingArm64.join('\n')}`);
   }
 };
+
+module.exports = afterPack;

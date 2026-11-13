@@ -4,7 +4,7 @@ import {
   getAudioInputs,
   getWindows,
   pickOneWindowPerApp,
-  sortAudioInputs
+  sortAudioInputs,
 } from '../main/utils/native-helper';
 
 const window = (ownerName: string, name: string, number: number) => ({
@@ -15,14 +15,14 @@ const window = (ownerName: string, name: string, number: number) => ({
   x: 0,
   y: 0,
   width: 100,
-  height: 100
+  height: 100,
 });
 
 test('audio inputs list built-in microphones first, then by name', t => {
   const sorted = sortAudioInputs([
     {id: 'usb', name: 'USB Mic', isBuiltIn: false},
     {id: 'airpods', name: 'AirPods', isBuiltIn: false},
-    {id: 'builtin', name: 'MacBook Pro Microphone', isBuiltIn: true}
+    {id: 'builtin', name: 'MacBook Pro Microphone', isBuiltIn: true},
   ]);
 
   t.deepEqual(sorted.map(device => device.id), ['builtin', 'airpods', 'usb']);
@@ -33,7 +33,7 @@ test('window list keeps one window per app and prefers one with a title', t => {
     window('Safari', '', 1),
     window('Safari', 'Apple', 2),
     window('Notes', '', 3),
-    window('Notes', '', 4)
+    window('Notes', '', 4),
   ]);
 
   t.deepEqual(picked.map(win => win.number), [2, 3]);

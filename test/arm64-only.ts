@@ -1,7 +1,7 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import test from 'ava';
-import fs from 'fs';
-import path from 'path';
-import {execFileSync} from 'child_process';
 import tempy from 'tempy';
 
 const {keepOnlyArm64} = require('../scripts/arm64-only');
@@ -33,7 +33,9 @@ const givenApp = () => {
   compile(arm64Only, ['arm64']);
   fs.writeFileSync(textFile, 'not a binary');
 
-  return {appDir, universal, intelOnly, arm64Only, textFile};
+  return {
+    appDir, universal, intelOnly, arm64Only, textFile,
+  };
 };
 
 macTest('strips the Intel code from universal binaries', t => {

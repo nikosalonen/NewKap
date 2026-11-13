@@ -1,9 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
-
 import {connect, CropperContainer, ActionBarContainer} from '../../containers';
-
 import MainControls from './controls/main';
 import AdvancedControls from './controls/advanced';
 import RecordButton from './record-button';
@@ -17,7 +15,7 @@ class ActionBar extends React.Component {
     width: 0,
     height: 0,
     x: 0,
-    y: 0
+    y: 0,
   };
 
   render() {
@@ -31,7 +29,7 @@ class ActionBar extends React.Component {
       advanced,
       isMoving,
       cropperWidth,
-      cropperHeight
+      cropperHeight,
     } = this.props;
 
     const className = classNames('action-bar', {moving: isMoving, hidden, 'is-advanced': advanced});
@@ -41,15 +39,15 @@ class ActionBar extends React.Component {
         className={className}
         onMouseDown={startMoving}
       >
-        <div className="actions">
-          <div className="main"><MainControls.Left/></div>
-          <div className="advanced"><AdvancedControls.Left/></div>
+        <div className='actions'>
+          <div className='main'><MainControls.Left/></div>
+          <div className='advanced'><AdvancedControls.Left/></div>
         </div>
         <RecordButton
           cropperExists={Boolean(cropperWidth && cropperHeight)}/>
-        <div className="actions">
-          <div className="main"><MainControls.Right/></div>
-          <div className="advanced"><AdvancedControls.Right/></div>
+        <div className='actions'>
+          <div className='main'><MainControls.Right/></div>
+          <div className='advanced'><AdvancedControls.Right/></div>
         </div>
 
         <style jsx>{`
@@ -135,13 +133,13 @@ ActionBar.propTypes = {
   advanced: PropTypes.bool,
   isMoving: PropTypes.bool,
   cropperWidth: PropTypes.number,
-  cropperHeight: PropTypes.number
+  cropperHeight: PropTypes.number,
 };
 
 export default connect(
   [ActionBarContainer, CropperContainer],
   ({advanced, isMoving, width, height, x, y}, {willStartRecording, isPicking, isResizing, width: cropperWidth, isActive, height: cropperHeight, isMoving: cropperMoving}) => ({
-    advanced, width, height, x, y, isMoving, hidden: !isActive || cropperMoving || isResizing || isPicking || willStartRecording, cropperWidth, cropperHeight
+    advanced, width, height, x, y, isMoving, hidden: !isActive || cropperMoving || isResizing || isPicking || willStartRecording, cropperWidth, cropperHeight,
   }),
-  ({startMoving}) => ({startMoving})
+  ({startMoving}) => ({startMoving}),
 )(ActionBar);

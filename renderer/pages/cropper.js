@@ -1,12 +1,10 @@
 import React from 'react';
 import {Provider} from 'unstated';
 import kap from '../utils/kap';
-
 import Overlay from '../components/cropper/overlay';
 import Cropper from '../components/cropper';
 import ActionBar from '../components/action-bar';
 import Countdown from '../components/cropper/countdown';
-
 import CursorContainer from '../containers/cursor';
 import CropperContainer from '../containers/cropper';
 import ActionBarContainer from '../containers/action-bar';
@@ -24,13 +22,9 @@ let lastRatioLockState = null;
 
 export default class CropperPage extends React.Component {
   dev = false;
-
   controlsReadyFrame = null;
-
   cropperReadyFrame = null;
-
   controlsReadyTimeout = null;
-
   cropperSessionId = null;
 
   constructor(props) {
@@ -50,7 +44,7 @@ export default class CropperPage extends React.Component {
         isRecording: false,
         willStartRecording: false,
         countdown: false,
-        countdownValue: 0
+        countdownValue: 0,
       });
     });
 
@@ -76,18 +70,18 @@ export default class CropperPage extends React.Component {
     kap.cropper.rendererReady();
     document.addEventListener('keydown', this.handleKeyEvent);
     document.addEventListener('keyup', this.handleKeyEvent);
-    window.addEventListener('mouseup', this.handleMouseUp);
-    window.addEventListener('pointerup', this.handlePointerUp);
-    window.addEventListener('pointercancel', this.handlePointerCancel);
+    addEventListener('mouseup', this.handleMouseUp);
+    addEventListener('pointerup', this.handlePointerUp);
+    addEventListener('pointercancel', this.handlePointerCancel);
     window.addEventListener('blur', this.handleWindowBlur);
   }
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyEvent);
     document.removeEventListener('keyup', this.handleKeyEvent);
-    window.removeEventListener('mouseup', this.handleMouseUp);
-    window.removeEventListener('pointerup', this.handlePointerUp);
-    window.removeEventListener('pointercancel', this.handlePointerCancel);
+    removeEventListener('mouseup', this.handleMouseUp);
+    removeEventListener('pointerup', this.handlePointerUp);
+    removeEventListener('pointercancel', this.handlePointerCancel);
     window.removeEventListener('blur', this.handleWindowBlur);
     if (this.controlsReadyFrame !== null) {
       cancelAnimationFrame(this.controlsReadyFrame);
@@ -136,38 +130,36 @@ export default class CropperPage extends React.Component {
       });
     });
   };
-
   endInteraction = reason => {
     cropperContainer.endInteraction(reason);
     actionBarContainer.stopMoving();
   };
-
   handleMouseUp = () => {
     this.endInteraction('mouse-up');
   };
-
   handlePointerUp = () => {
     this.endInteraction('pointer-up');
   };
-
   handlePointerCancel = () => {
     this.endInteraction('pointer-cancel');
   };
-
   handleWindowBlur = () => {
     this.endInteraction('window-blur');
   };
-
   handleKeyEvent = event => {
     switch (event.key) {
-      case 'Escape':
+      case 'Escape': {
         this.endInteraction('escape');
         kap.window.close();
         break;
-      case 'Enter':
+      }
+
+      case 'Enter': {
         cropperContainer.startCountdown();
         break;
-      case 'Shift':
+      }
+
+      case 'Shift': {
         if (event.type === 'keydown' && !event.defaultPrevented) {
           lastRatioLockState = actionBarContainer.state.ratioLocked;
           actionBarContainer.toggleRatioLock(true);
@@ -177,21 +169,28 @@ export default class CropperPage extends React.Component {
         }
 
         break;
-      case 'Alt':
+      }
+
+      case 'Alt': {
         cropperContainer.toggleResizeFromCenter(event.type === 'keydown');
         break;
-      case 'i':
+      }
+
+      case 'i': {
         kap.window.setIgnoreMouseEvents(true);
         this.dev = !this.dev;
         break;
-      default:
+      }
+
+      default: {
         break;
+      }
     }
   };
 
   render() {
     return (
-      <div className="cover-screen">
+      <div className='cover-screen'>
         <Provider inject={[cursorContainer, cropperContainer, actionBarContainer]}>
           <Overlay>
             <Cropper/>

@@ -1,15 +1,15 @@
 import type {BrowserWindow} from 'electron';
-import {MacWindow} from '../utils/windows';
+import type {MacWindow} from '../utils/windows';
 import type {Video} from '../video';
 import type {DialogOptions} from './dialog';
 import type {PreferencesWindowOptions} from './preferences';
 
-export interface EditorManager {
+export type EditorManager = {
   open: (video: Video) => Promise<void>;
   areAnyBlocking: () => boolean;
-}
+};
 
-export interface CropperManager {
+export type CropperManager = {
   open: () => Promise<void>;
   close: () => void;
   disable: () => void;
@@ -18,25 +18,25 @@ export interface CropperManager {
   isOpen: () => boolean;
   selectApp: (window: MacWindow, activateWindow: (window: MacWindow) => Promise<void>) => void;
   sendCountdown?: (value: number) => void;
-}
+};
 
-export interface ConfigManager {
+export type ConfigManager = {
   open: (pluginName: string) => Promise<void>;
-}
+};
 
-export interface DialogManager {
+export type DialogManager = {
   open: (options: DialogOptions) => Promise<number | void>;
-}
+};
 
-export interface ExportsManager {
+export type ExportsManager = {
   open: () => Promise<BrowserWindow>;
   get: () => BrowserWindow | undefined;
-}
+};
 
-export interface PreferencesManager {
+export type PreferencesManager = {
   open: (options?: PreferencesWindowOptions) => Promise<BrowserWindow>;
   close: () => void;
-}
+};
 
 export class WindowManager {
   editor?: EditorManager;
@@ -72,8 +72,8 @@ export class WindowManager {
   };
 }
 
-export interface ScreenshotManager {
+export type ScreenshotManager = {
   open: (filePath: string) => Promise<void>;
-}
+};
 
 export const windowManager = new WindowManager();

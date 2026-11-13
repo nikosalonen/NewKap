@@ -1,11 +1,18 @@
+/* eslint-disable @stylistic/function-call-argument-newline -- each ffmpeg flag stays on one line with its value */
+import os from 'node:os';
+import fs from 'node:fs';
 import PCancelable from 'p-cancelable';
 import tempy from 'tempy';
-import {compress, convert} from './process';
-import {areDimensionsEven, conditionalArgs, ConvertOptions, makeEven} from './utils';
 import {settings} from '../common/settings';
-import os from 'os';
 import {Format} from '../common/types';
-import fs from 'fs';
+import {compress, convert} from './process';
+import {
+  areDimensionsEven,
+  conditionalArgs,
+
+  makeEven,
+} from './utils';
+import type {ConvertOptions} from './utils';
 
 // `time ffmpeg -i original.mp4 -vf fps=30,scale=480:-1::flags=lanczos,palettegen palette.png`
 // `time ffmpeg -i original.mp4 -i palette.png -filter_complex 'fps=30,scale=-1:-1:flags=lanczos[x]; [x][1:v]paletteuse' palette.gif`
@@ -20,11 +27,11 @@ const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PC
         '-ss',
         options.startTime.toString(),
         '-to',
-        options.endTime.toString()
+        options.endTime.toString(),
       ],
-      if: options.shouldCrop
+      if: options.shouldCrop,
     },
-    palettePath
+    palettePath,
   ));
 
   onCancel(() => {
@@ -39,11 +46,11 @@ const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PC
   const shouldLoop = settings.get('loopExports');
 
   const conversionProcess = convert(options.outputPath, {
-    onProgress: (progress, estimate) => {
+    onProgress(progress, estimate) {
       options.onProgress('Converting', progress, estimate);
     },
     startTime: options.startTime,
-    endTime: options.endTime
+    endTime: options.endTime,
   }, conditionalArgs(
     '-i', options.inputPath,
     {
@@ -51,16 +58,16 @@ const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PC
         '-i',
         palettePath,
         '-filter_complex',
-        `fps=${options.fps}${options.shouldCrop ? `,scale=${options.width}:${options.height}:flags=lanczos` : ''}[x]; [x][1:v]paletteuse`
+        `fps=${options.fps}${options.shouldCrop ? `,scale=${options.width}:${options.height}:flags=lanczos` : ''}[x]; [x][1:v]paletteuse`,
       ],
-      if: hasPalette
+      if: hasPalette,
     },
     {
       args: [
         '-vf',
-        `fps=${options.fps}${options.shouldCrop ? `,scale=${options.width}:${options.height}:flags=lanczos` : ''}`
+        `fps=${options.fps}${options.shouldCrop ? `,scale=${options.width}:${options.height}:flags=lanczos` : ''}`,
       ],
-      if: !hasPalette
+      if: !hasPalette,
     },
     '-loop', shouldLoop ? '0' : '-1', // 0 == forever; -1 == no loop
     {
@@ -68,11 +75,11 @@ const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PC
         '-ss',
         options.startTime.toString(),
         '-to',
-        options.endTime.toString()
+        options.endTime.toString(),
       ],
-      if: options.shouldCrop
+      if: options.shouldCrop,
     },
-    options.outputPath
+    options.outputPath,
   ));
 
   onCancel(() => {
@@ -82,14 +89,14 @@ const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PC
   await conversionProcess;
 
   const compressProcess = compress(options.outputPath, {
-    onProgress: (progress, estimate) => {
+    onProgress(progress, estimate) {
       options.onProgress('Compressing', progress, estimate);
     },
     startTime: options.startTime,
-    endTime: options.endTime
+    endTime: options.endTime,
   }, [
     '--batch',
-    options.outputPath
+    options.outputPath,
   ]);
 
   onCancel(() => {
@@ -103,17 +110,17 @@ const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PC
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 const convertToMp4 = (options: ConvertOptions) => convert(options.outputPath, {
-  onProgress: (progress, estimate) => {
+  onProgress(progress, estimate) {
     options.onProgress('Converting', progress, estimate);
   },
   startTime: options.startTime,
-  endTime: options.endTime
+  endTime: options.endTime,
 }, conditionalArgs(
   '-i', options.inputPath,
   '-r', options.fps.toString(),
   {
     args: ['-an'],
-    if: options.shouldMute
+    if: options.shouldMute,
   },
   {
     args: [
@@ -122,25 +129,28 @@ const convertToMp4 = (options: ConvertOptions) => convert(options.outputPath, {
       '-ss',
       options.startTime.toString(),
       '-to',
-      options.endTime.toString()
+      options.endTime.toString(),
     ],
-    if: options.shouldCrop || !areDimensionsEven(options)
+    if: options.shouldCrop || !areDimensionsEven(options),
   },
-  options.outputPath
+  options.outputPath,
 ));
+
+// Leave one core free for the rest of the app.
+const getWebmThreadCount = () => Math.max(os.cpus().length - 1, 1).toString();
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 const convertToWebm = (options: ConvertOptions) => convert(options.outputPath, {
-  onProgress: (progress, estimate) => {
+  onProgress(progress, estimate) {
     options.onProgress('Converting', progress, estimate);
   },
   startTime: options.startTime,
-  endTime: options.endTime
+  endTime: options.endTime,
 }, conditionalArgs(
   '-i', options.inputPath,
-  // http://wiki.webmproject.org/ffmpeg
+  // https://wiki.webmproject.org/ffmpeg
   // https://trac.ffmpeg.org/wiki/Encode/VP9
-  '-threads', Math.max(os.cpus().length - 1, 1).toString(),
+  '-threads', getWebmThreadCount(),
   '-deadline', 'good', // `best` is twice as slow and only slighty better
   '-b:v', '1M', // Bitrate (same as the MP4)
   '-codec:v', 'vp9',
@@ -150,7 +160,7 @@ const convertToWebm = (options: ConvertOptions) => convert(options.outputPath, {
   '-r', options.fps.toString(),
   {
     args: ['-an'],
-    if: options.shouldMute
+    if: options.shouldMute,
   },
   {
     args: [
@@ -159,20 +169,20 @@ const convertToWebm = (options: ConvertOptions) => convert(options.outputPath, {
       '-ss',
       options.startTime.toString(),
       '-to',
-      options.endTime.toString()
+      options.endTime.toString(),
     ],
-    if: options.shouldCrop || !areDimensionsEven(options)
+    if: options.shouldCrop || !areDimensionsEven(options),
   },
-  options.outputPath
+  options.outputPath,
 ));
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 const convertToAv1 = (options: ConvertOptions) => convert(options.outputPath, {
-  onProgress: (progress, estimate) => {
+  onProgress(progress, estimate) {
     options.onProgress('Converting', progress, estimate);
   },
   startTime: options.startTime,
-  endTime: options.endTime
+  endTime: options.endTime,
 }, conditionalArgs(
   '-i', options.inputPath,
   '-r', options.fps.toString(),
@@ -188,7 +198,7 @@ const convertToAv1 = (options: ConvertOptions) => convert(options.outputPath, {
   '-tiles', '2x2',
   {
     args: ['-an'],
-    if: options.shouldMute
+    if: options.shouldMute,
   },
   {
     args: [
@@ -197,20 +207,20 @@ const convertToAv1 = (options: ConvertOptions) => convert(options.outputPath, {
       '-ss',
       options.startTime.toString(),
       '-to',
-      options.endTime.toString()
+      options.endTime.toString(),
     ],
-    if: options.shouldCrop || !areDimensionsEven(options)
+    if: options.shouldCrop || !areDimensionsEven(options),
   },
-  options.outputPath
+  options.outputPath,
 ));
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 const convertToHevc = (options: ConvertOptions) => convert(options.outputPath, {
-  onProgress: (progress, estimate) => {
+  onProgress(progress, estimate) {
     options.onProgress('Converting', progress, estimate);
   },
   startTime: options.startTime,
-  endTime: options.endTime
+  endTime: options.endTime,
 }, conditionalArgs(
   '-i', options.inputPath,
   '-r', options.fps.toString(),
@@ -220,7 +230,7 @@ const convertToHevc = (options: ConvertOptions) => convert(options.outputPath, {
   '-tag:v', 'hvc1', // Metadata for macOS
   {
     args: ['-an'],
-    if: options.shouldMute
+    if: options.shouldMute,
   },
   {
     args: [
@@ -229,20 +239,20 @@ const convertToHevc = (options: ConvertOptions) => convert(options.outputPath, {
       '-ss',
       options.startTime.toString(),
       '-to',
-      options.endTime.toString()
+      options.endTime.toString(),
     ],
-    if: options.shouldCrop || !areDimensionsEven(options)
+    if: options.shouldCrop || !areDimensionsEven(options),
   },
-  options.outputPath
+  options.outputPath,
 ));
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 const convertToApng = (options: ConvertOptions) => convert(options.outputPath, {
-  onProgress: (progress, estimate) => {
+  onProgress(progress, estimate) {
     options.onProgress('Converting', progress, estimate);
   },
   startTime: options.startTime,
-  endTime: options.endTime
+  endTime: options.endTime,
 }, conditionalArgs(
   '-i', options.inputPath,
   '-vf', `fps=${options.fps}${options.shouldCrop ? `,scale=${options.width}:${options.height}:flags=lanczos` : ''}`,
@@ -250,40 +260,42 @@ const convertToApng = (options: ConvertOptions) => convert(options.outputPath, {
   '-plays', settings.get('loopExports') ? '0' : '1', // 0 == forever; 1 == no loop
   {
     args: ['-an'],
-    if: options.shouldMute
+    if: options.shouldMute,
   },
   {
     args: [
       '-ss',
       options.startTime.toString(),
       '-to',
-      options.endTime.toString()
+      options.endTime.toString(),
     ],
-    if: options.shouldCrop
+    if: options.shouldCrop,
   },
-  options.outputPath
+  options.outputPath,
 ));
 
 // eslint-disable-next-line @typescript-eslint/promise-function-async
 export const crop = (options: ConvertOptions) => convert(options.outputPath, {
-  onProgress: (progress, estimate) => {
+  onProgress(progress, estimate) {
     options.onProgress('Cropping', progress, estimate);
   },
   startTime: options.startTime,
-  endTime: options.endTime
+  endTime: options.endTime,
 }, conditionalArgs(
   '-i', options.inputPath,
   '-s', `${makeEven(options.width)}x${makeEven(options.height)}`,
   '-ss', options.startTime.toString(),
   '-to', options.endTime.toString(),
-  options.outputPath
+  options.outputPath,
 ));
 
-export default new Map([
+const converters = new Map([
   [Format.gif, convertToGif],
   [Format.mp4, convertToMp4],
   [Format.hevc, convertToHevc],
   [Format.webm, convertToWebm],
   [Format.apng, convertToApng],
-  [Format.av1, convertToAv1]
+  [Format.av1, convertToAv1],
 ]);
+
+export default converters;

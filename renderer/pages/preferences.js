@@ -4,11 +4,9 @@ import classNames from 'classnames';
 import answerMain from '../utils/answer-main';
 import {ipcRenderer} from '../utils/ipc';
 import kap from '../utils/kap';
-
 import PreferencesNavigation from '../components/preferences/navigation';
 import WindowHeader from '../components/window-header';
 import Categories from '../components/preferences/categories';
-
 import PreferencesContainer from '../containers/preferences';
 
 const preferencesContainer = new PreferencesContainer();
@@ -34,10 +32,10 @@ export default class PreferencesPage extends React.Component {
     const className = classNames('overlay', {active: overlay});
 
     return (
-      <div className="cover-window">
+      <div className='cover-window'>
         <div className={className}/>
         <Provider inject={[preferencesContainer]}>
-          <WindowHeader title="Preferences">
+          <WindowHeader title='Preferences'>
             <PreferencesNavigation/>
           </WindowHeader>
           <Categories/>

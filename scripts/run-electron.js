@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 
-const {spawn} = require('child_process');
-const {execFileSync} = require('child_process');
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+const {spawn} = require('node:child_process');
+const {execFileSync} = require('node:child_process');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
 const electron = require('electron');
 
 const env = {...process.env};
@@ -61,7 +61,7 @@ try {
 const child = spawn(electron, process.argv.slice(2), {
   env,
   argv0: 'Kap',
-  stdio: 'inherit'
+  stdio: 'inherit',
 });
 
 child.on('exit', (code, signal) => {

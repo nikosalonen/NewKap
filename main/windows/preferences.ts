@@ -1,6 +1,5 @@
 import {ipcMain} from 'electron';
-import {setTimeout as delay} from 'timers/promises';
-
+import {setTimeout as delay} from 'node:timers/promises';
 import {ipcMain as ipc} from 'electron-better-ipc';
 import KapWindow from './kap-window';
 import {windowManager} from './manager';
@@ -39,7 +38,7 @@ const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
     transparent: true,
     vibrancy: 'window',
     dock: true,
-    route: 'preferences'
+    route: 'preferences',
   });
   prefsKapWindow = newPrefsKapWindow;
 
@@ -54,10 +53,12 @@ const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
 
   const rendererReadyPromise = new Promise<void>(resolve => {
     const handleReady = (event: Electron.IpcMainEvent) => {
-      if (event.sender === newPrefsWindow.webContents) {
-        ipcMain.removeListener('preferences-renderer-ready', handleReady);
-        resolve();
+      if (event.sender !== newPrefsWindow.webContents) {
+        return;
       }
+
+      ipcMain.removeListener('preferences-renderer-ready', handleReady);
+      resolve();
     };
 
     ipcMain.on('preferences-renderer-ready', handleReady);
@@ -70,7 +71,7 @@ const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
 
   await Promise.race([
     rendererReadyPromise,
-    delay(500)
+    delay(500),
   ]);
 
   if (options) {
@@ -89,5 +90,5 @@ ipc.answerRenderer('open-preferences', openPrefsWindow);
 
 windowManager.setPreferences({
   open: openPrefsWindow,
-  close: closePrefsWindow
+  close: closePrefsWindow,
 });

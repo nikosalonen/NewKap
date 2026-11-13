@@ -2,38 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import tildify from 'tildify';
 import kap from '../../../utils/kap';
-
 import {connect, PreferencesContainer} from '../../../containers';
-
 import Item from '../item';
 import Switch from '../item/switch';
 import Button from '../item/button';
 import Select from '../item/select';
 import KeyboardNumberInput from '../../keyboard-number-input';
-
 import Category from './category';
 
 class General extends React.Component {
   static defaultProps = {
     audioDevices: [],
     kapturesDir: '',
-    category: 'general'
+    category: 'general',
   };
-
   state = {
-    checkingForUpdate: false
+    checkingForUpdate: false,
+    showCursorSupported: kap.system.isMacosGreaterThanOrEqualTo('10.13'),
   };
-
-  componentDidMount() {
-    this.setState({
-      showCursorSupported: kap.system.isMacosGreaterThanOrEqualTo('10.13')
-    });
-  }
-
   openKapturesDir = () => {
     kap.shell.openPath(this.props.kapturesDir);
   };
-
   checkForUpdates = async () => {
     this.setState({checkingForUpdate: true});
 
@@ -67,7 +56,7 @@ class General extends React.Component {
       recordingQuality,
       defaultExportFormat,
       showNotifications,
-      playNotificationSound
+      playNotificationSound,
     } = this.props;
 
     const {showCursorSupported, checkingForUpdate} = this.state;
@@ -75,7 +64,7 @@ class General extends React.Component {
 
     const devices = audioDevices.map(device => ({
       label: device.name,
-      value: device.id
+      value: device.id,
     }));
 
     const kapturesDirPath = tildify(kapturesDir);
@@ -84,7 +73,7 @@ class General extends React.Component {
     const qualityOptions = [
       {label: 'Standard', value: 'standard'},
       {label: 'High', value: 'high'},
-      {label: 'Maximum', value: 'maximum'}
+      {label: 'Maximum', value: 'maximum'},
     ];
     const exportOptions = [
       {label: 'MP4 (H.264)', value: 'mp4'},
@@ -92,19 +81,19 @@ class General extends React.Component {
       {label: 'MP4 (AV1)', value: 'av1'},
       {label: 'GIF', value: 'gif'},
       {label: 'APNG', value: 'apng'},
-      {label: 'WebM', value: 'webm'}
+      {label: 'WebM', value: 'webm'},
     ];
 
     return (
       <Category>
-        <div className="section-heading"><h2>Capture</h2><span>Recording appearance, timing, audio, and quality</span></div>
+        <div className='section-heading'><h2>Capture</h2><span>Recording appearance, timing, audio, and quality</span></div>
         {
-          showCursorSupported &&
-          <Item
-            key="showCursor"
+          showCursorSupported
+          && <Item
+            key='showCursor'
             parentItem
-            title="Show cursor"
-            subtitle="Display the mouse cursor in your Kaptures"
+            title='Show cursor'
+            subtitle='Display the mouse cursor in your Kaptures'
           >
             <Switch
               tabIndex={tabIndex}
@@ -121,8 +110,8 @@ class General extends React.Component {
           </Item>
         }
         {
-          showCursorSupported &&
-          <Item key="highlightClicks" subtitle="Highlight clicks">
+          showCursorSupported
+          && <Item key='highlightClicks' subtitle='Highlight clicks'>
             <Switch
               tabIndex={tabIndex}
               checked={highlightClicks}
@@ -132,23 +121,23 @@ class General extends React.Component {
           </Item>
         }
         <Item
-          key="loopExports"
-          title="Loop exports"
-          subtitle="Infinitely loop exports when supported"
+          key='loopExports'
+          title='Loop exports'
+          subtitle='Infinitely loop exports when supported'
         >
           <Switch tabIndex={tabIndex} checked={loopExports} onClick={() => toggleSetting('loopExports')}/>
         </Item>
         <Item
-          key="countdownDuration"
-          title="Countdown"
-          subtitle="Seconds before recording begins. Use 0 for none."
+          key='countdownDuration'
+          title='Countdown'
+          subtitle='Seconds before recording begins. Use 0 for none.'
         >
-          <div className="countdown-input">
+          <div className='countdown-input'>
             <KeyboardNumberInput
               tabIndex={tabIndex}
               min={0}
               max={60}
-              maxLength="2"
+              maxLength='2'
               value={countdownDuration}
               onChange={event => setCountdownDuration(event.currentTarget.value)}
             />
@@ -156,10 +145,10 @@ class General extends React.Component {
           </div>
         </Item>
         <Item
-          key="recordAudio"
+          key='recordAudio'
           parentItem
-          title="Audio source"
-          subtitle="Microphone or system-audio loopback device"
+          title='Audio source'
+          subtitle='Microphone or system-audio loopback device'
         >
           <Switch
             tabIndex={tabIndex}
@@ -167,21 +156,21 @@ class General extends React.Component {
             onClick={toggleRecordAudio}/>
         </Item>
         {
-          recordAudio &&
-          <Item key="audioInputDeviceId" subtitle="Select input device">
+          recordAudio
+          && <Item key='audioInputDeviceId' subtitle='Select input device'>
             <Select
               tabIndex={tabIndex}
               options={devices}
               selected={audioInputDeviceId}
-              placeholder="Select Device"
-              noOptionsMessage="No input devices"
+              placeholder='Select Device'
+              noOptionsMessage='No input devices'
               onSelect={setAudioInputDeviceId}/>
           </Item>
         }
         <Item
-          key="record60fps"
-          title="Capture frame rate"
-          subtitle="Increased FPS impacts performance and file size"
+          key='record60fps'
+          title='Capture frame rate'
+          subtitle='Increased FPS impacts performance and file size'
         >
           <Select
             tabIndex={tabIndex}
@@ -190,9 +179,9 @@ class General extends React.Component {
             onSelect={value => toggleSetting('record60fps', value)}/>
         </Item>
         <Item
-          key="recordingQuality"
-          title="Recording quality"
-          subtitle="Higher quality uses more disk space"
+          key='recordingQuality'
+          title='Recording quality'
+          subtitle='Higher quality uses more disk space'
         >
           <Select
             tabIndex={tabIndex}
@@ -201,9 +190,9 @@ class General extends React.Component {
             onSelect={value => toggleSetting('recordingQuality', value)}/>
         </Item>
         <Item
-          key="defaultExportFormat"
-          title="Default export format"
-          subtitle="Initially selected in the editor"
+          key='defaultExportFormat'
+          title='Default export format'
+          subtitle='Initially selected in the editor'
         >
           <Select
             tabIndex={tabIndex}
@@ -211,25 +200,25 @@ class General extends React.Component {
             selected={defaultExportFormat}
             onSelect={value => toggleSetting('defaultExportFormat', value)}/>
         </Item>
-        <div className="section-heading"><h2>App</h2><span>Startup, notifications, and file storage</span></div>
+        <div className='section-heading'><h2>App</h2><span>Startup, notifications, and file storage</span></div>
         <Item
-          key="openOnStartup"
-          title="Start automatically"
-          subtitle="Launch Kap on system startup"
+          key='openOnStartup'
+          title='Start automatically'
+          subtitle='Launch Kap on system startup'
         >
           <Switch tabIndex={tabIndex} checked={openOnStartup} onClick={setOpenOnStartup}/>
         </Item>
         <Item
-          key="showNotifications"
+          key='showNotifications'
           parentItem
-          title="Notifications"
-          subtitle="Show export and plugin notifications"
+          title='Notifications'
+          subtitle='Show export and plugin notifications'
         >
           <Switch tabIndex={tabIndex} checked={showNotifications} onClick={() => toggleSetting('showNotifications')}/>
         </Item>
         {
-          showNotifications &&
-          <Item key="playNotificationSound" subtitle="Play notification sounds">
+          showNotifications
+          && <Item key='playNotificationSound' subtitle='Play notification sounds'>
             <Switch
               tabIndex={tabIndex}
               checked={playNotificationSound}
@@ -237,17 +226,17 @@ class General extends React.Component {
           </Item>
         }
         <Item
-          key="pickKapturesDir"
-          title="Save to…"
+          key='pickKapturesDir'
+          title='Save to…'
           subtitle={kapturesDirPath}
           tooltip={kapturesDir}
           onSubtitleClick={this.openKapturesDir}
         >
-          <Button tabIndex={tabIndex} title="Choose" onClick={pickKapturesDir}/>
+          <Button tabIndex={tabIndex} title='Choose' onClick={pickKapturesDir}/>
         </Item>
         <Item
-          key="checkForUpdates"
-          title="Software update"
+          key='checkForUpdates'
+          title='Software update'
           subtitle={`Kap ${version}`}
         >
           <Button
@@ -257,10 +246,10 @@ class General extends React.Component {
           />
         </Item>
         <Item
-          key="lossyCompression"
+          key='lossyCompression'
           parentItem
-          title="Lossy GIF compression"
-          subtitle="Smaller file size for a minor quality degradation."
+          title='Lossy GIF compression'
+          subtitle='Smaller file size for a minor quality degradation.'
         >
           <Switch
             tabIndex={tabIndex}
@@ -342,7 +331,7 @@ General.propTypes = {
   recordingQuality: PropTypes.string,
   defaultExportFormat: PropTypes.string,
   showNotifications: PropTypes.bool,
-  playNotificationSound: PropTypes.bool
+  playNotificationSound: PropTypes.bool,
 };
 
 export default connect(
@@ -364,7 +353,7 @@ export default connect(
     recordingQuality,
     defaultExportFormat,
     showNotifications,
-    playNotificationSound
+    playNotificationSound,
   }) => ({
     showCursor,
     highlightClicks,
@@ -382,7 +371,7 @@ export default connect(
     recordingQuality,
     defaultExportFormat,
     showNotifications,
-    playNotificationSound
+    playNotificationSound,
   }),
   ({
     toggleSetting,
@@ -390,13 +379,13 @@ export default connect(
     setAudioInputDeviceId,
     pickKapturesDir,
     setOpenOnStartup,
-    setCountdownDuration
+    setCountdownDuration,
   }) => ({
     toggleSetting,
     toggleRecordAudio,
     setAudioInputDeviceId,
     pickKapturesDir,
     setOpenOnStartup,
-    setCountdownDuration
-  })
+    setCountdownDuration,
+  }),
 )(General);

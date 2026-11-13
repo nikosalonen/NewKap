@@ -1,13 +1,13 @@
 import OptionsContainer from 'components/editor/options-container';
-import {ipcRenderer} from '../../utils/ipc';
 import {useMemo} from 'react';
+import {ipcRenderer} from '../../utils/ipc';
 
 const useSharePlugins = () => {
   const {
     formats,
     format,
     sharePlugin,
-    updateSharePlugin
+    updateSharePlugin,
   } = OptionsContainer.useContainer();
 
   const menuOptions = useMemo(() => {
@@ -16,32 +16,32 @@ const useSharePlugins = () => {
     let onlyBuiltIn = true;
     const options = selectedFormat?.plugins?.map(plugin => {
       if (plugin.apps && plugin.apps.length > 0) {
-        const subMenu = plugin.apps.map(app => ({
+        const submenu = plugin.apps.map(app => ({
           label: app.isDefault ? `${app.name} (default)` : app.name,
           type: 'radio',
           checked: sharePlugin.app?.url === app.url,
           value: {
             pluginName: plugin.pluginName,
             serviceTitle: plugin.title,
-            app
+            app,
           },
-          icon: app.icon
+          icon: app.icon,
         }));
 
         if (plugin.apps[0].isDefault) {
-          subMenu.splice(1, 0, {type: 'separator'} as any);
+          submenu.splice(1, 0, {type: 'separator'} as any);
         }
 
         return {
           isBuiltIn: true,
-          subMenu,
+          subMenu: submenu,
           value: {
             pluginName: plugin.pluginName,
             serviceTitle: plugin.title,
-            app: plugin.apps[0]
+            app: plugin.apps[0],
           },
           checked: sharePlugin.pluginName === plugin.pluginName,
-          label: 'Open With…'
+          label: 'Open With…',
         };
       }
 
@@ -52,22 +52,22 @@ const useSharePlugins = () => {
       return {
         value: {
           pluginName: plugin.pluginName,
-          serviceTitle: plugin.title
+          serviceTitle: plugin.title,
         },
         checked: sharePlugin.pluginName === plugin.pluginName,
-        label: plugin.title
+        label: plugin.title,
       };
     });
 
     if (onlyBuiltIn) {
       options?.push({
-        separator: true
+        separator: true,
       } as any, {
         label: 'Get Plugins…',
         checked: false,
-        click: () => {
+        click() {
           void ipcRenderer.callMain('open-preferences', {category: 'plugins', tab: 'discover'});
-        }
+        },
       } as any);
     }
 

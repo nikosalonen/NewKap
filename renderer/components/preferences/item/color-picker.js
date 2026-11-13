@@ -1,25 +1,24 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 const ColorPicker = ({hasErrors, value, onChange}) => {
   const className = classNames('container', {'has-errors': hasErrors});
   const handleChange = event => {
-    const value = event.currentTarget.value.toUpperCase();
-    onChange(value.startsWith('#') ? value : `#${value}`);
+    const color = event.currentTarget.value.toUpperCase();
+    onChange(color.startsWith('#') ? color : `#${color}`);
   };
 
   return (
     <div className={className}>
-      <div className="preview">
+      <div className='preview'>
         <input
-          type="color"
+          type='color'
           value={value}
           onChange={handleChange}/>
       </div>
       <input
-        type="text"
-        value={value.startsWith('#') ? value.slice(1, value.length) : value}
+        type='text'
+        value={value.startsWith('#') ? value.slice(1) : value}
         size={7}
         onChange={handleChange}
         onMouseUp={event => {
@@ -89,7 +88,7 @@ const ColorPicker = ({hasErrors, value, onChange}) => {
 ColorPicker.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.elementType,
-  hasErrors: PropTypes.bool
+  hasErrors: PropTypes.bool,
 };
 
 export default ColorPicker;

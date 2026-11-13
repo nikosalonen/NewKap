@@ -16,23 +16,20 @@ const useVideoMetadata = () => {
   };
 
   const videoProps = {
-    onLoadedMetadata: () => {
+    onLoadedMetadata() {
       setWidth(videoRef.current?.videoWidth);
       setHeight(videoRef.current?.videoHeight);
       setDuration(videoRef.current?.duration);
     },
-    onLoadedData: () => {
-      const hasAudio = (videoRef.current as any).webkitAudioDecodedByteCount > 0 || Boolean(
-        (videoRef.current as any).audioTracks &&
-        (videoRef.current as any).audioTracks.length > 0
-      );
+    onLoadedData() {
+      const videoHasAudio = (videoRef.current as any).webkitAudioDecodedByteCount > 0 || (videoRef.current as any).audioTracks?.length > 0;
 
-      if (!hasAudio) {
+      if (!videoHasAudio) {
         videoRef.current.muted = true;
       }
 
-      setHasAudio(hasAudio);
-    }
+      setHasAudio(videoHasAudio);
+    },
   };
 
   return {
@@ -41,7 +38,7 @@ const useVideoMetadata = () => {
     hasAudio,
     duration,
     setVideoRef,
-    videoProps
+    videoProps,
   };
 };
 

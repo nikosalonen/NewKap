@@ -1,55 +1,26 @@
-import ApplicationsIcon from './applications';
-import BackIcon from './back';
-import CropIcon from './crop';
-import DropdownArrowIcon from './dropdown-arrow';
-import FullscreenIcon from './fullscreen';
-import LinkIcon from './link';
-import SwapIcon from './swap';
-import ExitFullscreenIcon from './exit-fullscreen';
-import SettingsIcon from './settings';
-import TuneIcon from './tune';
-import PluginsIcon from './plugins';
-import GearIcon from './gear';
-import SpinnerIcon from './spinner';
-import MoreIcon from './more';
-import PlayIcon from './play';
-import PauseIcon from './pause';
-import VolumeHighIcon from './volume-high';
-import VolumeOffIcon from './volume-off';
-import CancelIcon from './cancel';
-import TooltipIcon from './tooltip';
-import EditIcon from './edit';
-import ErrorIcon from './error';
-import OpenConfigIcon from './open-config';
-import OpenOnGithubIcon from './open-on-github';
-import HelpIcon from './help';
-import BackPlainIcon from './back-plain';
-
-export {
-  ApplicationsIcon,
-  BackIcon,
-  CropIcon,
-  DropdownArrowIcon,
-  FullscreenIcon,
-  LinkIcon,
-  SwapIcon,
-  ExitFullscreenIcon,
-  SettingsIcon,
-  TuneIcon,
-  PluginsIcon,
-  GearIcon,
-  SpinnerIcon,
-  MoreIcon,
-  PlayIcon,
-  PauseIcon,
-  VolumeHighIcon,
-  VolumeOffIcon,
-  CancelIcon,
-  TooltipIcon,
-  EditIcon,
-  ErrorIcon,
-  OpenConfigIcon,
-  OpenOnGithubIcon,
-  HelpIcon,
-  BackPlainIcon
-};
+export {default as ApplicationsIcon} from './applications';
+export {default as BackIcon} from './back';
+export {default as CropIcon} from './crop';
+export {default as DropdownArrowIcon} from './dropdown-arrow';
+export {default as FullscreenIcon} from './fullscreen';
+export {default as LinkIcon} from './link';
+export {default as SwapIcon} from './swap';
+export {default as ExitFullscreenIcon} from './exit-fullscreen';
+export {default as SettingsIcon} from './settings';
+export {default as TuneIcon} from './tune';
+export {default as PluginsIcon} from './plugins';
+export {default as GearIcon} from './gear';
+export {default as SpinnerIcon} from './spinner';
+export {default as MoreIcon} from './more';
+export {default as PlayIcon} from './play';
+export {default as PauseIcon} from './pause';
+export {default as VolumeHighIcon} from './volume-high';
+export {default as VolumeOffIcon} from './volume-off';
+export {default as CancelIcon} from './cancel';
+export {default as TooltipIcon} from './tooltip';
+export {default as EditIcon} from './edit';
+export {default as ErrorIcon} from './error';
+export {default as OpenConfigIcon} from './open-config';
+export {default as OpenOnGithubIcon} from './open-on-github';
+export {default as HelpIcon} from './help';
+export {default as BackPlainIcon} from './back-plain';

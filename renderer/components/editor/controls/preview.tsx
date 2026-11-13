@@ -1,6 +1,6 @@
-import {formatTime} from '../../../../main/common/time';
 import {useRef, useEffect} from 'react';
 import useEditorWindowState from 'hooks/editor/use-editor-window-state';
+import {formatTime} from '../../../../main/common/time';
 
 type Props = {
   time: number;
@@ -22,12 +22,12 @@ const Preview = ({time, labelTime, duration, hidePreview}: Props) => {
 
   return (
     <div
-      className="container" onMouseMove={event => {
+      className='container' onMouseMove={event => {
         event.stopPropagation();
       }}
     >
-      <video ref={videoRef} preload="auto" src={src}/>
-      <div className="time">{formatTime(labelTime, {extra: duration})}</div>
+      <video ref={videoRef} preload='auto' src={src}/>
+      <div className='time'>{formatTime(labelTime, {extra: duration})}</div>
       <style jsx>{`
           .container {
             flex: 1;

@@ -1,10 +1,10 @@
 import {app, nativeImage} from 'electron';
-import path from 'path';
+import path from 'node:path';
 
 const getDockIcon = () => {
-  const iconPath = app.isPackaged ?
-    path.join(process.resourcesPath, 'icon.icns') :
-    path.join(app.getAppPath(), 'build', 'icon.icns');
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'icon.icns')
+    : path.join(app.getAppPath(), 'build', 'icon.icns');
 
   return nativeImage.createFromPath(iconPath);
 };

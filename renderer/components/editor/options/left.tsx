@@ -1,11 +1,11 @@
 import css from 'styled-jsx/css';
-import KeyboardNumberInput from '../../keyboard-number-input';
-import Slider from './slider';
-import OptionsContainer from '../options-container';
 import {useState, useEffect, useMemo} from 'react';
 import * as stringMath from 'string-math';
+import OptionsContainer from '../options-container';
+import KeyboardNumberInput from '../../keyboard-number-input';
 import VideoMetadataContainer from '../video-metadata-container';
 import {shake} from '../../../utils/inputs';
+import Slider from './slider';
 import Select, {Separator} from './select';
 
 const percentValues = [100, 75, 50, 33, 25, 20, 10];
@@ -117,10 +117,12 @@ const LeftOptions = () => {
   };
 
   useEffect(() => {
-    if (width && height) {
-      setWidthValue(width.toString());
-      setHeightValue(height.toString());
+    if (!(width && height)) {
+      return;
     }
+
+    setWidthValue(width.toString());
+    setHeightValue(height.toString());
   }, [width, height]);
 
   const percentOptions = useMemo(() => {
@@ -133,7 +135,7 @@ const LeftOptions = () => {
       return {
         label: `${adjustedWidth} x ${adjustedHeight} (${percent === 100 ? 'Original' : `${percent}%`})`,
         value: {width: adjustedWidth, height: adjustedHeight},
-        checked: width === adjustedWidth
+        checked: width === adjustedWidth,
       };
     });
 
@@ -142,12 +144,12 @@ const LeftOptions = () => {
         {
           label: 'Custom',
           value: {width, height},
-          checked: true
+          checked: true,
         },
         {
-          separator: true
+          separator: true,
         },
-        ...options
+        ...options,
       ];
     }
 
@@ -163,13 +165,13 @@ const LeftOptions = () => {
   const percentLabel = `${Math.round((width / metadata.width) * 100)}%`;
 
   return (
-    <div className="container">
-      <div className="label">Size</div>
+    <div className='container'>
+      <div className='label'>Size</div>
       <KeyboardNumberInput
         className={keyboardInputClass}
         value={widthValue || ''}
-        size="5"
-        name="width"
+        size='5'
+        name='width'
         min={1}
         max={metadata.width}
         onChange={onChange}
@@ -178,18 +180,18 @@ const LeftOptions = () => {
       <KeyboardNumberInput
         className={keyboardInputClass}
         value={heightValue || ''}
-        size="5"
-        name="height"
+        size='5'
+        name='height'
         min={1}
         max={metadata.height}
         onChange={onChange}
         onBlur={onBlur}
       />
-      <div className="percent">
+      <div className='percent'>
         <Select options={percentOptions as any} customLabel={percentLabel} onChange={selectPercentage}/>
       </div>
-      <div className="label">FPS</div>
-      <div className="fps">
+      <div className='label'>FPS</div>
+      <div className='fps'>
         <Slider value={fps} min={5} max={originalFps} onChange={updateFps}/>
       </div>
       {keyboardInputStyles}

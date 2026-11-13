@@ -1,16 +1,17 @@
 import {app, clipboard} from 'electron';
-import Store from 'electron-store';
-import got, {GotFn, GotPromise} from 'got';
-import {ApertureOptions, Format} from '../common/types';
-import {InstalledPlugin} from './plugin';
+import type Store from 'electron-store';
+import got from 'got';
+import type {GotFn, GotPromise} from 'got';
+import type PCancelable from 'p-cancelable';
+import type {ApertureOptions, Format} from '../common/types';
 import {addPluginPromise} from '../utils/deep-linking';
 import {notify} from '../utils/notifications';
-import PCancelable from 'p-cancelable';
 import {getFormatExtension} from '../common/constants';
+import type {InstalledPlugin} from './plugin';
 
-interface ServiceContextOptions {
+type ServiceContextOptions = {
   plugin: InstalledPlugin;
-}
+};
 
 class ServiceContext {
   requests: Array<GotPromise<any>> = [];
@@ -23,6 +24,7 @@ class ServiceContext {
     this.config = this.plugin.config;
   }
 
+  // eslint-disable-next-line @typescript-eslint/promise-function-async -- plugins get got's promise, which has cancel() and progress events
   request = (...args: Parameters<GotFn>) => {
     const request = got(...args);
     this.requests.push(request);
@@ -33,33 +35,29 @@ class ServiceContext {
     clipboard.writeText(text);
   };
 
-  notify = (text: string, action?: () => any) => {
-    return notify({
-      body: text,
-      title: this.plugin.isBuiltIn ? app.name : this.plugin.prettyName,
-      click: action
-    });
-  };
+  notify = async (text: string, action?: () => any) => notify({
+    body: text,
+    title: this.plugin.isBuiltIn ? app.name : this.plugin.prettyName,
+    click: action,
+  });
 
   openConfigFile = () => {
     this.config.openInEditor();
   };
 
-  waitForDeepLink = async () => {
-    return new Promise(resolve => {
-      addPluginPromise(this.plugin.name, resolve);
-    });
-  };
+  waitForDeepLink = async () => new Promise(resolve => {
+    addPluginPromise(this.plugin.name, resolve);
+  });
 }
 
-interface ShareServiceContextOptions extends ServiceContextOptions {
+type ShareServiceContextOptions = {
   onProgress: (text: string, percentage: number) => void;
   filePath: (options?: {fileType?: Format}) => Promise<string>;
   format: Format;
   prettyFormat: string;
   defaultFileName: string;
   onCancel: () => void;
-}
+} & ServiceContextOptions;
 
 export class ShareServiceContext extends ServiceContext {
   isCanceled = false;
@@ -83,9 +81,7 @@ export class ShareServiceContext extends ServiceContext {
     return `${this.options.defaultFileName}.${getFormatExtension(this.options.format)}`;
   }
 
-  filePath = async (options?: {fileType?: Format}) => {
-    return this.options.filePath(options);
-  };
+  filePath = async (options?: {fileType?: Format}) => this.options.filePath(options);
 
   setProgress = (text: string, percentage: number) => {
     this.options.onProgress(text, percentage);
@@ -101,7 +97,7 @@ export class ShareServiceContext extends ServiceContext {
   };
 }
 
-interface EditServiceContextOptions extends ServiceContextOptions {
+type EditServiceContextOptions = {
   onProgress: (text: string, percentage: number) => void;
   inputPath: string;
   outputPath: string;
@@ -116,7 +112,7 @@ interface EditServiceContextOptions extends ServiceContextOptions {
   };
   convert: (args: string[], text?: string) => PCancelable<void>;
   onCancel: () => void;
-}
+} & ServiceContextOptions;
 
 export class EditServiceContext extends ServiceContext {
   isCanceled = false;
@@ -162,11 +158,11 @@ export type RecordServiceState<PersistedState extends Record<string, unknown> = 
   persistedState?: PersistedState;
 };
 
-export interface RecordServiceContextOptions<State extends RecordServiceState> extends ServiceContextOptions {
+export type RecordServiceContextOptions<State extends RecordServiceState> = {
   apertureOptions: ApertureOptions;
   state: State;
   setRecordingName: (name: string) => void;
-}
+} & ServiceContextOptions;
 
 export class RecordServiceContext<State extends RecordServiceState> extends ServiceContext {
   private readonly options: RecordServiceContextOptions<State>;

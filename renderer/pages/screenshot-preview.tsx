@@ -1,4 +1,9 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import TrafficLights from '../components/traffic-lights';
 import Select from '../components/editor/options/select';
 import useWindowState from '../hooks/window-state';
@@ -6,9 +11,9 @@ import {useShowWindow} from '../hooks/use-show-window';
 import ipc from '../utils/ipc';
 import {getCanvasPointFromClientPoint} from '../../main/common/screenshot-canvas';
 
-interface ScreenshotState {
+type ScreenshotState = {
   filePath: string;
-}
+};
 
 type Tool = 'move' | 'draw' | 'crop';
 type ImageFormat = 'png' | 'jpeg' | 'webp';
@@ -38,7 +43,7 @@ type ScreenshotSaveResult = {
 const formatOptions: Array<{label: string; value: ImageFormat}> = [
   {label: 'PNG', value: 'png'},
   {label: 'JPEG', value: 'jpeg'},
-  {label: 'WebP', value: 'webp'}
+  {label: 'WebP', value: 'webp'},
 ];
 
 const colors = ['#ffffff', '#ff5f57', '#ffbd2e', '#28c840', '#5aa9ff', '#ad7cff'];
@@ -46,7 +51,7 @@ const colors = ['#ffffff', '#ff5f57', '#ffbd2e', '#28c840', '#5aa9ff', '#ad7cff'
 const getFileName = (filePath: string) => filePath.split('/').pop() ?? filePath;
 
 const ToolButton = ({active, children, title, onClick}: {active?: boolean; children: React.ReactNode; title: string; onClick: () => void}) => (
-  <button type="button" className={active ? 'tool active' : 'tool'} title={title} onClick={onClick}>
+  <button type='button' className={active ? 'tool active' : 'tool'} title={title} onClick={onClick}>
     {children}
     <style jsx>{`
       .tool {
@@ -80,9 +85,9 @@ const ToolButton = ({active, children, title, onClick}: {active?: boolean; child
 );
 
 const Range = ({label, min, max, step = 1, value, onChange}: {label: string; min: number; max: number; step?: number; value: number; onChange: (value: number) => void}) => (
-  <label className="range">
+  <label className='range'>
     <span>{label}</span>
-    <input type="range" min={min} max={max} step={step} value={value} onChange={event => onChange(Number(event.target.value))}/>
+    <input type='range' min={min} max={max} step={step} value={value} onChange={event => onChange(Number(event.target.value))}/>
     <output>{value}</output>
     <style jsx>{`
       .range {
@@ -157,7 +162,7 @@ const ScreenshotPreview = () => {
     historyRef.current.push({
       crop: committedCrop ? {...committedCrop} : undefined,
       cropHistory: cropHistory.map(entry => ({crop: entry.crop ? {...entry.crop} : undefined, offset: {...entry.offset}})),
-      strokes: strokes.map(stroke => ({...stroke, points: stroke.points.map(point => ({...point}))}))
+      strokes: strokes.map(stroke => ({...stroke, points: stroke.points.map(point => ({...point}))})),
     });
     setHistoryDepth(historyRef.current.length);
   }, [committedCrop, cropHistory, strokes]);
@@ -190,7 +195,9 @@ const ScreenshotPreview = () => {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
-    const source = committedCrop ?? {x: 0, y: 0, width: imageSize.width, height: imageSize.height};
+    const source = committedCrop ?? {
+      x: 0, y: 0, width: imageSize.width, height: imageSize.height,
+    };
     context.drawImage(image, source.x, source.y, source.width, source.height, 0, 0, canvas.width, canvas.height);
     context.filter = 'none';
     context.lineCap = 'round';
@@ -221,12 +228,17 @@ const ScreenshotPreview = () => {
     }
 
     const image = new Image();
-    image.addEventListener('load', () => {
+    const handleLoad = () => {
       imageRef.current = image;
       setImageSize({width: image.naturalWidth, height: image.naturalHeight});
-    });
+    };
 
+    image.addEventListener('load', handleLoad);
     image.src = `file://${state.filePath}`;
+
+    return () => {
+      image.removeEventListener('load', handleLoad);
+    };
   }, [state]);
 
   const eventPoint = (event: React.PointerEvent<HTMLCanvasElement>): Point => {
@@ -235,7 +247,7 @@ const ScreenshotPreview = () => {
     return getCanvasPointFromClientPoint({
       client: {x: event.clientX, y: event.clientY},
       bounds,
-      canvasSize: {width: canvas.width, height: canvas.height}
+      canvasSize: {width: canvas.width, height: canvas.height},
     });
   };
 
@@ -252,7 +264,9 @@ const ScreenshotPreview = () => {
       setStrokes(current => [...current, {color: strokeColor, width: strokeWidth, points: [point]}]);
     } else {
       cropStartRef.current = point;
-      const selection = {x: point.x, y: point.y, width: 0, height: 0};
+      const selection = {
+        x: point.x, y: point.y, width: 0, height: 0,
+      };
       draftCropRef.current = selection;
       setDraftCrop(selection);
     }
@@ -268,7 +282,7 @@ const ScreenshotPreview = () => {
         x: Math.min(start.x, point.x),
         y: Math.min(start.y, point.y),
         width: Math.abs(point.x - start.x),
-        height: Math.abs(point.y - start.y)
+        height: Math.abs(point.y - start.y),
       };
       draftCropRef.current = selection;
       setDraftCrop(selection);
@@ -288,17 +302,19 @@ const ScreenshotPreview = () => {
 
     pushHistory();
     const previousCrop = committedCrop;
-    const source = previousCrop ?? {x: 0, y: 0, width: imageSize.width, height: imageSize.height};
+    const source = previousCrop ?? {
+      x: 0, y: 0, width: imageSize.width, height: imageSize.height,
+    };
     setCommittedCrop({
       x: source.x + selection.x,
       y: source.y + selection.y,
       width: selection.width,
-      height: selection.height
+      height: selection.height,
     });
     setCropHistory(current => [...current, {crop: previousCrop, offset: {x: selection.x, y: selection.y}}]);
     setStrokes(current => current.map(stroke => ({
       ...stroke,
-      points: stroke.points.map(point => ({x: point.x - selection.x, y: point.y - selection.y}))
+      points: stroke.points.map(point => ({x: point.x - selection.x, y: point.y - selection.y})),
     })));
     setDraftCrop(undefined);
     draftCropRef.current = undefined;
@@ -306,7 +322,7 @@ const ScreenshotPreview = () => {
   };
 
   const revertLatestCrop = () => {
-    const previous = cropHistory[cropHistory.length - 1];
+    const previous = cropHistory.at(-1);
     if (!previous) {
       return;
     }
@@ -316,7 +332,7 @@ const ScreenshotPreview = () => {
     setCropHistory(current => current.slice(0, -1));
     setStrokes(current => current.map(stroke => ({
       ...stroke,
-      points: stroke.points.map(point => ({x: point.x + previous.offset.x, y: point.y + previous.offset.y}))
+      points: stroke.points.map(point => ({x: point.x + previous.offset.x, y: point.y + previous.offset.y})),
     })));
   };
 
@@ -347,7 +363,7 @@ const ScreenshotPreview = () => {
         action,
         message: `${format.toUpperCase()} image ready to paste`,
         thumbnail: dataUrl,
-        title: 'Screenshot copied'
+        title: 'Screenshot copied',
       });
       return;
     }
@@ -362,7 +378,7 @@ const ScreenshotPreview = () => {
       filePath: result.filePath,
       message: `Saved ${format.toUpperCase()} screenshot`,
       thumbnail: dataUrl,
-      title: getFileName(result.filePath)
+      title: getFileName(result.filePath),
     });
   }, [format, renderOutput]);
 
@@ -392,8 +408,8 @@ const ScreenshotPreview = () => {
       }
     };
 
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    addEventListener('keydown', onKeyDown);
+    return () => removeEventListener('keydown', onKeyDown);
   }, [exportImage, tool, undo]);
 
   if (!state) {
@@ -402,14 +418,16 @@ const ScreenshotPreview = () => {
 
   const canvasSize = {
     width: Math.max(1, Math.round(committedCrop?.width ?? imageSize.width)),
-    height: Math.max(1, Math.round(committedCrop?.height ?? imageSize.height))
+    height: Math.max(1, Math.round(committedCrop?.height ?? imageSize.height)),
   };
-  const cropStyle = draftCrop ? {
-    left: `${(draftCrop.x / canvasSize.width) * 100}%`,
-    top: `${(draftCrop.y / canvasSize.height) * 100}%`,
-    width: `${(draftCrop.width / canvasSize.width) * 100}%`,
-    height: `${(draftCrop.height / canvasSize.height) * 100}%`
-  } : undefined;
+  const cropStyle = draftCrop
+    ? {
+      left: `${(draftCrop.x / canvasSize.width) * 100}%`,
+      top: `${(draftCrop.y / canvasSize.height) * 100}%`,
+      width: `${(draftCrop.width / canvasSize.width) * 100}%`,
+      height: `${(draftCrop.height / canvasSize.height) * 100}%`,
+    }
+    : undefined;
 
   const outputSize = `${canvasSize.width} × ${canvasSize.height}`;
   const resetAdjustments = () => {
@@ -419,22 +437,22 @@ const ScreenshotPreview = () => {
   };
 
   return (
-    <main className="editor-shell">
-      <header className="title-bar">
+    <main className='editor-shell'>
+      <header className='title-bar'>
         <TrafficLights/>
-        <div className="title">Screenshot</div>
-        <div className="size-readout">{outputSize}</div>
+        <div className='title'>Screenshot</div>
+        <div className='size-readout'>{outputSize}</div>
       </header>
 
-      <section className="stage">
-        <div className="tool-rail">
-          <ToolButton active={tool === 'move'} title="View (V)" onClick={() => setTool('move')}>View</ToolButton>
-          <ToolButton active={tool === 'draw'} title="Draw (D)" onClick={() => setTool('draw')}>Draw</ToolButton>
-          <ToolButton active={tool === 'crop'} title="Crop (C)" onClick={() => setTool('crop')}>Crop</ToolButton>
+      <section className='stage'>
+        <div className='tool-rail'>
+          <ToolButton active={tool === 'move'} title='View (V)' onClick={() => setTool('move')}>View</ToolButton>
+          <ToolButton active={tool === 'draw'} title='Draw (D)' onClick={() => setTool('draw')}>Draw</ToolButton>
+          <ToolButton active={tool === 'crop'} title='Crop (C)' onClick={() => setTool('crop')}>Crop</ToolButton>
         </div>
 
-        <div className="canvas-wrap">
-          <div className="canvas-frame">
+        <div className='canvas-wrap'>
+          <div className='canvas-frame'>
             <canvas
               ref={canvasRef}
               width={canvasSize.width}
@@ -445,19 +463,19 @@ const ScreenshotPreview = () => {
               onPointerUp={onPointerUp}
               onPointerCancel={onPointerUp}
             />
-            {draftCrop && draftCrop.width > 0 && draftCrop.height > 0 && <div className="crop-selection" style={cropStyle}><i/><i/><i/><i/></div>}
+            {draftCrop && draftCrop.width > 0 && draftCrop.height > 0 && <div className='crop-selection' style={cropStyle}><i/><i/><i/><i/></div>}
           </div>
         </div>
       </section>
 
-      <section className="edit-strip">
-        <div className="edit-group drawing-controls">
-          <span className="group-label">Markup</span>
-          <div className="swatches">
+      <section className='edit-strip'>
+        <div className='edit-group drawing-controls'>
+          <span className='group-label'>Markup</span>
+          <div className='swatches'>
             {colors.map(color => (
               <button
                 key={color}
-                type="button"
+                type='button'
                 aria-label={`Use ${color}`}
                 className={strokeColor === color ? 'swatch selected' : 'swatch'}
                 style={{background: color}}
@@ -468,11 +486,11 @@ const ScreenshotPreview = () => {
               />
             ))}
           </div>
-          <Range label="Width" min={2} max={24} value={strokeWidth} onChange={setStrokeWidth}/>
-          <button type="button" className="text-button" disabled={historyDepth === 0} onClick={undo}>Undo</button>
+          <Range label='Width' min={2} max={24} value={strokeWidth} onChange={setStrokeWidth}/>
+          <button type='button' className='text-button' disabled={historyDepth === 0} onClick={undo}>Undo</button>
           <button
-            type="button"
-            className="text-button"
+            type='button'
+            className='text-button'
             disabled={strokes.length === 0}
             onClick={() => {
               pushHistory();
@@ -483,54 +501,54 @@ const ScreenshotPreview = () => {
           </button>
         </div>
 
-        <div className="edit-group adjustments">
-          <span className="group-label">Adjust</span>
-          <Range label="Brightness" min={50} max={150} value={brightness} onChange={setBrightness}/>
-          <Range label="Contrast" min={50} max={150} value={contrast} onChange={setContrast}/>
-          <Range label="Saturation" min={0} max={200} value={saturation} onChange={setSaturation}/>
-          <button type="button" className="text-button" onClick={resetAdjustments}>Reset</button>
+        <div className='edit-group adjustments'>
+          <span className='group-label'>Adjust</span>
+          <Range label='Brightness' min={50} max={150} value={brightness} onChange={setBrightness}/>
+          <Range label='Contrast' min={50} max={150} value={contrast} onChange={setContrast}/>
+          <Range label='Saturation' min={0} max={200} value={saturation} onChange={setSaturation}/>
+          <button type='button' className='text-button' onClick={resetAdjustments}>Reset</button>
         </div>
       </section>
 
-      <footer className="options-bar">
-        <div className="left-options">
-          <span className="option-label">Crop</span>
-          <button type="button" className={committedCrop ? 'control active-control' : 'control'} onClick={() => setTool('crop')}>{committedCrop ? outputSize : 'Original'}</button>
-          {committedCrop && <button type="button" className="control subtle" onClick={revertLatestCrop}>Revert crop</button>}
+      <footer className='options-bar'>
+        <div className='left-options'>
+          <span className='option-label'>Crop</span>
+          <button type='button' className={committedCrop ? 'control active-control' : 'control'} onClick={() => setTool('crop')}>{committedCrop ? outputSize : 'Original'}</button>
+          {committedCrop && <button type='button' className='control subtle' onClick={revertLatestCrop}>Revert crop</button>}
         </div>
-        <div className="right-options">
-          <span className="option-label">Format</span>
-          <div className="format-select"><Select options={formatOptions} value={format} onChange={value => value && setFormat(value)}/></div>
-          <div className="export-select">
+        <div className='right-options'>
+          <span className='option-label'>Format</span>
+          <div className='format-select'><Select options={formatOptions} value={format} onChange={value => value && setFormat(value)}/></div>
+          <div className='export-select'>
             <Select
               value={exportAction}
               options={[
                 {label: 'Save to Disk', value: 'save' as const},
-                {label: 'Copy to Clipboard', value: 'copy' as const}
+                {label: 'Copy to Clipboard', value: 'copy' as const},
               ]}
               onChange={action => action && setExportAction(action)}
             />
           </div>
-          <button type="button" className="primary-action" onClick={async () => exportImage(exportAction)}>Export</button>
+          <button type='button' className='primary-action' onClick={async () => exportImage(exportAction)}>Export</button>
         </div>
       </footer>
 
       {exportNotice && (
-        <aside className="export-completion" aria-live="polite">
-          <div className="completion-thumbnail">
-            <img src={exportNotice.thumbnail} alt=""/>
+        <aside className='export-completion' aria-live='polite'>
+          <div className='completion-thumbnail'>
+            <img src={exportNotice.thumbnail} alt=''/>
           </div>
-          <div className="completion-details">
-            <div className="completion-title" title={exportNotice.title}>{exportNotice.title}</div>
-            <div className="completion-message">{exportNotice.message}</div>
-            <div className="completion-actions">
+          <div className='completion-details'>
+            <div className='completion-title' title={exportNotice.title}>{exportNotice.title}</div>
+            <div className='completion-message'>{exportNotice.message}</div>
+            <div className='completion-actions'>
               {exportNotice.action === 'save' && (
                 <>
-                  <button type="button" onClick={async () => exportImage('copy')}>Copy</button>
-                  <button type="button" onClick={async () => ipc.callMain('screenshot-show-in-folder', {filePath: exportNotice.filePath})}>Show in Finder</button>
+                  <button type='button' onClick={async () => exportImage('copy')}>Copy</button>
+                  <button type='button' onClick={async () => ipc.callMain('screenshot-show-in-folder', {filePath: exportNotice.filePath})}>Show in Finder</button>
                 </>
               )}
-              <button type="button" onClick={() => setExportNotice(undefined)}>Done</button>
+              <button type='button' onClick={() => setExportNotice(undefined)}>Done</button>
             </div>
           </div>
         </aside>
@@ -658,8 +676,16 @@ const ScreenshotPreview = () => {
 
         .crop-selection {
           background-image:
-            linear-gradient(to right, transparent 33.2%, rgba(255, 255, 255, 0.42) 33.2%, rgba(255, 255, 255, 0.42) 33.4%, transparent 33.4%, transparent 66.5%, rgba(255, 255, 255, 0.42) 66.5%, rgba(255, 255, 255, 0.42) 66.7%, transparent 66.7%),
-            linear-gradient(to bottom, transparent 33.2%, rgba(255, 255, 255, 0.42) 33.2%, rgba(255, 255, 255, 0.42) 33.4%, transparent 33.4%, transparent 66.5%, rgba(255, 255, 255, 0.42) 66.5%, rgba(255, 255, 255, 0.42) 66.7%, transparent 66.7%);
+            linear-gradient(
+              to right,
+              transparent 33.2%, rgba(255, 255, 255, 0.42) 33.2%, rgba(255, 255, 255, 0.42) 33.4%, transparent 33.4%,
+              transparent 66.5%, rgba(255, 255, 255, 0.42) 66.5%, rgba(255, 255, 255, 0.42) 66.7%, transparent 66.7%
+            ),
+            linear-gradient(
+              to bottom,
+              transparent 33.2%, rgba(255, 255, 255, 0.42) 33.2%, rgba(255, 255, 255, 0.42) 33.4%, transparent 33.4%,
+              transparent 66.5%, rgba(255, 255, 255, 0.42) 66.5%, rgba(255, 255, 255, 0.42) 66.7%, transparent 66.7%
+            );
           border: 1px solid #fff;
           box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.52), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
           pointer-events: none;

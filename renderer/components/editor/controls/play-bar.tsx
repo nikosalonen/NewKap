@@ -1,12 +1,12 @@
-import VideoTimeContainer from '../video-time-container';
 import {useState, useRef} from 'react';
+import VideoTimeContainer from '../video-time-container';
 import VideoControlsContainer from '../video-controls-container';
 import Preview from './preview';
 
 const PlayBar = () => {
   const [resizing, setResizing] = useState(false);
   const [hoverTime, setHoverTime] = useState(0);
-  const progress = useRef<HTMLProgressElement>();
+  const progressRef = useRef<HTMLProgressElement>();
 
   const {play, pause} = VideoControlsContainer.useContainer();
   const {
@@ -16,7 +16,7 @@ const PlayBar = () => {
     endTime,
     updateTime,
     updateStartTime,
-    updateEndTime
+    updateEndTime,
   } = VideoTimeContainer.useContainer();
 
   const total = endTime - startTime;
@@ -24,7 +24,7 @@ const PlayBar = () => {
 
   const getTimeFromEvent = event => {
     const cursorX = event.clientX;
-    const {x, width} = progress.current.getBoundingClientRect();
+    const {x, width} = progressRef.current.getBoundingClientRect();
 
     const percent = (cursorX - x) / width;
     const time = startTime + ((endTime - startTime) * percent);
@@ -64,19 +64,19 @@ const PlayBar = () => {
 
   const previewTime = resizing ? currentTime : hoverTime;
   const previewLabelTime = resizing ? currentTime : (startTime <= hoverTime && hoverTime <= endTime ? hoverTime - startTime : hoverTime);
-  const previewDuration = resizing ? total : (startTime <= hoverTime && hoverTime <= endTime ? total : undefined);
+  const previewDuration = resizing || (startTime <= hoverTime && hoverTime <= endTime) ? total : undefined;
 
   return (
-    <div className="container" onMouseUp={seek} onMouseMove={updatePreview}>
-      <div className="progress-bar-container">
-        <div className="progress-bar">
-          <progress ref={progress} max={total} value={current}/>
-          <div className="preview">
+    <div className='container' onMouseUp={seek} onMouseMove={updatePreview}>
+      <div className='progress-bar-container'>
+        <div className='progress-bar'>
+          <progress ref={progressRef} max={total} value={current}/>
+          <div className='preview'>
             <Preview time={previewTime} labelTime={previewLabelTime} duration={previewDuration} hidePreview={resizing}/>
           </div>
           <input
-            type="range"
-            className="slider start"
+            type='range'
+            className='slider start'
             value={startTime}
             min={0}
             max={duration}
@@ -85,8 +85,8 @@ const PlayBar = () => {
             onMouseDown={startResizing}
             onMouseUp={stopResizing}/>
           <input
-            type="range"
-            className="slider end"
+            type='range'
+            className='slider end'
             value={endTime}
             min={0}
             max={duration}
@@ -219,7 +219,7 @@ export default PlayBar;
 //   const {startTime, endTime} = this.props;
 
 //   const cursorX = event.clientX;
-//   const {x, width} = this.progress.current.getBoundingClientRect();
+//   const {x, width} = this.progressRef.current.getBoundingClientRect();
 
 //   const percent = (cursorX - x) / width;
 //   const time = startTime + ((endTime - startTime) * percent);

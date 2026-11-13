@@ -1,6 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import ava from 'ava';
-import fs from 'fs';
-import path from 'path';
 import sinon from 'sinon';
 import {ensureMicrophonePermissions, ensureScreenCapturePermissions} from '../main/common/system-permissions';
 

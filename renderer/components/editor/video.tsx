@@ -1,10 +1,10 @@
 import {useRef, useEffect} from 'react';
-import VideoTimeContainer from './video-time-container';
-import VideoMetadataContainer from './video-metadata-container';
-import VideoControlsContainer from './video-controls-container';
 import useEditorWindowState from 'hooks/editor/use-editor-window-state';
 import {ipcRenderer as ipc} from '../../utils/ipc';
 import {popupMenu} from '../../utils/menu-actions';
+import VideoTimeContainer from './video-time-container';
+import VideoMetadataContainer from './video-metadata-container';
+import VideoControlsContainer from './video-controls-container';
 import TimelineContainer from './timeline-container';
 
 const getVideoProps = (propsArray: Array<React.DetailedHTMLProps<React.VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>>) => {
@@ -20,15 +20,11 @@ const getVideoProps = (propsArray: Array<React.DetailedHTMLProps<React.VideoHTML
     }
   }
 
-  // eslint-disable-next-line unicorn/no-array-reduce
-  return [...handlers.entries()].reduce((acc, [key, handlerList]) => ({
-    ...acc,
-    [key]: () => {
-      for (const handler of handlerList) {
-        handler?.();
-      }
+  return Object.fromEntries([...handlers].map(([key, handlerList]) => [key, () => {
+    for (const handler of handlerList) {
+      handler?.();
     }
-  }), {});
+  }]));
 };
 
 const Video = () => {
@@ -57,7 +53,7 @@ const Video = () => {
   const videoProps = getVideoProps([
     videoTimeContainer.videoProps,
     videoMetadataContainer.videoProps,
-    videoControlsContainer.videoProps
+    videoControlsContainer.videoProps,
   ]);
 
   const onContextMenu = async () => {
@@ -75,9 +71,9 @@ const Video = () => {
 
     await popupMenu([{
       label: 'Snapshot',
-      click: () => {
+      click() {
         ipc.callMain('save-snapshot', video.currentTime);
-      }
+      },
     }]);
 
     if (!wasPaused) {
@@ -86,8 +82,8 @@ const Video = () => {
   };
 
   return (
-    <div className="video-frame" onContextMenu={onContextMenu}>
-      <video ref={videoRef} preload="auto" src={src} style={{filter: videoFilter}} {...videoProps}/>
+    <div className='video-frame' onContextMenu={onContextMenu}>
+      <video ref={videoRef} preload='auto' src={src} style={{filter: videoFilter}} {...videoProps}/>
       <style jsx>{`
         .video-frame {
           flex: 1;

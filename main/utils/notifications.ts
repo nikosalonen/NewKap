@@ -1,19 +1,24 @@
-import {Notification, NotificationConstructorOptions, NotificationAction, app} from 'electron';
+import {
+  Notification,
+
+  app,
+} from 'electron';
+import type {NotificationConstructorOptions, NotificationAction} from 'electron';
 import {settings} from '../common/settings';
 
 // Need to persist the notifications, otherwise it is garbage collected and the actions don't trigger
 // https://github.com/electron/electron/issues/12690
 const notifications = new Set<Notification>();
 
-interface Action extends NotificationAction {
+type Action = {
   action?: () => void | Promise<void>;
-}
+} & NotificationAction;
 
-interface NotificationOptions extends NotificationConstructorOptions {
+type NotificationOptions = {
   actions?: Action[];
   click?: () => void | Promise<void>;
   show?: boolean;
-}
+} & NotificationConstructorOptions;
 
 type NotificationPromise = Promise<void> & {
   show: () => void;
@@ -30,7 +35,7 @@ export const notify = (options: NotificationOptions): NotificationPromise => {
 
   const notification = new Notification({
     ...options,
-    silent: options.silent ?? !settings.get('playNotificationSound')
+    silent: options.silent ?? !settings.get('playNotificationSound'),
   });
 
   notifications.add(notification);
@@ -81,4 +86,4 @@ export const notify = (options: NotificationOptions): NotificationPromise => {
   return promise as NotificationPromise;
 };
 
-notify.simple = (text: string) => notify({title: app.name, body: text});
+notify.simple = async (text: string) => notify({title: app.name, body: text});

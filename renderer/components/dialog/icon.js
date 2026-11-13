@@ -1,10 +1,7 @@
-import React from 'react';
-
-const Icon = () => {
-  return (
-    <div>
-      <img src="/static/kap-icon.png"/>
-      <style jsx>{`
+const Icon = () => (
+  <div>
+    <img src='/static/kap-icon.png' alt=''/>
+    <style jsx>{`
         img {
           width: 58px;
           height: 58px;
@@ -15,8 +12,7 @@ const Icon = () => {
           pointer-events: none;
         }
       `}</style>
-    </div>
-  );
-};
+  </div>
+);
 
 export default Icon;

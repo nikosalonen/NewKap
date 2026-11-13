@@ -1,33 +1,33 @@
 import {app, dialog} from 'electron';
-import {setTimeout as delay} from 'timers/promises';
+import {setTimeout as delay} from 'node:timers/promises';
 import {openNewGitHubIssue} from 'electron-util';
 import macosRelease from '../utils/macos-release';
 import {supportedVideoExtensions} from '../common/constants';
-import {getCurrentMenuItem, MenuItemId} from './utils';
 import {openFiles} from '../utils/open-files';
 import {windowManager} from '../windows/manager';
+import {getCurrentMenuItem, MenuItemId} from './utils';
 
 export const getPreferencesMenuItem = () => ({
   id: MenuItemId.preferences,
   label: 'Preferences…',
-  click: () => windowManager.preferences?.open()
+  click: async () => windowManager.preferences?.open(),
 });
 
 export const getAboutMenuItem = () => ({
   id: MenuItemId.about,
   label: `About ${app.name}`,
-  click: () => {
+  click() {
     windowManager.cropper?.close();
     app.focus();
     app.showAboutPanel();
-  }
+  },
 });
 
 export const getOpenFileMenuItem = () => ({
   id: MenuItemId.openVideo,
   label: 'Open Video…',
   accelerator: 'Command+O',
-  click: async () => {
+  async click() {
     windowManager.cropper?.close();
 
     await delay(200);
@@ -35,29 +35,29 @@ export const getOpenFileMenuItem = () => ({
     app.focus();
     const {canceled, filePaths} = await dialog.showOpenDialog({
       filters: [{name: 'Videos', extensions: supportedVideoExtensions}],
-      properties: ['openFile', 'multiSelections']
+      properties: ['openFile', 'multiSelections'],
     });
 
     if (!canceled && filePaths) {
       openFiles(...filePaths);
     }
-  }
+  },
 });
 
 export const getExportHistoryMenuItem = () => ({
   label: 'Export History',
-  click: () => windowManager.exports?.open(),
+  click: async () => windowManager.exports?.open(),
   enabled: getCurrentMenuItem(MenuItemId.exportHistory)?.enabled ?? false,
-  id: MenuItemId.exportHistory
+  id: MenuItemId.exportHistory,
 });
 
 export const getCheckForUpdatesMenuItem = () => ({
   id: MenuItemId.checkForUpdates,
   label: 'Check for Updates…',
-  click: () => {
+  click() {
     const {checkForUpdates} = require('../updater');
     checkForUpdates({silent: false});
-  }
+  },
 });
 
 export const getSendFeedbackMenuItem = () => ({
@@ -67,9 +67,9 @@ export const getSendFeedbackMenuItem = () => ({
     openNewGitHubIssue({
       user: 'jacobpowaza',
       repo: 'NewKap',
-      body: issueBody
+      body: issueBody,
     });
-  }
+  },
 });
 
 const release = macosRelease();
@@ -78,7 +78,8 @@ const issueBody = `
 <!--
 Thank you for helping us test Kap. Your feedback helps us make Kap better for everyone!
 
-Before you continue; please make sure you've searched our existing issues to avoid duplicates. When you're ready to open a new issue, include as much information as possible. You can use the handy template below for bug reports.
+Before you continue; please make sure you've searched our existing issues to avoid duplicates.
+When you're ready to open a new issue, include as much information as possible. You can use the handy template below for bug reports.
 
 Step to reproduce:    If applicable, provide steps to reproduce the issue you're having.
 Current behavior:     A description of how Kap is currently behaving.

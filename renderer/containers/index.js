@@ -1,18 +1,11 @@
-import React from 'react';
 import {Subscribe} from 'unstated';
-
-import CropperContainer from './cropper';
-import CursorContainer from './cursor';
-import ActionBarContainer from './action-bar';
-import PreferencesContainer from './preferences';
-import ConfigContainer from './config';
 
 export const connect = (containers, mapStateToProps, mapActionsToProps) => Component => props => (
   <Subscribe to={containers}>
     {
-      (...containers) => {
-        const stateProps = mapStateToProps ? mapStateToProps(...containers.map(a => a.state)) : {};
-        const actionProps = mapActionsToProps ? mapActionsToProps(...containers) : {};
+      (...instances) => {
+        const stateProps = mapStateToProps ? mapStateToProps(...instances.map(a => a.state)) : {};
+        const actionProps = mapActionsToProps ? mapActionsToProps(...instances) : {};
         const componentProps = {...props, ...stateProps, ...actionProps};
 
         return <Component {...componentProps}/>;
@@ -21,10 +14,8 @@ export const connect = (containers, mapStateToProps, mapActionsToProps) => Compo
   </Subscribe>
 );
 
-export {
-  CropperContainer,
-  CursorContainer,
-  ActionBarContainer,
-  PreferencesContainer,
-  ConfigContainer
-};
+export {default as CursorContainer} from './cursor';
+export {default as CropperContainer} from './cropper';
+export {default as ActionBarContainer} from './action-bar';
+export {default as PreferencesContainer} from './preferences';
+export {default as ConfigContainer} from './config';

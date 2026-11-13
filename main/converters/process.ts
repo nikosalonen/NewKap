@@ -1,33 +1,32 @@
+import path from 'node:path';
 import util from 'electron-util';
 import execa from 'execa';
 import PCancelable from 'p-cancelable';
 import tempy from 'tempy';
-import path from 'path';
-
-import {conditionalArgs, extractProgressFromStderr} from './utils';
 import {settings} from '../common/settings';
-
 import ffmpegPath from '../utils/ffmpeg-path';
+import {conditionalArgs, extractProgressFromStderr} from './utils';
 
 // Gifsicle 7 is an ES module; its default export is the binary path.
 const {default: gifsicle} = require('gifsicle');
+
 const gifsiclePath = util.fixPathForAsarUnpack(gifsicle);
 
 enum Mode {
   convert,
-  compress
+  compress,
 }
 
 const modes = new Map([
   [Mode.convert, ffmpegPath],
-  [Mode.compress, gifsiclePath]
+  [Mode.compress, gifsiclePath],
 ]);
 
-export interface ProcessOptions {
+export type ProcessOptions = {
   startTime?: number;
   endTime?: number;
   onProgress?: (progress: number, estimate?: string) => void;
-}
+};
 
 const createProcess = (mode: Mode) => {
   const program = modes.get(mode)!;
@@ -37,7 +36,7 @@ const createProcess = (mode: Mode) => {
     const {
       startTime = 0,
       endTime = 0,
-      onProgress
+      onProgress,
     } = options;
 
     return new PCancelable<string>((resolve, reject, onCancel) => {
@@ -52,7 +51,7 @@ const createProcess = (mode: Mode) => {
 
       let stderr = '';
       runner.stderr?.setEncoding('utf8');
-      runner.stderr?.on('data', data => {
+      runner.stderr?.on('data', (data: string) => {
         stderr += data;
 
         const progressData = extractProgressFromStderr(data, conversionStartTime, durationMs);
@@ -91,7 +90,7 @@ export const compress = (outputPath: string, options: ProcessOptions, args: stri
   return compressFunction(
     outputPath,
     options,
-    conditionalArgs(args, {args: ['--lossy=50'], if: useLossy})
+    conditionalArgs(args, {args: ['--lossy=50'], if: useLossy}),
   );
 };
 
@@ -104,7 +103,7 @@ export const mute = PCancelable.fn(async (inputPath: string, onCancel: PCancelab
     '-an',
     '-vcodec',
     'copy',
-    mutedPath
+    mutedPath,
   ]);
 
   onCancel(() => {

@@ -30,14 +30,14 @@ export const getContainedRectangle = (bounds: Rectangle, content: Size): Rectang
     left: bounds.left + ((bounds.width - width) / 2),
     top: bounds.top + ((bounds.height - height) / 2),
     width,
-    height
+    height,
   };
 };
 
 export const getCanvasPointFromClientPoint = ({
   client,
   bounds,
-  canvasSize
+  canvasSize,
 }: {
   client: Point;
   bounds: Rectangle;
@@ -51,6 +51,6 @@ export const getCanvasPointFromClientPoint = ({
 
   return {
     x: clamp(((client.x - rendered.left) / rendered.width) * canvasSize.width, 0, canvasSize.width),
-    y: clamp(((client.y - rendered.top) / rendered.height) * canvasSize.height, 0, canvasSize.height)
+    y: clamp(((client.y - rendered.top) / rendered.height) * canvasSize.height, 0, canvasSize.height),
   };
 };

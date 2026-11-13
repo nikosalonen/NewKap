@@ -30,7 +30,7 @@ export const serializeMenuTemplate = (template: any[]): SerializedMenuItem[] => 
     ...rest,
     iconDataUrl: icon,
     submenu: item.submenu ? serializeMenuTemplate(item.submenu) : undefined,
-    subMenu: item.subMenu ? serializeMenuTemplate(item.subMenu) : undefined
+    subMenu: item.subMenu ? serializeMenuTemplate(item.subMenu) : undefined,
   };
 
   if (typeof click === 'function') {
@@ -42,6 +42,4 @@ export const serializeMenuTemplate = (template: any[]): SerializedMenuItem[] => 
   return serialized;
 });
 
-export const popupMenu = (template: any[], position?: {x?: number; y?: number}) => {
-  return kap.menu.popup(serializeMenuTemplate(template), position);
-};
+export const popupMenu = (template: any[], position?: {x?: number; y?: number}) => kap.menu.popup(serializeMenuTemplate(template), position);

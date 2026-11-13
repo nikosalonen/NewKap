@@ -1,14 +1,15 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import {app} from 'electron';
-import {EventEmitter} from 'events';
-import {ConversionOptions, Format} from './common/types';
-import {Video} from './video';
-import {convertTo} from './converters';
+import {EventEmitter} from 'node:events';
 import hash from 'object-hash';
-import {notify} from './utils/notifications';
 import PCancelable from 'p-cancelable';
 import prettyBytes from 'pretty-bytes';
-import TypedEventEmitter from 'typed-emitter';
+import type TypedEventEmitter from 'typed-emitter';
+import {Format} from './common/types';
+import type {ConversionOptions} from './common/types';
+import type {Video} from './video';
+import {convertTo} from './converters';
+import {notify} from './utils/notifications';
 import {renderTimeline} from './converters/timeline';
 import {copyFilesToClipboard} from './utils/clipboard';
 
@@ -18,7 +19,7 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
   static conversionMap = new Map<string, Conversion>();
 
   static get all() {
-    return [...this.conversionMap.values()];
+    return this.conversionMap.values().toArray();
   }
 
   readonly id: string;
@@ -34,15 +35,14 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
   constructor(
     public readonly video: Video,
     public readonly format: Format,
-    public readonly options: ConversionOptions
+    public readonly options: ConversionOptions,
   ) {
-    // eslint-disable-next-line constructor-super
     super();
 
     this.id = hash({
       filePath: video.filePath,
       format,
-      options
+      options,
     });
 
     Conversion.conversionMap.set(this.id, this);
@@ -56,7 +56,7 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
     const id = hash({
       filePath: video.filePath,
       format,
-      options
+      options,
     });
 
     return this.fromId(id) ?? new Conversion(video, format, options);
@@ -71,7 +71,7 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
     await copyFilesToClipboard([this.convertedFilePath]);
     notify({
       body: 'The file has been copied to the clipboard',
-      title: app.name
+      title: app.name,
     });
   };
 
@@ -146,7 +146,7 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
           inputPath,
           clips: this.options.clips,
           hasAudio: Boolean(this.options.hasAudio && !this.options.shouldMute),
-          onProgress: (progress, estimate) => this.onConversionProgress('Applying edits', progress, estimate)
+          onProgress: (progress, estimate) => this.onConversionProgress('Applying edits', progress, estimate),
         });
         onCancel(() => timelineProcess.cancel());
         inputPath = await timelineProcess;
@@ -168,9 +168,9 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
           onProgress: this.onConversionProgress,
           onCancel: () => {
             this.emit('cancel');
-          }
+          },
         },
-        this.video.encoding
+        this.video.encoding,
       );
       onCancel(() => conversionProcess.cancel());
       return conversionProcess;
@@ -178,10 +178,10 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
   };
 }
 
-interface ConversionEvents {
+type ConversionEvents = {
   progress: (text: string, percentage: number) => void;
   error: (error: Error) => void;
   cancel: () => void;
   completed: () => void;
   'file-size': (size: string) => void;
-}
+};

@@ -1,18 +1,20 @@
-import electron, {app, BrowserWindow, Menu} from 'electron';
+import type electron from 'electron';
+import {app, BrowserWindow, Menu} from 'electron';
+import {once} from 'node:events';
+import path from 'node:path';
 import {ipcMain as ipc} from 'electron-better-ipc';
-import {once} from 'events';
-import path from 'path';
-import {customApplicationMenu, defaultApplicationMenu, MenuModifier} from '../menus/application';
+import {customApplicationMenu, defaultApplicationMenu} from '../menus/application';
+import type {MenuModifier} from '../menus/application';
 import {loadRoute} from '../utils/routes';
 import {setDockVisible} from '../utils/dock';
 
-interface KapWindowOptions<State> extends Electron.BrowserWindowConstructorOptions {
+type KapWindowOptions<State> = {
   route: string;
   waitForMount?: boolean;
   initialState?: State;
   menu?: MenuModifier;
   dock?: boolean;
-}
+} & Electron.BrowserWindowConstructorOptions;
 
 // Compatibility path for legacy windows that have not migrated to KapWindow.
 app.on('browser-window-focus', (_, window) => {
@@ -27,7 +29,7 @@ export default class KapWindow<State = any> {
   static defaultOptions: Partial<KapWindowOptions<any>> = {
     waitForMount: true,
     dock: false,
-    menu: defaultMenu => defaultMenu
+    menu: defaultMenu => defaultMenu,
   };
 
   private static readonly windows = new Map<number, KapWindow>();
@@ -55,9 +57,9 @@ export default class KapWindow<State = any> {
         contextIsolation: true,
         nodeIntegration: false,
         preload: path.join(__dirname, '..', 'preload.js'),
-        ...rest.webPreferences
+        ...rest.webPreferences,
       },
-      show: false
+      show: false,
     });
 
     this.id = this.browserWindow.id;
@@ -66,7 +68,7 @@ export default class KapWindow<State = any> {
     this.cleanupMethods = [];
     this.options = {
       ...KapWindow.defaultOptions,
-      ...props
+      ...props,
     };
 
     this.state = initialState;
@@ -75,7 +77,7 @@ export default class KapWindow<State = any> {
   }
 
   static getAllWindows() {
-    return [...this.windows.values()];
+    return this.windows.values().toArray();
   }
 
   static fromId(id: number) {
@@ -83,10 +85,10 @@ export default class KapWindow<State = any> {
   }
 
   private static hideDockIfUnused() {
-    const hasVisibleDockWindow = [...KapWindow.windows.values()].some(window =>
-      window.options.dock &&
-      !window.browserWindow.isDestroyed() &&
-      window.browserWindow.isVisible()
+    const hasVisibleDockWindow = this.windows.values().some(window =>
+      window.options.dock
+      && !window.browserWindow.isDestroyed()
+      && window.browserWindow.isVisible(),
     );
 
     if (!hasVisibleDockWindow) {
@@ -106,9 +108,7 @@ export default class KapWindow<State = any> {
     }
   };
 
-  callRenderer = async <T, R>(channel: string, data?: T) => {
-    return ipc.callRenderer<T, R>(this.browserWindow, channel, data);
-  };
+  callRenderer = async <T, R>(channel: string, data?: T) => ipc.callRenderer<T, R>(this.browserWindow, channel, data);
 
   answerRenderer = <T, R>(channel: string, callback: (data: T, window: electron.BrowserWindow) => R) => {
     this.cleanupMethods.push(ipc.answerRenderer(this.browserWindow, channel, callback));
@@ -117,19 +117,17 @@ export default class KapWindow<State = any> {
   setState = (partialState: State) => {
     this.state = {
       ...this.state,
-      ...partialState
+      ...partialState,
     };
 
     this.callRenderer('kap-window-state', this.state);
   };
 
-  whenReady = async () => {
-    return this.readyPromise;
-  };
+  whenReady = async () => this.readyPromise;
 
   private readonly generateMenu = () => {
     this.menu = Menu.buildFromTemplate(
-      customApplicationMenu(this.options.menu!)
+      customApplicationMenu(this.options.menu!),
     );
   };
 

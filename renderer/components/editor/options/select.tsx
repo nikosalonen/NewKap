@@ -1,7 +1,7 @@
-import {DropdownArrowIcon, CancelIcon} from '../../../vectors';
+import type {MenuItemConstructorOptions} from 'electron';
 import classNames from 'classnames';
 import {useRef} from 'react';
-import type {MenuItemConstructorOptions} from 'electron';
+import {DropdownArrowIcon, CancelIcon} from '../../../vectors';
 import {popupMenu} from '../../../utils/menu-actions';
 
 type Option<T> = {
@@ -26,18 +26,19 @@ export type Separator = {
   separator: true;
 };
 
-interface Props<T> {
+type Props<T> = {
   value?: T;
   options: Array<Option<T> | Separator>;
   onChange: (newValue?: T) => void;
   clearable?: boolean;
   customLabel?: string;
-}
+};
 
-// eslint-disable-next-line @typescript-eslint/comma-dangle
+const noOptions: never[] = [];
+
 const Select = <T, >(props: Props<T>) => {
-  const select = useRef<HTMLDivElement>();
-  const {options = [], value} = props;
+  const selectRef = useRef<HTMLDivElement>();
+  const {options = noOptions, value} = props;
 
   const selectedOption = options.find(opt => opt.value === value);
   const selectedLabel = props.customLabel ?? (selectedOption?.label);
@@ -48,7 +49,7 @@ const Select = <T, >(props: Props<T>) => {
       return;
     }
 
-    const boundingRect = select.current.getBoundingClientRect();
+    const boundingRect = selectRef.current.getBoundingClientRect();
 
     const convertToMenuTemplate = (option: Option<T> | Separator): MenuItemConstructorOptions => {
       if (option.separator) {
@@ -59,7 +60,7 @@ const Select = <T, >(props: Props<T>) => {
         return {
           label: option.label,
           submenu: option.subMenu.map(opt => convertToMenuTemplate(opt)),
-          checked: option.checked
+          checked: option.checked,
         };
       }
 
@@ -70,31 +71,33 @@ const Select = <T, >(props: Props<T>) => {
         click: option.click ?? (() => {
           props.onChange(option.value);
         }),
-        icon: option.icon
+        icon: option.icon,
       };
     };
 
     void popupMenu(options.map(opt => convertToMenuTemplate(opt)), {
       x: Math.round(boundingRect.left),
-      y: Math.round(boundingRect.top)
+      y: Math.round(boundingRect.top),
     });
   };
 
   const handleDropdownClick = event => {
-    if (clearable) {
-      event.stopPropagation();
-      props.onChange();
+    if (!clearable) {
+      return;
     }
+
+    event.stopPropagation();
+    props.onChange();
   };
 
   return (
-    <div ref={select} className="container" onClick={handleClick}>
-      <div className="label">{selectedLabel}</div>
+    <div ref={selectRef} className='container' onClick={handleClick}>
+      <div className='label'>{selectedLabel}</div>
       <div className={classNames({dropdown: true, clearable})} onClick={handleDropdownClick}>
         {
-          clearable ?
-            <CancelIcon size="16px"/> :
-            <DropdownArrowIcon/>
+          clearable
+            ? <CancelIcon size='16px'/>
+            : <DropdownArrowIcon/>
         }
       </div>
       <style jsx>{`

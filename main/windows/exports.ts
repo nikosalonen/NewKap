@@ -19,7 +19,7 @@ const openExportsWindow = async () => {
       transparent: true,
       vibrancy: 'window',
       dock: true,
-      route: 'exports'
+      route: 'exports',
     });
 
     const exportsWindow = exportsKapWindow.browserWindow;
@@ -41,5 +41,5 @@ const getExportsWindow = () => exportsKapWindow?.browserWindow;
 
 windowManager.setExports({
   open: openExportsWindow,
-  get: getExportsWindow
+  get: getExportsWindow,
 });

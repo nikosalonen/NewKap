@@ -1,20 +1,20 @@
-import {GearIcon} from '../../../vectors';
-import OptionsContainer from '../options-container';
-import Select from './select';
-import {ipcRenderer as ipc} from '../../../utils/ipc';
 import useConversionIdContext from 'hooks/editor/use-conversion-id';
 import useEditorWindowState from 'hooks/editor/use-editor-window-state';
-import VideoTimeContainer from '../video-time-container';
-import VideoControlsContainer from '../video-controls-container';
-import VideoMetadataContainer from '../video-metadata-container';
 import useSharePlugins from 'hooks/editor/use-share-plugins';
 import useEditorOptions from 'hooks/editor/use-editor-options';
-import TimelineContainer from '../timeline-container';
 import {useState} from 'react';
+import TimelineContainer from '../timeline-container';
+import VideoMetadataContainer from '../video-metadata-container';
+import VideoControlsContainer from '../video-controls-container';
+import VideoTimeContainer from '../video-time-container';
+import {ipcRenderer as ipc} from '../../../utils/ipc';
+import OptionsContainer from '../options-container';
+import {GearIcon} from '../../../vectors';
+import Select from './select';
 
 const FormatSelect = () => {
   const {formats, format, updateFormat} = OptionsContainer.useContainer();
-  const options = formats.map(format => ({label: format.prettyFormat, value: format.format}));
+  const options = formats.map(item => ({label: item.prettyFormat, value: item.format}));
 
   return <Select options={options} value={format} onChange={updateFormat}/>;
 };
@@ -34,7 +34,7 @@ const EditPluginsControl = () => {
   if (!editPlugin) {
     return (
       <button
-        type="button" className="add-edit-plugin" onClick={() => {
+        type='button' className='add-edit-plugin' onClick={() => {
           setEditPlugin(editServices[0]);
         }}
       >
@@ -71,7 +71,7 @@ const EditPluginsControl = () => {
   const openEditPluginConfig = () => {
     ipc.callMain('open-edit-config', {
       pluginName: editPlugin.pluginName,
-      serviceTitle: editPlugin.title
+      serviceTitle: editPlugin.title,
     });
   };
 
@@ -81,12 +81,12 @@ const EditPluginsControl = () => {
     <>
       {
         editPlugin.hasConfig && (
-          <button type="button" className="add-edit-plugin" onClick={openEditPluginConfig}>
-            <GearIcon fill="#fff" hoverFill="#fff" size="12px"/>
+          <button type='button' className='add-edit-plugin' onClick={openEditPluginConfig}>
+            <GearIcon fill='#fff' hoverFill='#fff' size='12px'/>
           </button>
         )
       }
-      <div className="edit-plugin">
+      <div className='edit-plugin'>
         <Select clearable options={options} value={editPlugin} onChange={setEditPlugin}/>
       </div>
       <style jsx>{`
@@ -160,20 +160,22 @@ const ConvertButton = () => {
           hasAudio,
           clips: isEdited ? clips : undefined,
           shouldCrop,
-          editService: options.editPlugin ? {
-            pluginName: options.editPlugin.pluginName,
-            serviceTitle: options.editPlugin.title
-          } : undefined
+          editService: options.editPlugin
+            ? {
+              pluginName: options.editPlugin.pluginName,
+              serviceTitle: options.editPlugin.title,
+            }
+            : undefined,
         },
         format: options.format,
         plugins: {
-          share: options.sharePlugin
-        }
+          share: options.sharePlugin,
+        },
       });
 
       updatePluginUsage?.({
         format: options.format,
-        plugin: options.sharePlugin.pluginName
+        plugin: options.sharePlugin.pluginName,
       });
     } catch (error) {
       setErrorMessage((error as Error).message || 'Export failed to start.');
@@ -183,11 +185,11 @@ const ConvertButton = () => {
   };
 
   return (
-    <div className="export-action">
-      <button type="button" className="start-export" disabled={isStarting} onClick={onClick}>
+    <div className='export-action'>
+      <button type='button' className='start-export' disabled={isStarting} onClick={onClick}>
         {isStarting ? 'Starting…' : 'Export'}
       </button>
-      {errorMessage && <div className="export-error" role="alert">{errorMessage}</div>}
+      {errorMessage ? <div className='export-error' role='alert'>{errorMessage}</div> : null}
       <style jsx>{`
         .export-action {
           align-items: center;
@@ -235,14 +237,13 @@ const ConvertButton = () => {
   );
 };
 
-const RightOptions = () => {
-  return (
-    <div className="container">
-      <EditPluginsControl/>
-      <div className="format"><FormatSelect/></div>
-      <div className="plugin"><PluginsSelect/></div>
-      <ConvertButton/>
-      <style jsx>{`
+const RightOptions = () => (
+  <div className='container'>
+    <EditPluginsControl/>
+    <div className='format'><FormatSelect/></div>
+    <div className='plugin'><PluginsSelect/></div>
+    <ConvertButton/>
+    <style jsx>{`
           .container {
             height: 100%;
             display: flex;
@@ -267,9 +268,8 @@ const RightOptions = () => {
             margin-right: 8px;
           }
         `}</style>
-    </div>
-  );
-};
+  </div>
+);
 
 export default RightOptions;
 

@@ -3,14 +3,16 @@ import sinon from 'sinon';
 
 const test = ava.serial;
 
+/* eslint-disable @typescript-eslint/naming-convention -- these are classes */
 const CropperContainer = require('../renderer/containers/cropper').default;
 const CursorContainer = require('../renderer/containers/cursor').default;
+/* eslint-enable @typescript-eslint/naming-convention */
 
 const makeSynchronous = (container: any) => {
   container.setState = async (updates: Record<string, unknown>) => {
     container.state = {
       ...container.state,
-      ...updates
+      ...updates,
     };
   };
 
@@ -22,20 +24,20 @@ const setup = () => {
   const cursor = makeSynchronous(new CursorContainer());
   const actionBar = {
     state: {
-      ratioLocked: false
+      ratioLocked: false,
     },
     setInputValues: sinon.fake(),
-    toggleRatioLock: sinon.fake()
+    toggleRatioLock: sinon.fake(),
   };
 
   cropper.settings = {
     get: sinon.fake((_key: string, value: unknown) => value),
-    set: sinon.fake()
+    set: sinon.fake(),
   };
   cropper.remote = {
     getCurrentWindow: () => ({
-      close: sinon.fake()
-    })
+      close: sinon.fake(),
+    }),
   };
   cropper.bindCursor(cursor);
   cropper.bindActionBar(actionBar);
@@ -53,7 +55,7 @@ const setup = () => {
     isReady: true,
     isFullscreen: false,
     selectedApp: '',
-    resizeFromCenter: false
+    resizeFromCenter: false,
   };
 
   return {cropper, cursor, actionBar};
@@ -72,7 +74,7 @@ test('cursor movement without a pressed button does not alter crop bounds', t =>
     width: 200,
     height: 120,
     isMoving: false,
-    isResizing: false
+    isResizing: false,
   });
 });
 
@@ -92,8 +94,8 @@ test('reopening the cropper clears stale drag state but keeps saved selection bo
       y: 50,
       width: 320,
       height: 180,
-      ratio: [16, 9]
-    }
+      ratio: [16, 9],
+    },
   });
 
   t.like(cropper.state, {
@@ -106,7 +108,7 @@ test('reopening the cropper clears stale drag state but keeps saved selection bo
     isPicking: false,
     isPointerDown: false,
     activeGesture: null,
-    currentHandle: null
+    currentHandle: null,
   });
   t.is(cursor.state.observers.length, 0);
 
@@ -115,7 +117,7 @@ test('reopening the cropper clears stale drag state but keeps saved selection bo
     x: 40,
     y: 50,
     width: 320,
-    height: 180
+    height: 180,
   });
 });
 
@@ -132,8 +134,8 @@ test('restored crop does not follow the cursor until a new drag starts', t => {
       y: 50,
       width: 320,
       height: 180,
-      ratio: [16, 9]
-    }
+      ratio: [16, 9],
+    },
   });
 
   cursor.setCursor({pageX: 600, pageY: 500});
@@ -144,7 +146,7 @@ test('restored crop does not follow the cursor until a new drag starts', t => {
     height: 180,
     isMoving: false,
     isResizing: false,
-    isPointerDown: false
+    isPointerDown: false,
   });
 
   cropper.startMoving({button: 0, pageX: 50, pageY: 60});
@@ -152,7 +154,7 @@ test('restored crop does not follow the cursor until a new drag starts', t => {
   t.like(cropper.state, {
     x: 60,
     y: 80,
-    isMoving: true
+    isMoving: true,
   });
 });
 
@@ -168,12 +170,14 @@ test('dragging only begins after a valid press on the crop area or resize handle
   t.like(cropper.state, {x: 130, y: 130});
 
   cropper.endInteraction('pointer-up');
-  cropper.startResizing({right: true, left: false, top: false, bottom: false}, {button: 0});
+  cropper.startResizing({
+    right: true, left: false, top: false, bottom: false,
+  }, {button: 0});
   cursor.setCursor({pageX: 360, pageY: 250});
   t.like(cropper.state, {
     width: 230,
     isResizing: true,
-    activeGesture: 'resizing'
+    activeGesture: 'resizing',
   });
 });
 
@@ -188,7 +192,7 @@ test('releasing outside the overlay ends the active interaction', t => {
   t.like(cropper.state, {
     isMoving: false,
     isPointerDown: false,
-    activeGesture: null
+    activeGesture: null,
   });
   t.is(cursor.state.observers.length, 0);
 
@@ -204,11 +208,23 @@ test('rapid close and reopen does not duplicate cursor observers', t => {
   t.is(cursor.state.observers.length, 1);
 
   cropper.resetInteractionState('close');
-  cropper.setDisplay({id: 1, width: 800, height: 600, isActive: true, cropper: {x: 100, y: 100, width: 200, height: 120}});
-  cropper.setDisplay({id: 1, width: 800, height: 600, isActive: true, cropper: {x: 100, y: 100, width: 200, height: 120}});
+  cropper.setDisplay({
+    id: 1, width: 800, height: 600, isActive: true, cropper: {
+      x: 100, y: 100, width: 200, height: 120,
+    },
+  });
+  cropper.setDisplay({
+    id: 1, width: 800, height: 600, isActive: true, cropper: {
+      x: 100, y: 100, width: 200, height: 120,
+    },
+  });
   t.is(cursor.state.observers.length, 0);
 
-  cropper.startResizing({right: true, left: false, top: false, bottom: false}, {button: 0});
-  cropper.startResizing({right: true, left: false, top: false, bottom: false}, {button: 0});
+  cropper.startResizing({
+    right: true, left: false, top: false, bottom: false,
+  }, {button: 0});
+  cropper.startResizing({
+    right: true, left: false, top: false, bottom: false,
+  }, {button: 0});
   t.is(cursor.state.observers.length, 1);
 });

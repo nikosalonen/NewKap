@@ -1,14 +1,14 @@
-import React, {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 
 const Actions = ({buttons, performAction, defaultId}) => {
   const [activeButton, setActiveButton] = useState();
-  const defaultButton = useRef(null);
+  const defaultButtonRef = useRef(null);
 
   useEffect(() => {
     setActiveButton();
-    if (defaultButton.current) {
-      defaultButton.current.focus();
+    if (defaultButtonRef.current) {
+      defaultButtonRef.current.focus();
     }
   }, [buttons]);
 
@@ -18,13 +18,13 @@ const Actions = ({buttons, performAction, defaultId}) => {
   };
 
   return (
-    <div className="container">
+    <div className='container'>
       {
         buttons.map((button, index) => (
           <button
-            ref={index === defaultId ? defaultButton : undefined}
+            ref={index === defaultId ? defaultButtonRef : undefined}
             key={button.label}
-            type="button"
+            type='button'
             disabled={index === activeButton}
             onClick={async () => action(index)}
           >
@@ -65,7 +65,7 @@ const Actions = ({buttons, performAction, defaultId}) => {
 Actions.propTypes = {
   performAction: PropTypes.elementType,
   defaultId: PropTypes.number,
-  buttons: PropTypes.arrayOf(PropTypes.object)
+  buttons: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default Actions;

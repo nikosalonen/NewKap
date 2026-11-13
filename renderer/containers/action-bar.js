@@ -13,25 +13,22 @@ export default class ActionBarContainer extends Container {
     this.settings = kap.settings;
     this.state = {
       cropperWidth: '',
-      cropperHeight: ''
+      cropperHeight: '',
     };
   }
 
   setInputValues = ({width, height}) => {
     this.setState({
       cropperWidth: width ? width.toString() : '',
-      cropperHeight: height ? height.toString() : ''
+      cropperHeight: height ? height.toString() : '',
     });
   };
-
   setWidth = cropperWidth => {
     this.setState({cropperWidth});
   };
-
   setHeight = cropperHeight => {
     this.setState({cropperHeight});
   };
-
   setDisplay = display => {
     const {width, height, cropper} = display;
     const {x, y, ratioLocked} = cropper ? this.settings.get('actionBar') : {};
@@ -47,10 +44,9 @@ export default class ActionBarContainer extends Container {
       y: clamp(parsedY, 0, Math.max(0, height - barHeight)),
       width: barWidth,
       height: barHeight,
-      ratioLocked
+      ratioLocked,
     });
   };
-
   resetPosition = () => {
     const {screenWidth, screenHeight} = this.state;
 
@@ -58,18 +54,15 @@ export default class ActionBarContainer extends Container {
       x: (screenWidth - barWidth) / 2,
       y: Math.ceil(screenHeight * 0.8),
       width: barWidth,
-      height: barHeight
+      height: barHeight,
     });
   };
-
   bindCursor = cursorContainer => {
     this.cursorContainer = cursorContainer;
   };
-
   bindCropper = cropperContainer => {
     this.cropperContainer = cropperContainer;
   };
-
   updateSettings = updates => {
     const {x, y, ratioLocked} = this.state;
 
@@ -77,11 +70,10 @@ export default class ActionBarContainer extends Container {
       x,
       y,
       ratioLocked,
-      ...updates
+      ...updates,
     });
     this.setState(updates);
   };
-
   toggleRatioLock = ratioLocked => {
     const {ratioLocked: isLocked} = this.state;
     if (ratioLocked) {
@@ -92,29 +84,30 @@ export default class ActionBarContainer extends Container {
 
     this.cropperContainer.setOriginal();
   };
-
   toggleAdvanced = () => {
-    if (!this.cropperContainer.state.isFullscreen) {
-      const {advanced, screenWidth} = this.state;
-      this.updateSettings({advanced: !advanced});
-
-      if (!advanced) {
-        const width = screenWidth * 0.2;
-        const height = width * 0.75; // 4:3
-        this.cropperContainer.setSize({
-          width,
-          height
-        });
-      }
+    if (this.cropperContainer.state.isFullscreen) {
+      return;
     }
-  };
 
+    const {advanced, screenWidth} = this.state;
+    this.updateSettings({advanced: !advanced});
+
+    if (advanced) {
+      return;
+    }
+
+    const width = screenWidth * 0.2;
+    const height = width * 0.75; // 4:3
+    this.cropperContainer.setSize({
+      width,
+      height,
+    });
+  };
   startMoving = ({pageX, pageY}) => {
     this.setState({isMoving: true, offsetX: pageX, offsetY: pageY});
     this.cursorContainer.addCursorObserver(this.move);
-    window.addEventListener('mouseup', this.stopMoving, {once: true});
+    addEventListener('mouseup', this.stopMoving, {once: true});
   };
-
   stopMoving = () => {
     if (!this.state.isMoving) {
       return;
@@ -124,24 +117,19 @@ export default class ActionBarContainer extends Container {
     this.updateSettings({x, y});
     this.setState({isMoving: false});
     this.cursorContainer.removeCursorObserver(this.move);
-    window.removeEventListener('mouseup', this.stopMoving);
+    removeEventListener('mouseup', this.stopMoving);
   };
-
   move = ({pageX, pageY}) => {
     const {x, y, offsetX, offsetY, height, width, screenWidth, screenHeight} = this.state;
 
+    const newX = x + pageX - offsetX;
+    const newY = y + pageY - offsetY;
     const updates = {
       offsetX: pageX,
-      offsetY: pageY
+      offsetY: pageY,
+      ...((newY + height <= screenHeight && newY >= 0) && {y: newY}),
+      ...((newX + width <= screenWidth && newX >= 0) && {x: newX}),
     };
-
-    if (y + pageY - offsetY + height <= screenHeight && y + pageY - offsetY >= 0) {
-      updates.y = y + pageY - offsetY;
-    }
-
-    if (x + pageX - offsetX + width <= screenWidth && x + pageX - offsetX >= 0) {
-      updates.x = x + pageX - offsetX;
-    }
 
     this.setState(updates);
   };

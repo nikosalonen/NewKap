@@ -1,8 +1,8 @@
 'use strict';
 
-const {execFileSync} = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const {execFileSync} = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // First four bytes of Mach-O files: 64-bit and 32-bit binaries in either byte order, and universal (fat) binaries.
 const machOMagicNumbers = new Set([
@@ -13,7 +13,7 @@ const machOMagicNumbers = new Set([
   0xCA_FE_BA_BE,
   0xBE_BA_FE_CA,
   0xCA_FE_BA_BF,
-  0xBF_BA_FE_CA
+  0xBF_BA_FE_CA,
 ]);
 
 const isMachO = file => {
@@ -59,22 +59,28 @@ const keepOnlyArm64 = appDirectory => {
   const thinned = [];
   const missingArm64 = [];
 
-  for (const file of listFiles(appDirectory).filter(file => isMachO(file))) {
+  for (const file of listFiles(appDirectory)) {
+    if (!isMachO(file)) {
+      continue;
+    }
+
     const architectures = getArchitectures(file);
 
     if (!architectures) {
       continue;
     }
 
-    if (!architectures.some(architecture => architecture.startsWith('arm64'))) {
+    if (architectures.every(architecture => !architecture.startsWith('arm64'))) {
       missingArm64.push(file);
       continue;
     }
 
-    if (architectures.includes('arm64') && architectures.length > 1) {
-      thinToArm64(file);
-      thinned.push(file);
+    if (!(architectures.includes('arm64') && architectures.length > 1)) {
+      continue;
     }
+
+    thinToArm64(file);
+    thinned.push(file);
   }
 
   return {thinned, missingArm64};

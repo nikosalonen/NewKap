@@ -41,7 +41,7 @@ A share service lets you add an entry to the export menu in the Kap editor windo
 
 <img src="https://cloud.githubusercontent.com/assets/170270/26560296/8ac42740-44df-11e7-88f5-46f8483ffea1.jpg" width="1024">
 
-```
+```text
 | Save to Disk      |
 | Upload to Dropbox |
 | Share on GIPHY    |

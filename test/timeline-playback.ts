@@ -6,14 +6,20 @@ import {
   getTimelineTimeForClipSourceTime,
   getTimelineTimeForClipStart,
   snapTimelineTime,
-  trimClipAtTimelineTime
+  trimClipAtTimelineTime,
 } from '../main/common/timeline';
-import {TimelineClip} from '../main/common/types';
+import type {TimelineClip} from '../main/common/types';
 
 const clips: TimelineClip[] = [
-  {id: 'first', startTime: 0, endTime: 2, speed: 1, brightness: 0, contrast: 1, saturation: 1},
-  {id: 'selected', startTime: 2, endTime: 4, speed: 1, brightness: 0, contrast: 1, saturation: 1},
-  {id: 'last', startTime: 4, endTime: 8, speed: 1, brightness: 0, contrast: 1, saturation: 1}
+  {
+    id: 'first', startTime: 0, endTime: 2, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+  },
+  {
+    id: 'selected', startTime: 2, endTime: 4, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+  },
+  {
+    id: 'last', startTime: 4, endTime: 8, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+  },
 ];
 
 test('timeline duration includes clips after the selected clip', t => {
@@ -43,8 +49,10 @@ test('timeline boundary lookup treats adjacent clips as first-class items', t =>
 test('freeze frame timeline positions advance while source frame stays fixed', t => {
   const freezeClips: TimelineClip[] = [
     clips[0],
-    {id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1.25, speed: 1, brightness: 0, contrast: 1, saturation: 1},
-    clips[2]
+    {
+      id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1.25, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+    },
+    clips[2],
   ];
 
   const midway = getPlaybackPositionAtTimelineTime(freezeClips, 2.75);
@@ -69,20 +77,20 @@ test('timeline snapping uses clip starts, clip ends, and full timeline bounds', 
   t.deepEqual(nearClipBoundary, {
     time: 4,
     snapped: true,
-    snapPoint: 4
+    snapPoint: 4,
   });
 
   const nearTimelineStart = snapTimelineTime(0.03, clips, 800, 8);
   t.deepEqual(nearTimelineStart, {
     time: 0,
     snapped: true,
-    snapPoint: 0
+    snapPoint: 0,
   });
 
   const intentionalNonSnap = snapTimelineTime(3.8, clips, 800, 8);
   t.deepEqual(intentionalNonSnap, {
     time: 3.8,
-    snapped: false
+    snapped: false,
   });
 });
 
@@ -97,9 +105,9 @@ test('clip trim handles update in and out points from timeline drag time', t => 
     clipId: 'selected',
     edge: 'end',
     requestedTime: 3.5,
-    mediaDuration: 8
+    mediaDuration: 8,
   }), {
-    endTime: 3.5
+    endTime: 3.5,
   });
 
   t.deepEqual(trimClipAtTimelineTime({
@@ -107,17 +115,19 @@ test('clip trim handles update in and out points from timeline drag time', t => 
     clipId: 'selected',
     edge: 'start',
     requestedTime: 2.5,
-    mediaDuration: 8
+    mediaDuration: 8,
   }), {
-    startTime: 2.5
+    startTime: 2.5,
   });
 });
 
 test('freeze frame trim keeps the clip editable as a freeze clip', t => {
   const freezeClips: TimelineClip[] = [
     clips[0],
-    {id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1, speed: 1, brightness: 0, contrast: 1, saturation: 1},
-    clips[2]
+    {
+      id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+    },
+    clips[2],
   ];
 
   t.deepEqual(trimClipAtTimelineTime({
@@ -125,9 +135,9 @@ test('freeze frame trim keeps the clip editable as a freeze clip', t => {
     clipId: 'freeze',
     edge: 'end',
     requestedTime: 2.05,
-    mediaDuration: 8
+    mediaDuration: 8,
   }), {
-    freezeDuration: 0.1
+    freezeDuration: 0.1,
   });
 
   t.is(getPlaybackPositionAtTimelineTime(freezeClips, 2)?.sourceTime, 2);

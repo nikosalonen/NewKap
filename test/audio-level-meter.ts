@@ -27,7 +27,7 @@ class FakeAudioContext {
     return {
       connect: sinon.fake(),
       frequencyBinCount: 4,
-      getByteFrequencyData: (levels: Uint8Array) => levels.fill(40)
+      getByteFrequencyData: (levels: Uint8Array) => levels.fill(40),
     };
   }
 
@@ -45,20 +45,25 @@ const givenMicrophone = () => {
   const track = {stop: sinon.fake()};
   const stream = {getTracks: () => [track]};
   let openMicrophone: (stream: unknown) => void = () => undefined;
-  const getUserMedia = sinon.fake(async () => new Promise(resolve => {
+  const getUserMedia = sinon.fake(async () => {
+    const {promise, resolve} = Promise.withResolvers<unknown>();
     openMicrophone = resolve;
-  }));
+    return promise;
+  });
 
-  Object.defineProperty(globalThis, 'navigator', {value: {mediaDevices: {getUserMedia}}, configurable: true, writable: true});
-  (globalThis as any).AudioContext = FakeAudioContext;
+  Object.defineProperties(globalThis, {
+    navigator: {value: {mediaDevices: {getUserMedia}}, configurable: true, writable: true},
+    // eslint-disable-next-line @typescript-eslint/naming-convention -- the browser global's name
+    AudioContext: {value: FakeAudioContext, configurable: true, writable: true},
+  });
 
   return {
     track,
     getUserMedia,
-    open: async () => {
+    async open() {
       openMicrophone(stream);
       await flushPromises();
-    }
+    },
   };
 };
 

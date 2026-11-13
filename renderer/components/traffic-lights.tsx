@@ -1,14 +1,15 @@
-import {useState, useEffect, FunctionComponent} from 'react';
+import {useState, useEffect} from 'react';
+import type {FunctionComponent} from 'react';
 import kap from '../utils/kap';
 
-interface TrafficLightsProps {
+type TrafficLightsProps = {
   shouldClose?: () => PromiseLike<boolean>;
-}
+};
 
 const normalizeCapabilities = capabilities => ({
   close: capabilities.close ?? capabilities.closable ?? true,
   minimize: capabilities.minimize ?? capabilities.minimizable ?? true,
-  maximize: capabilities.maximize ?? capabilities.maximizable ?? true
+  maximize: capabilities.maximize ?? capabilities.maximizable ?? true,
 });
 
 const TrafficLights: FunctionComponent<TrafficLightsProps> = props => {
@@ -16,7 +17,7 @@ const TrafficLights: FunctionComponent<TrafficLightsProps> = props => {
   const [enabled, setEnabled] = useState({
     close: true,
     minimize: true,
-    maximize: true
+    maximize: true,
   });
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const TrafficLights: FunctionComponent<TrafficLightsProps> = props => {
     };
   }, []);
 
-  const getClassName = (name: string) => `traffic-light ${name}${enabled[name] ? '' : ' disabled'}`;
+  const getClassName = (name: string) => `traffic-light ${name}${enabled[name] === true ? '' : ' disabled'}`;
 
   const close = async () => {
     if (!props.shouldClose || await props.shouldClose()) {
@@ -56,23 +57,23 @@ const TrafficLights: FunctionComponent<TrafficLightsProps> = props => {
   return (
     <div className={`traffic-lights ${tint}`}>
       <div className={getClassName('close')} onClick={close}>
-        <svg width="12" height="12">
-          <circle cx="6" cy="6" r="5.75" strokeWidth="0.5"/>
-          <line x1="3.17" y1="3.17" x2="8.83" y2="8.83" stroke="black"/>
-          <line x1="3.17" y1="8.83" x2="8.83" y2="3.17" stroke="#760e0e"/>
+        <svg width='12' height='12'>
+          <circle cx='6' cy='6' r='5.75' strokeWidth='0.5'/>
+          <line x1='3.17' y1='3.17' x2='8.83' y2='8.83' stroke='black'/>
+          <line x1='3.17' y1='8.83' x2='8.83' y2='3.17' stroke='#760e0e'/>
         </svg>
       </div>
       <div className={getClassName('minimize')} onClick={minimize}>
-        <svg width="12" height="12">
-          <circle cx="6" cy="6" r="5.75" strokeWidth="0.5"/>
-          <line x1="2" y1="6" x2="10" y2="6"/>
+        <svg width='12' height='12'>
+          <circle cx='6' cy='6' r='5.75' strokeWidth='0.5'/>
+          <line x1='2' y1='6' x2='10' y2='6'/>
         </svg>
       </div>
       <div className={getClassName('maximize')} onClick={maximize}>
-        <svg width="12" height="12">
-          <circle cx="6" cy="6" r="5.75" strokeWidth="0.5"/>
-          <rect x="3.5" y="3.5" width="5" height="5" rx="1" ry="1"/>
-          <rect className="background-rect" x="5.5" y="1.5" width="1" height="9" transform="rotate(-45 6 6)"/>
+        <svg width='12' height='12'>
+          <circle cx='6' cy='6' r='5.75' strokeWidth='0.5'/>
+          <rect x='3.5' y='3.5' width='5' height='5' rx='1' ry='1'/>
+          <rect className='background-rect' x='5.5' y='1.5' width='1' height='9' transform='rotate(-45 6 6)'/>
         </svg>
       </div>
       <style jsx>{`

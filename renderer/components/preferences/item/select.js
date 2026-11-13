@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
 import {DropdownArrowIcon} from '../../../vectors';
 import {handleKeyboardActivation} from '../../../utils/inputs';
 import {popupMenu} from '../../../utils/menu-actions';
@@ -9,7 +8,7 @@ class Select extends React.Component {
   static defaultProps = {
     options: [],
     placeholder: 'Select',
-    noOptionsMessage: 'No options'
+    noOptionsMessage: 'No options',
   };
 
   constructor(props) {
@@ -31,40 +30,44 @@ class Select extends React.Component {
         label: option.label,
         type: 'radio',
         checked: option.value === selected,
-        click: () => onSelect(option.value)
-      }))
+        click: () => onSelect(option.value),
+      })),
     };
   }
 
   handleClick = () => {
-    if (this.props.options.length > 0) {
-      const boundingRect = this.select.current.getBoundingClientRect();
-
-      popupMenu(this.state.menuTemplate, {
-        x: Math.round(boundingRect.left),
-        y: Math.round(boundingRect.top)
-      });
+    if (this.props.options.length === 0) {
+      return;
     }
+
+    const boundingRect = this.select.current.getBoundingClientRect();
+
+    popupMenu(this.state.menuTemplate, {
+      x: Math.round(boundingRect.left),
+      y: Math.round(boundingRect.top),
+    });
   };
 
   render() {
     const {options, selected, placeholder, noOptionsMessage, tabIndex, full} = this.props;
 
-    const selectedLabel = options.length === 0 ? noOptionsMessage : (
-      selected === undefined ? placeholder : options.find(option => option.value === selected).label
-    );
+    const selectedLabel = options.length === 0
+      ? noOptionsMessage
+      : (
+        selected === undefined ? placeholder : options.find(option => option.value === selected).label
+      );
 
     return (
       <div
         ref={this.select}
         tabIndex={tabIndex}
-        className="select"
+        className='select'
         onClick={this.handleClick}
         onKeyDown={handleKeyboardActivation(this.handleClick, {isMenu: true})}
       >
         <span>{selectedLabel}</span>
-        <div className="dropdown">
-          <DropdownArrowIcon size="15px"/>
+        <div className='dropdown'>
+          <DropdownArrowIcon size='15px'/>
         </div>
         <style jsx>{`
           .select {
@@ -121,14 +124,14 @@ class Select extends React.Component {
 Select.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({
     label: PropTypes.string,
-    value: PropTypes.any
+    value: PropTypes.any,
   })),
   onSelect: PropTypes.elementType.isRequired,
   selected: PropTypes.any,
   placeholder: PropTypes.string,
   noOptionsMessage: PropTypes.string,
   tabIndex: PropTypes.number.isRequired,
-  full: PropTypes.bool
+  full: PropTypes.bool,
 };
 
 export default Select;

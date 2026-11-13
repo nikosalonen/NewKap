@@ -5,42 +5,42 @@ const unavailable = {
   app: {
     getInfo: () => ({isPackaged: false, name: 'Kap', version: '0.0.0'}),
     getLoginItemSettings: async () => ({openAtLogin: false}),
-    setLoginItemSettings: asyncNoop
+    setLoginItemSettings: asyncNoop,
   },
   cropper: {
     captureScreenshot: asyncNoop,
     controlsReady: noop,
-    startRecording: asyncNoop
+    startRecording: asyncNoop,
   },
   dialog: {
     showMessageBox: asyncNoop,
     showMessageBoxSync: () => 1,
-    showOpenDialogSync: () => undefined
+    showOpenDialogSync: () => undefined,
   },
   flags: {
     get: () => false,
-    set: asyncNoop
+    set: asyncNoop,
   },
   ipc: {
     answerMain: () => noop,
     callMain: asyncNoop,
     on: () => noop,
-    send: noop
+    send: noop,
   },
   menu: {
     popup: asyncNoop,
     popupCog: asyncNoop,
-    popupWindows: asyncNoop
+    popupWindows: asyncNoop,
   },
   permissions: {
-    ensureMicrophonePermissions: async () => false
+    ensureMicrophonePermissions: async () => false,
   },
   pluginConfig: {
     delete: asyncNoop,
     load: async () => ({values: {}, validators: []}),
     openInEditor: asyncNoop,
     set: asyncNoop,
-    viewOnGithub: asyncNoop
+    viewOnGithub: asyncNoop,
   },
   plugins: {
     getFromNpm: async () => [],
@@ -48,18 +48,18 @@ const unavailable = {
     getPluginsDir: async () => '',
     install: asyncNoop,
     openPluginConfig: asyncNoop,
-    uninstall: asyncNoop
+    uninstall: asyncNoop,
   },
   settings: {
     get: (_key: string, defaultValue?: any) => defaultValue,
     getAll: () => ({}),
     getSelectedInputDeviceId: () => undefined,
     onDidChange: () => noop,
-    set: asyncNoop
+    set: asyncNoop,
   },
   shell: {
     openExternal: asyncNoop,
-    openPath: asyncNoop
+    openPath: asyncNoop,
   },
   system: {
     getAudioDevices: async () => [],
@@ -70,20 +70,22 @@ const unavailable = {
     onAccentColorChanged: () => noop,
     onAquaColorVariantChanged: () => noop,
     onNativeThemeUpdated: () => noop,
-    shouldUseDarkColors: () => false
+    shouldUseDarkColors: () => false,
   },
   updater: {
-    check: asyncNoop
+    check: asyncNoop,
   },
   window: {
     close: asyncNoop,
     getCapabilities: async () => ({closable: true, maximizable: true, minimizable: true}),
-    getEditorBounds: async () => ({x: 0, y: 0, width: 768, height: 480}),
+    getEditorBounds: async () => ({
+      x: 0, y: 0, width: 768, height: 480,
+    }),
     minimize: asyncNoop,
     setEditorConversionMode: asyncNoop,
     setIgnoreMouseEvents: asyncNoop,
-    toggleFullScreen: asyncNoop
-  }
+    toggleFullScreen: asyncNoop,
+  },
 };
 
 const kap = (globalThis as any).kap ?? unavailable;

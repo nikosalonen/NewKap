@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {ipcRenderer as ipc} from '../../../utils/ipc';
-
 import {connect, PreferencesContainer} from '../../../containers';
-
 import General from './general';
 import Keybinds from './keybinds';
 import Plugins from './plugins';
@@ -11,14 +9,14 @@ import Plugins from './plugins';
 const CATEGORIES = [
   {
     name: 'general',
-    Component: General
+    Component: General,
   }, {
     name: 'keybinds',
-    Component: Keybinds
+    Component: Keybinds,
   }, {
     name: 'plugins',
-    Component: Plugins
-  }
+    Component: Plugins,
+  },
 ];
 
 class Categories extends React.Component {
@@ -35,13 +33,13 @@ class Categories extends React.Component {
     const index = CATEGORIES.findIndex(({name}) => name === category);
 
     return (
-      <div className="categories-container">
-        <div className="switcher"/>
+      <div className='categories-container'>
+        <div className='switcher'/>
         {
           CATEGORIES.map(
             ({name, Component}) => (
               <Component key={name}/>
-            )
+            ),
           )
         }
         <style jsx>{`
@@ -64,10 +62,10 @@ class Categories extends React.Component {
 
 Categories.propTypes = {
   category: PropTypes.string,
-  isMounted: PropTypes.bool
+  isMounted: PropTypes.bool,
 };
 
 export default connect(
   [PreferencesContainer],
-  ({category, isMounted}) => ({category, isMounted})
+  ({category, isMounted}) => ({category, isMounted}),
 )(Categories);

@@ -2,15 +2,16 @@ import {hasMicrophoneAccess} from '../common/system-permissions';
 import {settings} from '../common/settings';
 import {defaultInputDeviceId} from '../common/constants';
 import {getAudioInputs, getAudioInputsSync} from './native-helper';
+
 const aperture = require('aperture');
 
 let cachedDevices: Array<{id: string; name: string}> | undefined;
 let cacheTimestamp = 0;
-const CACHE_TTL_MS = 10000;
+const CACHE_TTL_MS = 10_000;
 
 let cachedDefaultDeviceId: string | undefined;
 let defaultDeviceCacheTimestamp = 0;
-const DEFAULT_DEVICE_CACHE_TTL = 30000;
+const DEFAULT_DEVICE_CACHE_TTL = 30_000;
 
 const setCachedDefaultDeviceId = (deviceId: string | undefined) => {
   cachedDefaultDeviceId = deviceId;
@@ -63,7 +64,7 @@ export const getDefaultInputDevice = () => {
     setCachedDefaultDeviceId(device.id);
     return {
       id: device.id,
-      name: device.name
+      name: device.name,
     };
   } catch {
     return undefined;
@@ -72,7 +73,8 @@ export const getDefaultInputDevice = () => {
 
 const getDefaultInputDeviceId = async () => {
   try {
-    return (await getAudioInputs()).defaultId;
+    const {defaultId} = await getAudioInputs();
+    return defaultId;
   } catch {
     return undefined;
   }
@@ -86,14 +88,15 @@ export const getCachedAudioDeviceId = () => {
   const audioInputDeviceId = settings.get('audioInputDeviceId', defaultInputDeviceId);
 
   if (audioInputDeviceId === defaultInputDeviceId) {
-    if (cachedDefaultDeviceId && (Date.now() - defaultDeviceCacheTimestamp) < DEFAULT_DEVICE_CACHE_TTL) {
-      return cachedDefaultDeviceId;
-    }
-
-    return undefined;
+    return cachedDefaultDeviceId && (Date.now() - defaultDeviceCacheTimestamp) < DEFAULT_DEVICE_CACHE_TTL ? cachedDefaultDeviceId : undefined;
   }
 
   return audioInputDeviceId;
+};
+
+const getFirstAudioDeviceId = async () => {
+  const [firstDevice] = await getAudioDevices();
+  return firstDevice?.id;
 };
 
 export const getRecordingAudioDeviceId = async () => {
@@ -111,7 +114,7 @@ export const getRecordingAudioDeviceId = async () => {
     return audioInputDeviceId;
   }
 
-  const deviceId = await getDefaultInputDeviceId() ?? (await getAudioDevices())[0]?.id;
+  const deviceId = await getDefaultInputDeviceId() ?? await getFirstAudioDeviceId();
   setCachedDefaultDeviceId(deviceId);
   return deviceId;
 };
@@ -134,10 +137,10 @@ export const initializeDevices = async () => {
     if (hasMicrophoneAccess()) {
       const [devices] = await Promise.all([
         getAudioDevices(),
-        getRecordingAudioDeviceId()
+        getRecordingAudioDeviceId(),
       ]);
 
-      if (!devices.some((device: any) => device.id === audioInputDeviceId)) {
+      if (devices.every((device: any) => device.id !== audioInputDeviceId)) {
         settings.set('audioInputDeviceId', defaultInputDeviceId);
       }
     }

@@ -1,35 +1,42 @@
 import {ipcMain, dialog, app} from 'electron';
-import {EventEmitter} from 'events';
-import PCancelable, {CancelError, OnCancelFunction} from 'p-cancelable';
+import {EventEmitter} from 'node:events';
+import path from 'node:path';
+import PCancelable from 'p-cancelable';
+import type {CancelError, OnCancelFunction} from 'p-cancelable';
+import {ipcMain as ipc} from 'electron-better-ipc';
+import type TypedEventEmitter from 'typed-emitter';
 import Conversion from './conversion';
-import {InstalledPlugin} from './plugins/plugin';
-import {ShareService} from './plugins/service';
+import type {InstalledPlugin} from './plugins/plugin';
+import type {ShareService} from './plugins/service';
 import {ShareServiceContext} from './plugins/service-context';
 import {prettifyFormat} from './utils/formats';
-import {ipcMain as ipc} from 'electron-better-ipc';
 import {setExportMenuItemState} from './menus/utils';
 import {Video} from './video';
-import {ConversionOptions, ExportState, ExportStatus, Format, CreateExportOptions} from './common/types';
+import {
+
+  ExportStatus,
+  Format,
+
+} from './common/types';
+import type {ConversionOptions, ExportState, CreateExportOptions} from './common/types';
 import {showError} from './utils/errors';
-import TypedEventEmitter from 'typed-emitter';
 import {plugins} from './plugins';
 import {askForTargetFilePath} from './plugins/built-in/save-file-plugin';
-import path from 'path';
 import {windowManager} from './windows/manager';
 
-export interface ExportOptions {
+export type ExportOptions = {
   plugin: InstalledPlugin;
   service: ShareService;
   extras: Record<string, unknown>;
   title?: string;
-}
+};
 
 export default class Export extends (EventEmitter as new () => TypedEventEmitter<ExportEvents>) {
   static exportsMap = new Map<string, Export>();
   static events = new EventEmitter() as TypedEventEmitter<ExportsEvents>;
 
   static get all() {
-    return [...this.exportsMap.values()];
+    return this.exportsMap.values().toArray();
   }
 
   readonly createdAt: number = Date.now();
@@ -72,9 +79,8 @@ export default class Export extends (EventEmitter as new () => TypedEventEmitter
     public readonly video: Video,
     private readonly format: Format,
     private readonly conversionOptions: ConversionOptions,
-    private readonly options: ExportOptions
+    private readonly options: ExportOptions,
   ) {
-    // eslint-disable-next-line constructor-super
     super();
     Export.addExport(this);
     video.generatePreviewImage();
@@ -88,7 +94,7 @@ export default class Export extends (EventEmitter as new () => TypedEventEmitter
       defaultFileName: this.title,
       filePath: this.filePath,
       onProgress: this.onProgress,
-      onCancel: this.cancel
+      onCancel: this.cancel,
     });
 
     // Used for built-in plugins like save-to-disk
@@ -144,7 +150,7 @@ export default class Export extends (EventEmitter as new () => TypedEventEmitter
       error: this.error,
       fileSize: this.conversion?.finalSize,
       disableOutputActions: this.areOutputActionsDisabled,
-      canPreviewExport: this.canPreviewExport
+      canPreviewExport: this.canPreviewExport,
     };
   }
 
@@ -232,14 +238,14 @@ export default class Export extends (EventEmitter as new () => TypedEventEmitter
   };
 }
 
-interface ExportEvents {
+type ExportEvents = {
   updated: (state: ExportState) => void;
-}
+};
 
-interface ExportsEvents {
+type ExportsEvents = {
   added: (state: ExportState) => void;
   updated: (state: ExportState) => void;
-}
+};
 
 export const setUpExportsListeners = () => {
   ipcMain.on('drag-export', async (event: any, id: string) => {
@@ -249,28 +255,29 @@ export const setUpExportsListeners = () => {
     if (conversion && (await conversion.filePathExists()) && exportMap?.status === ExportStatus.completed) {
       event.sender.startDrag({
         file: exportMap?.finalFilePath ?? conversion.convertedFilePath,
-        icon: await conversion.video.getDragIcon(conversion.options)
+        icon: await conversion.video.getDragIcon(conversion.options),
       });
     }
   });
 
   ipc.answerRenderer('create-export', async ({
-    filePath, conversionOptions, format, plugins: pluginOptions
+    filePath, conversionOptions, format, plugins: pluginOptions,
   }: CreateExportOptions, window) => {
     const video = Video.fromId(filePath);
-    const extras: Record<string, any> = {
-      appUrl: pluginOptions.share.app?.url
-    };
 
     if (!video) {
       throw new Error(`Cannot start export because the source video is unavailable: ${filePath}`);
     }
 
+    const extras: Record<string, any> = {
+      appUrl: pluginOptions.share.app?.url,
+    };
+
     if (pluginOptions.share.pluginName === '_saveToDisk') {
       const targetFilePath = await askForTargetFilePath(
         window,
         format,
-        video.title
+        video.title,
       );
 
       if (targetFilePath) {
@@ -280,13 +287,9 @@ export const setUpExportsListeners = () => {
       }
     }
 
-    const exportPlugin = plugins.sharePlugins.find(plugin => {
-      return plugin.name === pluginOptions.share.pluginName;
-    });
+    const exportPlugin = plugins.sharePlugins.find(plugin => plugin.name === pluginOptions.share.pluginName);
 
-    const exportService = exportPlugin?.shareServices.find(service => {
-      return service.title === pluginOptions.share.serviceTitle;
-    });
+    const exportService = exportPlugin?.shareServices.find(service => service.title === pluginOptions.share.serviceTitle);
 
     if (!exportPlugin || !exportService) {
       throw new Error(`Cannot start export because the ${pluginOptions.share.serviceTitle} export service is unavailable.`);
@@ -300,8 +303,8 @@ export const setUpExportsListeners = () => {
         plugin: exportPlugin,
         service: exportService,
         extras,
-        title: extras.targetFilePath && path.parse(extras.targetFilePath).name
-      }
+        title: extras.targetFilePath && path.parse(extras.targetFilePath).name,
+      },
     );
 
     newExport.start();
@@ -310,24 +313,26 @@ export const setUpExportsListeners = () => {
   });
 
   app.on('before-quit', event => {
-    if (Export.all.some(exp => exp.status === ExportStatus.inProgress)) {
-      windowManager.exports?.open();
+    if (Export.all.every(exp => exp.status !== ExportStatus.inProgress)) {
+      return;
+    }
 
-      const buttonIndex = dialog.showMessageBoxSync({
-        type: 'question',
-        buttons: [
-          'Continue',
-          'Quit'
-        ],
-        defaultId: 0,
-        cancelId: 1,
-        message: 'Do you want to continue exporting?',
-        detail: 'Kap is currently exporting files. If you quit, the export task will be canceled.'
-      });
+    windowManager.exports?.open();
 
-      if (buttonIndex === 0) {
-        event.preventDefault();
-      }
+    const buttonIndex = dialog.showMessageBoxSync({
+      type: 'question',
+      buttons: [
+        'Continue',
+        'Quit',
+      ],
+      defaultId: 0,
+      cancelId: 1,
+      message: 'Do you want to continue exporting?',
+      detail: 'Kap is currently exporting files. If you quit, the export task will be canceled.',
+    });
+
+    if (buttonIndex === 0) {
+      event.preventDefault();
     }
   });
 };

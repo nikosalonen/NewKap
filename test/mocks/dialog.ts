@@ -45,6 +45,8 @@ export const fakeAction = async (index: any) => {
 
 export const getCurrentState = () => dialogState;
 
-export const waitForDialog = async () => new Promise<any>(resolve => {
-  waitForDialogResolve = resolve;
-});
+export const waitForDialog = async () => {
+  const {promise, resolve: resolveWait} = Promise.withResolvers<any>();
+  waitForDialogResolve = resolveWait;
+  return promise;
+};

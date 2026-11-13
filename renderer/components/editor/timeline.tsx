@@ -1,9 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
-import TimelineContainer from './timeline-container';
-import VideoTimeContainer from './video-time-container';
-import VideoControlsContainer from './video-controls-container';
+import type {TimelineClip} from 'common/types';
 import {PauseIcon, PlayIcon} from '../../vectors';
-import {TimelineClip} from 'common/types';
 import {
   clipDuration,
   formatTimelineDuration,
@@ -11,8 +8,12 @@ import {
   getTimelineDuration,
   snapTimelineTime,
   trimClipAtTimelineTime,
-  TrimEdge
+
 } from '../../../main/common/timeline';
+import type {TrimEdge} from '../../../main/common/timeline';
+import TimelineContainer from './timeline-container';
+import VideoTimeContainer from './video-time-container';
+import VideoControlsContainer from './video-controls-container';
 
 const Timeline = () => {
   const {duration} = VideoTimeContainer.useContainer();
@@ -37,10 +38,12 @@ const Timeline = () => {
 
   const seekToTimelineTime = (requestedTime: number, snap = false) => {
     const width = trackRef.current?.getBoundingClientRect().width ?? 0;
-    const snapResult = snap ? snapTimelineTime(requestedTime, clips, width) : {
-      time: Math.max(0, Math.min(timelineDuration, requestedTime)),
-      snapped: false
-    };
+    const snapResult = snap
+      ? snapTimelineTime(requestedTime, clips, width)
+      : {
+        time: Math.max(0, Math.min(timelineDuration, requestedTime)),
+        snapped: false,
+      };
     const position = getPlaybackPositionAtTimelineTime(clips, snapResult.time);
 
     setSnapPoint(snapResult.snapped ? snapResult.snapPoint : undefined);
@@ -115,7 +118,7 @@ const Timeline = () => {
       clipId: trimTarget.clipId,
       edge: trimTarget.edge,
       requestedTime: snappedTime,
-      mediaDuration: duration
+      mediaDuration: duration,
     });
 
     if (updates) {
@@ -149,7 +152,9 @@ const Timeline = () => {
       }
 
       if (event.metaKey) {
-        const actions = {c: copy, v: paste, x: cut, d: duplicate};
+        const actions = {
+          c: copy, v: paste, x: cut, d: duplicate,
+        };
         const action = actions[event.key.toLowerCase()];
         if (action) {
           event.preventDefault();
@@ -165,10 +170,12 @@ const Timeline = () => {
         return;
       }
 
-      if (event.code === 'Space') {
-        event.preventDefault();
-        togglePlayback();
+      if (event.code !== 'Space') {
+        return;
       }
+
+      event.preventDefault();
+      togglePlayback();
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -176,28 +183,28 @@ const Timeline = () => {
   }, [copy, paste, cut, duplicate, isPaused, pause, play, remove]);
 
   return (
-    <section className="timeline-panel">
-      <div className="toolbar">
+    <section className='timeline-panel'>
+      <div className='toolbar'>
         <strong>Timeline</strong>
-        <button type="button" className="playback" title={isPaused ? 'Play (Space)' : 'Pause (Space)'} onClick={togglePlayback}>
-          {isPaused ? <PlayIcon size="12px" fill="#fff" hoverFill="#fff"/> : <PauseIcon size="12px" fill="#fff" hoverFill="#fff"/>}
+        <button type='button' className='playback' title={isPaused ? 'Play (Space)' : 'Pause (Space)'} onClick={togglePlayback}>
+          {isPaused ? <PlayIcon size='12px' fill='#fff' hoverFill='#fff'/> : <PauseIcon size='12px' fill='#fff' hoverFill='#fff'/>}
           {isPaused ? 'Play' : 'Pause'}
         </button>
-        <button type="button" title="Skip backward 5 seconds" onClick={() => seekToTimelineTime(playheadTime - 5)}>−5s</button>
-        <button type="button" title="Skip forward 5 seconds" onClick={() => seekToTimelineTime(playheadTime + 5)}>+5s</button>
-        <button type="button" title="Split at playhead" onClick={split}>Split</button>
-        <button type="button" title="Copy (⌘C)" onClick={copy}>Copy</button>
-        <button type="button" disabled={!copiedClip} title="Paste (⌘V)" onClick={paste}>Paste</button>
-        <button type="button" disabled={clips.length <= 1} title="Cut (⌘X)" onClick={cut}>Cut</button>
-        <button type="button" title="Duplicate (⌘D)" onClick={duplicate}>Duplicate</button>
-        <button type="button" disabled={clips.length <= 1} title="Delete (⌫)" onClick={remove}>Delete</button>
-        <button type="button" title="Insert the frame at the playhead" onClick={freeze}>Freeze Frame</button>
-        <span className="hint">Select a clip, then adjust it before export</span>
+        <button type='button' title='Skip backward 5 seconds' onClick={() => seekToTimelineTime(playheadTime - 5)}>−5s</button>
+        <button type='button' title='Skip forward 5 seconds' onClick={() => seekToTimelineTime(playheadTime + 5)}>+5s</button>
+        <button type='button' title='Split at playhead' onClick={split}>Split</button>
+        <button type='button' title='Copy (⌘C)' onClick={copy}>Copy</button>
+        <button type='button' disabled={!copiedClip} title='Paste (⌘V)' onClick={paste}>Paste</button>
+        <button type='button' disabled={clips.length <= 1} title='Cut (⌘X)' onClick={cut}>Cut</button>
+        <button type='button' title='Duplicate (⌘D)' onClick={duplicate}>Duplicate</button>
+        <button type='button' disabled={clips.length <= 1} title='Delete (⌫)' onClick={remove}>Delete</button>
+        <button type='button' title='Insert the frame at the playhead' onClick={freeze}>Freeze Frame</button>
+        <span className='hint'>Select a clip, then adjust it before export</span>
       </div>
       <div
         ref={trackRef}
-        className="track"
-        title="Click or drag to seek"
+        className='track'
+        title='Click or drag to seek'
         onPointerDown={startScrubbing}
         onPointerMove={event => {
           updateTrimming(event);
@@ -218,54 +225,85 @@ const Timeline = () => {
           return (
             <div
               key={clip.id}
-              role="button"
+              role='button'
               tabIndex={0}
               className={[
                 'clip',
                 clip.id === selectedClip?.id ? 'selected' : '',
-                clip.id === activeClip?.id ? 'active' : ''
+                clip.id === activeClip?.id ? 'active' : '',
               ].filter(Boolean).join(' ')}
               style={{width: `${width}%`}}
               onPointerDown={event => seekWithinClip(event, clip)}
               onKeyDown={event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  select(clip.id);
+                if (!(event.key === 'Enter' || event.key === ' ')) {
+                  return;
                 }
+
+                event.preventDefault();
+                select(clip.id);
               }}
             >
               <span
-                role="button"
+                role='button'
                 aria-label={`Trim start of ${clipLabel}`}
                 tabIndex={-1}
-                className="trim-handle start"
+                className='trim-handle start'
                 onPointerDown={event => startTrimming(event, clip, 'start')}
               />
               {clip.freezeDuration === undefined ? `Clip ${index + 1}` : `Freeze ${formatTimelineDuration(clip.freezeDuration)}`}
               <span
-                role="button"
+                role='button'
                 aria-label={`Trim end of ${clipLabel}`}
                 tabIndex={-1}
-                className="trim-handle end"
+                className='trim-handle end'
                 onPointerDown={event => startTrimming(event, clip, 'end')}
               />
             </div>
           );
         })}
-        {snapPoint !== undefined && <div className="snap-guide" style={{left: `${(snapPoint / timelineDuration) * 100}%`}}/>}
-        <div className="playhead" style={{left: `${playheadPosition}%`}}><span/></div>
+        {snapPoint !== undefined && <div className='snap-guide' style={{left: `${(snapPoint / timelineDuration) * 100}%`}}/>}
+        <div className='playhead' style={{left: `${playheadPosition}%`}}><span/></div>
       </div>
       {selectedClip && (
-        <div className="adjustments">
+        <div className='adjustments'>
           {isStandardClip && <>
-            <label>In <input type="number" min="0" max={selectedClip.endTime - 0.05} step="0.05" value={selectedClip.startTime.toFixed(2)} onChange={event => updateSelected({startTime: Number(event.target.value)})}/></label>
-            <label>Out <input type="number" min={selectedClip.startTime + 0.05} max={duration} step="0.05" value={selectedClip.endTime.toFixed(2)} onChange={event => updateSelected({endTime: Number(event.target.value)})}/></label>
-            <label>Speed <input type="range" min="0.5" max="2" step="0.25" value={selectedClip.speed} onChange={event => updateSelected({speed: Number(event.target.value)})}/><output>{selectedClip.speed}×</output></label>
+            <label>In <input
+              type='number'
+              min='0'
+              max={selectedClip.endTime - 0.05}
+              step='0.05'
+              value={selectedClip.startTime.toFixed(2)}
+              onChange={event => updateSelected({startTime: Number(event.target.value)})}
+            /></label>
+            <label>Out <input
+              type='number'
+              min={selectedClip.startTime + 0.05}
+              max={duration}
+              step='0.05'
+              value={selectedClip.endTime.toFixed(2)}
+              onChange={event => updateSelected({endTime: Number(event.target.value)})}
+            /></label>
+            <label>Speed <input
+              type='range'
+              min='0.5'
+              max='2'
+              step='0.25'
+              value={selectedClip.speed}
+              onChange={event => updateSelected({speed: Number(event.target.value)})}
+            /><output>{selectedClip.speed}×</output></label>
           </>}
-          {isStandardClip ? null : <label>Duration <input type="number" min="0.1" max="10" step="0.1" value={selectedClip.freezeDuration} onBlur={finishFreezeDurationInput} onChange={event => updateSelected({freezeDuration: Number(event.target.value)})}/></label>}
-          <label>Brightness <input type="range" min="-0.5" max="0.5" step="0.05" value={selectedClip.brightness} onChange={event => updateSelected({brightness: Number(event.target.value)})}/></label>
-          <label>Contrast <input type="range" min="0.5" max="2" step="0.1" value={selectedClip.contrast} onChange={event => updateSelected({contrast: Number(event.target.value)})}/></label>
-          <label>Saturation <input type="range" min="0" max="2" step="0.1" value={selectedClip.saturation} onChange={event => updateSelected({saturation: Number(event.target.value)})}/></label>
+          {!isStandardClip && <label>Duration <input
+            type='number'
+            min='0.1'
+            max='10'
+            step='0.1'
+            value={selectedClip.freezeDuration}
+            onBlur={finishFreezeDurationInput}
+            onChange={event => updateSelected({freezeDuration: Number(event.target.value)})}
+          /></label>}
+          <label>Brightness <input type='range' min='-0.5' max='0.5' step='0.05' value={selectedClip.brightness} onChange={event => updateSelected({brightness: Number(event.target.value)})}/></label>
+          <label>Contrast <input type='range' min='0.5' max='2' step='0.1' value={selectedClip.contrast} onChange={event => updateSelected({contrast: Number(event.target.value)})}/></label>
+          <label>Saturation <input type='range' min='0' max='2' step='0.1' value={selectedClip.saturation} onChange={event => updateSelected({saturation: Number(event.target.value)})}/></label>
         </div>
       )}
       <style jsx>{`

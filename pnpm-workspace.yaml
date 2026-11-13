@@ -23,7 +23,10 @@ patchedDependencies:
   # Wait up to 30 seconds for recording to start on newer macOS, and resolve as
   # soon as the helper reports the start instead of one second later.
   aperture@6.1.2: patches/aperture@6.1.2.patch
-  # Lint only (xo 0.38 -> eslint-plugin-ava -> deep-strict-equal). Node 23
-  # removed util.isDate and util.isRegExp; use util.types instead. Drop this
-  # with the xo upgrade.
-  core-assert@0.2.1: patches/core-assert@0.2.1.patch
+
+overrides:
+  # xo 5 bundles TypeScript 6, while the project builds with TypeScript 5.9.
+  # Two TypeScript copies in one lint run can crash type-aware rules (TypeFlags
+  # changed in TypeScript 6), so xo uses the project's copy. xo itself only reads
+  # the version. Drop this when the project moves to TypeScript 6.
+  xo>typescript: $typescript

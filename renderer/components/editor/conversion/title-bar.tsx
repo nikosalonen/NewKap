@@ -1,9 +1,9 @@
 import TrafficLights from 'components/traffic-lights';
 import {BackPlainIcon, MoreIcon} from 'vectors';
-import {UseConversionState} from 'hooks/editor/use-conversion';
+import type {UseConversionState} from 'hooks/editor/use-conversion';
+import {useMemo} from 'react';
 import kap from '../../../utils/kap';
 import {ExportStatus} from '../../../common/types';
-import {useMemo} from 'react';
 import IconMenu from '../../icon-menu';
 
 const TitleBar = ({conversion, cancel, copy, retry, showInFolder}: {conversion: UseConversionState; cancel: () => any; copy: () => any; retry: () => any; showInFolder: () => void}) => {
@@ -13,7 +13,7 @@ const TitleBar = ({conversion, cancel, copy, retry, showInFolder}: {conversion: 
         type: 'info',
         message: 'Your export will continue in the background. You can access it through the Export History window.',
         buttons: ['Ok'],
-        defaultId: 0
+        defaultId: 0,
       });
       kap.flags.set('backgroundEditorConversion', true);
     }
@@ -21,49 +21,32 @@ const TitleBar = ({conversion, cancel, copy, retry, showInFolder}: {conversion: 
     return true;
   };
 
-  const menuTemplate = useMemo(() => {
-    const template: any[] = [];
-
-    if (conversion?.canCopy) {
-      template.push({
-        label: 'Copy',
-        click: () => copy()
-      }, {
-        type: 'separator'
-      });
-    }
-
-    if (conversion?.status === ExportStatus.completed) {
-      template.push({
-        label: 'Show in Finder',
-        click: () => showInFolder()
-      });
-    }
-
-    return template;
-  }, [conversion?.canCopy, conversion?.status]);
+  const menuTemplate = useMemo<any[]>(() => [
+    ...(conversion?.canCopy ? [{label: 'Copy', click: () => copy()}, {type: 'separator'}] : []),
+    ...(conversion?.status === ExportStatus.completed ? [{label: 'Show in Finder', click: () => showInFolder()}] : []),
+  ], [conversion?.canCopy, conversion?.status]);
 
   const canRetry = [ExportStatus.canceled, ExportStatus.failed].includes(conversion?.status);
 
   return (
-    <div className="title-bar">
-      <div className="left">
+    <div className='title-bar'>
+      <div className='left'>
         <TrafficLights shouldClose={shouldClose}/>
-        <div className="icon" onClick={cancel}>
-          <BackPlainIcon fill="white" hoverFill="white" size="100%"/>
+        <div className='icon' onClick={cancel}>
+          <BackPlainIcon fill='white' hoverFill='white' size='100%'/>
         </div>
       </div>
-      <div className="right">
-        {canRetry && <div className="button" onClick={retry}>Retry</div>}
+      <div className='right'>
+        {canRetry && <div className='button' onClick={retry}>Retry</div>}
         {
           menuTemplate.length > 0 && (
-            <div className="icon">
+            <div className='icon'>
               <IconMenu
                 icon={MoreIcon}
-                fill="white"
-                hoverFill="white"
-                activeFill="white"
-                size="20px"
+                fill='white'
+                hoverFill='white'
+                activeFill='white'
+                size='20px'
                 template={menuTemplate}
               />
             </div>

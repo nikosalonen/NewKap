@@ -1,13 +1,12 @@
 import React, {useCallback, useMemo} from 'react';
 import classNames from 'classnames';
 import kap from '../../utils/kap';
-
 import IconMenu from '../icon-menu';
 import {CancelIcon, MoreIcon} from '../../vectors';
-import {Progress, ProgressSpinner} from './progress';
 import useConversion from '../../hooks/editor/use-conversion';
 import {ExportStatus} from '../../common/types';
 import {useShowWindow} from '../../hooks/use-show-window';
+import {Progress, ProgressSpinner} from './progress';
 
 const stopPropagation = event => event.stopPropagation();
 
@@ -29,7 +28,7 @@ const Export = ({id}: {id: string}) => {
 
   const fileNameClassName = classNames({
     title: true,
-    disabled: !isActionable
+    disabled: !isActionable,
   });
 
   const onDragStart = useCallback(event => {
@@ -39,72 +38,55 @@ const Export = ({id}: {id: string}) => {
     }
   }, [isActionable, state?.id]);
 
-  const template = useMemo(() => {
-    const menuTemplate: any[] = [{
-      label: 'Open Original',
-      click: () => openInEditor()
-    }];
-
-    if (state?.canCopy) {
-      menuTemplate.unshift({
-        label: 'Copy',
-        click: () => copy()
-      }, {
-        type: 'separator'
-      });
-    }
-
-    if (canRetry) {
-      menuTemplate.unshift({
-        label: 'Retry',
-        click: () => retry()
-      }, {
-        type: 'separator'
-      });
-    }
-
-    return menuTemplate;
-  }, [canRetry, retry, openInEditor, state?.canCopy, copy]);
+  const template = useMemo<any[]>(() => [
+    ...(canRetry ? [{label: 'Retry', click: () => retry()}, {type: 'separator'}] : []),
+    ...(state?.canCopy ? [{label: 'Copy', click: () => copy()}, {type: 'separator'}] : []),
+    {label: 'Open Original', click: () => openInEditor()},
+  ], [canRetry, retry, openInEditor, state?.canCopy, copy]);
 
   if (isLoading) {
     return null;
   }
 
   return (
-    <div draggable className="export-container" onClick={onClick} onDragStart={onDragStart}>
-      <div className="thumbnail">
-        <div className="overlay"/>
-        <div className="icon" onClick={stopPropagation}>
+    <div draggable className='export-container' onClick={onClick} onDragStart={onDragStart}>
+      <div className='thumbnail'>
+        <div className='overlay'/>
+        <div className='icon' onClick={stopPropagation}>
           {
-            isCancelable ?
-              <div className="icon" onClick={onCancel}>
-                <CancelIcon fill="white" hoverFill="white" activeFill="white"/>
-              </div> :
-              <IconMenu
-                fillParent
-                icon={MoreIcon}
-                fill="white"
-                hoverFill="white"
-                activeFill="white"
-                template={template}
-              />
+            isCancelable
+              ? (
+                <div className='icon' onClick={onCancel}>
+                  <CancelIcon fill='white' hoverFill='white' activeFill='white'/>
+                </div>
+              )
+              : (
+                <IconMenu
+                  fillParent
+                  icon={MoreIcon}
+                  fill='white'
+                  hoverFill='white'
+                  activeFill='white'
+                  template={template}
+                />
+              )
           }
         </div>
-        <div className="progress">
+        <div className='progress'>
           {
             state.status === ExportStatus.inProgress && (
-              state.progress === 0 ?
-                <ProgressSpinner/> :
-                <Progress percent={Math.min(state.progress, 1)}/>
+              state.progress === 0
+                ? <ProgressSpinner/>
+                : <Progress percent={Math.min(state.progress, 1)}/>
             )
           }
         </div>
       </div>
-      <div className="details">
+      <div className='details'>
         <div className={fileNameClassName} title={state.titleWithFormat}>
           {state.titleWithFormat}
         </div>
-        <div className="subtitle" title={state.error?.message}>{state.message}{state.error && ` - ${state.error.message}`}</div>
+        <div className='subtitle' title={state.error?.message}>{state.message}{state.error && ` - ${state.error.message}`}</div>
       </div>
       <style jsx>{`
           .export-container {

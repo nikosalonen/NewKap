@@ -1,6 +1,6 @@
-import React, {FunctionComponent} from 'react';
+import React from 'react';
+import type {FunctionComponent} from 'react';
 import classNames from 'classnames';
-
 import {handleKeyboardActivation} from '../utils/inputs';
 
 const defaultProps: SvgProps = {
@@ -10,7 +10,7 @@ const defaultProps: SvgProps = {
   size: '24px',
   active: false,
   viewBox: '0 0 24 24',
-  tabIndex: -1
+  tabIndex: -1,
 };
 
 const stopPropagation = event => {
@@ -29,10 +29,10 @@ const Svg: FunctionComponent<SvgProps> = props => {
     viewBox,
     shadow,
     tabIndex,
-    isMenu
+    isMenu,
   } = {
     ...defaultProps,
-    ...props
+    ...props,
   };
 
   const className = classNames({active, shadow, focusable: tabIndex >= 0});
@@ -93,7 +93,7 @@ const Svg: FunctionComponent<SvgProps> = props => {
   );
 };
 
-export interface SvgProps {
+export type SvgProps = {
   fill?: string;
   size?: string;
   activeFill?: string;
@@ -104,6 +104,6 @@ export interface SvgProps {
   shadow?: boolean;
   tabIndex?: number;
   isMenu?: boolean;
-}
+};
 
 export default Svg;

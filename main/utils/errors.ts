@@ -1,12 +1,11 @@
-import path from 'path';
+import path from 'node:path';
 import {clipboard, app} from 'electron';
 import ensureError from 'ensure-error';
 import cleanStack from 'clean-stack';
 import {openNewGitHubIssue} from 'electron-util';
-import macosRelease from './macos-release';
-
 import {windowManager} from '../windows/manager';
-import {InstalledPlugin} from '../plugins/plugin';
+import type {InstalledPlugin} from '../plugins/plugin';
+import macosRelease from './macos-release';
 
 const ERRORS_TO_IGNORE = [
   /net::ERR_CONNECTION_TIMED_OUT/,
@@ -14,7 +13,7 @@ const ERRORS_TO_IGNORE = [
   /net::ERR_CONNECTION_CLOSED/,
   /net::ERR_INTERNET_DISCONNECTED/,
   /net::ERR_NAME_NOT_RESOLVED/,
-  /The operation couldn't be completed/
+  /The operation couldn't be completed/,
 ];
 
 const shouldIgnoreError = (errorText: string) => ERRORS_TO_IGNORE.some(regex => regex.test(errorText));
@@ -47,11 +46,11 @@ export const showError = async (
   error: Error,
   {
     title: customTitle,
-    plugin
+    plugin,
   }: {
     title?: string;
     plugin?: InstalledPlugin;
-  } = {}
+  } = {},
 ) => {
   await app.whenReady();
   const ensuredError = ensureError(error);
@@ -67,23 +66,23 @@ export const showError = async (
     'Close',
     {
       label: 'Copy Error',
-      action: () => {
+      action() {
         clipboard.writeText(`${title}\n${detail}`);
-      }
-    }
+      },
+    },
   ];
 
   // If it's a plugin error, offer to open an issue on the plugin repo (if known)
   if (plugin) {
     const openIssueButton = plugin.repoUrl && {
       label: 'Open Issue',
-      action: () => {
+      action() {
         openNewGitHubIssue({
           repoUrl: plugin.repoUrl,
           title,
-          body: getIssueBody(title, detail)
+          body: getIssueBody(title, detail),
         });
-      }
+      },
     };
 
     return windowManager.dialog?.open({
@@ -91,7 +90,7 @@ export const showError = async (
       detail,
       cancelId: 0,
       defaultId: openIssueButton ? 2 : 0,
-      buttons: [...mainButtons, openIssueButton].filter(Boolean)
+      buttons: [...mainButtons, openIssueButton].filter(Boolean),
     });
   }
 
@@ -100,7 +99,7 @@ export const showError = async (
     detail,
     buttons: mainButtons,
     cancelId: 0,
-    defaultId: 0
+    defaultId: 0,
   });
 };
 

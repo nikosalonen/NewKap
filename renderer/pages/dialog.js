@@ -1,7 +1,12 @@
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from 'react';
 import Actions from '../components/dialog/actions';
 import Icon from '../components/dialog/icon';
 import Body from '../components/dialog/body';
-import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {ipcRenderer as ipc} from '../utils/ipc';
 import answerMain from '../utils/answer-main';
 
@@ -11,50 +16,54 @@ const Dialog = () => {
   const [data, setData] = useState();
   const [measureSize, setMeasureSize] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const container = useRef(null);
+  const containerRef = useRef(null);
 
   const performAction = useCallback(async index => {
-    if (!isDisabled || data.cancelId === index) {
-      setIsDisabled(true);
-      return ipc.callMain(`dialog-action-${data.id}`, index);
+    if (isDisabled && data.cancelId !== index) {
+      return;
     }
+
+    setIsDisabled(true);
+    return ipc.callMain(`dialog-action-${data.id}`, index);
   }, [data, isDisabled, setIsDisabled]);
 
-  useEffect(() => {
-    return answerMain('data', async newData => new Promise(resolve => {
-      setData(newData);
-      setMeasureSize(true);
-      measureResolve = resolve;
-    }));
-  }, []);
+  useEffect(() => answerMain('data', async newData => new Promise(resolve => {
+    setData(newData);
+    setMeasureSize(true);
+    measureResolve = resolve;
+  })), []);
 
   useEffect(() => {
     if (data) {
       setIsDisabled(false);
     }
 
-    if (data && data.cancelId) {
-      const handler = event => {
-        if (event.code === 'Escape') {
-          performAction(data.cancelId);
-        }
-      };
-
-      document.addEventListener('keydown', handler);
-
-      return () => {
-        document.removeEventListener('keydown', handler);
-      };
+    if (!data?.cancelId) {
+      return;
     }
+
+    const handler = event => {
+      if (event.code === 'Escape') {
+        performAction(data.cancelId);
+      }
+    };
+
+    document.addEventListener('keydown', handler);
+
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
   }, [data, performAction, isDisabled, setIsDisabled]);
 
   useEffect(() => {
-    if (measureSize && measureResolve) {
-      const {offsetWidth, offsetHeight} = container.current;
-      measureResolve({width: offsetWidth, height: offsetHeight});
-      measureResolve = undefined;
-      setMeasureSize(false);
+    if (!(measureSize && measureResolve)) {
+      return;
     }
+
+    const {offsetWidth, offsetHeight} = containerRef.current;
+    measureResolve({width: offsetWidth, height: offsetHeight});
+    measureResolve = undefined;
+    setMeasureSize(false);
   }, [measureSize]);
 
   if (!data) {
@@ -62,9 +71,9 @@ const Dialog = () => {
   }
 
   return (
-    <div ref={container} className="dialog-container">
+    <div ref={containerRef} className='dialog-container'>
       <Icon/>
-      <div className="dialog-content">
+      <div className='dialog-content'>
         <Body title={data.title} message={data.message} detail={data.detail}/>
         <Actions buttons={data.buttons} performAction={performAction} defaultId={data.defaultId}/>
       </div>

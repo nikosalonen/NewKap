@@ -1,7 +1,6 @@
 import React from 'react';
 import {Provider} from 'unstated';
 import answerMain from '../utils/answer-main';
-
 import {ConfigContainer} from '../containers';
 import Config from '../components/config';
 import WindowHeader from '../components/window-header';
@@ -27,8 +26,8 @@ export default class ConfigPage extends React.Component {
     const {title} = this.state;
 
     return (
-      <div className="root">
-        <div className="cover-window">
+      <div className='root'>
+        <div className='cover-window'>
           <Provider inject={[configContainer]}>
             <WindowHeader title={title}/>
             <Config/>

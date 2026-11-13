@@ -1,14 +1,17 @@
-/* eslint-disable array-element-newline */
+/* eslint-disable @stylistic/array-element-newline -- each ffmpeg flag stays on one line with its value */
 
 import {BrowserWindow, dialog} from 'electron';
+import fs from 'node:fs';
 import execa from 'execa';
 import tempy from 'tempy';
-import fs from 'fs';
 import type {Video} from '../video';
 import {generateTimestampedName} from './timestamped-name';
 import ffmpegPath from './ffmpeg-path';
 
-const getBase64 = async (imagePath: string) => `data:image/jpeg;base64,${(await fs.promises.readFile(imagePath)).toString('base64')}`;
+const getBase64 = async (imagePath: string) => {
+  const image = await fs.promises.readFile(imagePath);
+  return `data:image/jpeg;base64,${image.toString('base64')}`;
+};
 
 export const generatePreviewImage = async (filePath: string): Promise<{path: string; data: string} | undefined> => {
   const previewPath = tempy.file({extension: '.jpg'});
@@ -20,7 +23,7 @@ export const generatePreviewImage = async (filePath: string): Promise<{path: str
       '-t', '1',
       '-vframes', '1',
       '-f', 'image2',
-      previewPath
+      previewPath,
     ]);
   } catch {
     return;
@@ -29,19 +32,19 @@ export const generatePreviewImage = async (filePath: string): Promise<{path: str
   try {
     return {
       path: previewPath,
-      data: await getBase64(previewPath)
+      data: await getBase64(previewPath),
     };
   } catch {
     return {
       path: previewPath,
-      data: ''
+      data: '',
     };
   }
 };
 
 export const saveSnapshot = async (video: Video, time: number) => {
   const {filePath: outputPath} = await dialog.showSaveDialog(BrowserWindow.getFocusedWindow()!, {
-    defaultPath: generateTimestampedName('Snapshot', '.jpg')
+    defaultPath: generateTimestampedName('Snapshot', '.jpg'),
   });
 
   if (outputPath) {
@@ -49,7 +52,7 @@ export const saveSnapshot = async (video: Video, time: number) => {
       '-i', video.filePath,
       '-ss', time.toString(),
       '-vframes', '1',
-      outputPath
+      outputPath,
     ]);
   }
 };

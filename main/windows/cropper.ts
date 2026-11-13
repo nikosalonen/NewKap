@@ -1,13 +1,28 @@
-import {windowManager} from './manager';
-import {BrowserWindow, systemPreferences, dialog, screen, Display, app, globalShortcut, ipcMain} from 'electron';
-import path from 'path';
-import {setTimeout as delay} from 'timers/promises';
+import {
+  BrowserWindow,
+  systemPreferences,
+  dialog,
+  screen,
 
+  app,
+  globalShortcut,
+  ipcMain,
+} from 'electron';
+import type {Display} from 'electron';
+import path from 'node:path';
+import {setTimeout as delay} from 'node:timers/promises';
 import {settings} from '../common/settings';
 import {validateCropperBounds} from '../common/cropper-bounds';
-import {hasMicrophoneAccess, ensureMicrophonePermissions, openSystemPreferences, ensureScreenCapturePermissions} from '../common/system-permissions';
+import {
+  hasMicrophoneAccess,
+  ensureMicrophonePermissions,
+  openSystemPreferences,
+  ensureScreenCapturePermissions,
+} from '../common/system-permissions';
 import {loadRoute} from '../utils/routes';
-import {MacWindow} from '../utils/windows';
+import type {MacWindow} from '../utils/windows';
+import {windowManager} from './manager';
+
 const croppers = new Map<number, BrowserWindow>();
 const readyCroppers = new Set<number>();
 const cropperDisplayState = new Map<number, {
@@ -76,12 +91,12 @@ const createCropper = (display: Display, activeDisplayId?: number, sessionId = o
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, '..', 'preload.js')
-    }
+      preload: path.join(__dirname, '..', 'preload.js'),
+    },
   });
   cropper.setIgnoreMouseEvents(true);
 
-  loadRoute(cropper, 'cropper').catch(error => {
+  loadRoute(cropper, 'cropper').catch((error: unknown) => {
     console.error('[cropper] failed to load renderer route', error);
     closeAllCroppers();
   });
@@ -93,14 +108,16 @@ const createCropper = (display: Display, activeDisplayId?: number, sessionId = o
   });
 
   cropper.webContents.on('before-input-event', (event, input) => {
-    if (input.type === 'keyDown' && input.key === 'Escape') {
-      event.preventDefault();
-      closeAllCroppers();
+    if (!(input.type === 'keyDown' && input.key === 'Escape')) {
+      return;
     }
+
+    event.preventDefault();
+    closeAllCroppers();
   });
 
   cropper.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
-    console.error('[cropper] renderer failed to load', {errorCode, errorDescription, validatedURL});
+    console.error('[cropper] renderer failed to load', {errorCode, errorDescription, url: validatedURL});
     closeAllCroppers();
   });
 
@@ -129,9 +146,7 @@ const createCropper = (display: Display, activeDisplayId?: number, sessionId = o
   });
 
   cropper.on('closed', () => {
-    if (croppers.has(id)) {
-      croppers.delete(id);
-    }
+    croppers.delete(id);
 
     readyCroppers.delete(cropper.id);
     cropperDisplayState.delete(cropper.id);
@@ -150,20 +165,24 @@ const closeAllCroppers = () => {
   unregisterCloseShortcuts();
 
   for (const cropper of croppers.values()) {
-    if (!cropper.isDestroyed()) {
-      cropper.setIgnoreMouseEvents(true);
-      cropper.setVisibleOnAllWorkspaces(false);
-      cropper.webContents.send('hide');
-      cropper.hide();
+    if (cropper.isDestroyed()) {
+      continue;
     }
+
+    cropper.setIgnoreMouseEvents(true);
+    cropper.setVisibleOnAllWorkspaces(false);
+    cropper.webContents.send('hide');
+    cropper.hide();
   }
 
   isOpen = false;
 
-  if (notificationId !== undefined) {
-    systemPreferences.unsubscribeWorkspaceNotification(notificationId);
-    notificationId = undefined;
+  if (notificationId === undefined) {
+    return;
   }
+
+  systemPreferences.unsubscribeWorkspaceNotification(notificationId);
+  notificationId = undefined;
 };
 
 const destroyAllCroppers = () => {
@@ -196,7 +215,7 @@ const sendDisplayInfo = (cropper: BrowserWindow, display: Display, activeDisplay
     x,
     y,
     width,
-    height
+    height,
   };
 
   if (isActive) {
@@ -253,13 +272,15 @@ const ensureCroppers = async (activeDisplayId: number, sessionId: number): Promi
   const currentDisplayIds = new Set(displays.map(d => d.id));
 
   for (const [displayId, cropper] of croppers) {
-    if (!currentDisplayIds.has(displayId)) {
-      cropper.removeAllListeners('close');
-      cropper.removeAllListeners('closed');
-      cropper.destroy();
-      croppers.delete(displayId);
-      readyCroppers.delete(cropper.id);
+    if (currentDisplayIds.has(displayId)) {
+      continue;
     }
+
+    cropper.removeAllListeners('close');
+    cropper.removeAllListeners('closed');
+    cropper.destroy();
+    croppers.delete(displayId);
+    readyCroppers.delete(cropper.id);
   }
 
   const newCropperPromises: Array<Promise<void>> = [];
@@ -316,7 +337,7 @@ const openCropperWindow = async () => {
             defaultId: 1,
             message: 'Kap cannot access the microphone.',
             detail: 'Audio recording is enabled but Kap does not have access to the microphone. Continue without audio, or grant Kap access to the microphone in System Settings.',
-            cancelId: 2
+            cancelId: 2,
           });
 
           if (response === 0) {
@@ -375,12 +396,12 @@ const openCropperWindow = async () => {
         croppers.delete(id);
         readyCroppers.delete(cropper.id);
 
-        if (wasFocused) {
-          const newActiveId = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).id;
-          if (croppers.has(newActiveId)) {
-            croppers.get(newActiveId)?.focus();
-          }
+        if (!wasFocused) {
+          return;
         }
+
+        const newActiveId = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).id;
+        croppers.get(newActiveId)?.focus();
       });
 
       screen.on('display-added', (_, newDisplay) => {
@@ -414,16 +435,20 @@ const selectApp = async (window: MacWindow, activateWindow: (window: MacWindow) 
 
   const {x, y, width, height, ownerName} = window;
 
-  const display = screen.getDisplayMatching({x, y, width, height});
+  const display = screen.getDisplayMatching({
+    x, y, width, height,
+  });
   const {id, bounds: {x: screenX, y: screenY}} = display;
 
   await delay(300);
 
   for (const cropper of croppers.values()) {
-    if (!cropper.isDestroyed()) {
-      cropper.removeListener('blur', preventDefault);
-      cropper.webContents.send('blur');
+    if (cropper.isDestroyed()) {
+      continue;
     }
+
+    cropper.removeListener('blur', preventDefault);
+    cropper.webContents.send('blur');
   }
 
   croppers.get(id)?.focus();
@@ -433,7 +458,7 @@ const selectApp = async (window: MacWindow, activateWindow: (window: MacWindow) 
     x: x - screenX,
     y: y - screenY,
     width,
-    height
+    height,
   });
 };
 
@@ -446,11 +471,13 @@ const disableCroppers = () => {
   }
 
   for (const cropper of croppers.values()) {
-    if (!cropper.isDestroyed()) {
-      cropper.removeAllListeners('blur');
-      cropper.setIgnoreMouseEvents(true);
-      cropper.setVisibleOnAllWorkspaces(true);
+    if (cropper.isDestroyed()) {
+      continue;
     }
+
+    cropper.removeAllListeners('blur');
+    cropper.setIgnoreMouseEvents(true);
+    cropper.setVisibleOnAllWorkspaces(true);
   }
 };
 
@@ -483,11 +510,7 @@ const isCropperOpen = () => isOpen;
 
 const handleControlsReady = (event: Electron.IpcMainEvent, payload?: {sessionId?: number}) => {
   const cropper = BrowserWindow.fromWebContents(event.sender);
-  if (!isOpen || !cropper || ![...croppers.values()].includes(cropper)) {
-    return;
-  }
-
-  if (payload?.sessionId !== undefined && payload.sessionId !== openSessionId) {
+  if (!isOpen || !cropper || !croppers.values().toArray().includes(cropper) || (payload?.sessionId !== undefined && payload.sessionId !== openSessionId)) {
     return;
   }
 
@@ -497,16 +520,12 @@ const handleControlsReady = (event: Electron.IpcMainEvent, payload?: {sessionId?
 
 const handleRendererReady = (event: Electron.IpcMainEvent, payload?: {sessionId?: number}) => {
   const cropper = BrowserWindow.fromWebContents(event.sender);
-  if (!isOpen || !cropper || ![...croppers.values()].includes(cropper)) {
+  if (!isOpen || !cropper || !croppers.values().toArray().includes(cropper)) {
     return;
   }
 
   const displayState = cropperDisplayState.get(cropper.id);
-  if (!displayState) {
-    return;
-  }
-
-  if (typeof payload?.sessionId === 'number' && payload.sessionId !== displayState.sessionId) {
+  if (!displayState || (typeof payload?.sessionId === 'number' && payload.sessionId !== displayState.sessionId)) {
     return;
   }
 
@@ -533,5 +552,5 @@ windowManager.setCropper({
   startRecording: startRecordingFromCroppers,
   isOpen: isCropperOpen,
   disable: disableCroppers,
-  sendCountdown: sendCountdownToCroppers
+  sendCountdown: sendCountdownToCroppers,
 });

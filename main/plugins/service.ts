@@ -1,29 +1,27 @@
 
-import PCancelable from 'p-cancelable';
-import {Format} from '../common/types';
-import {Schema} from '../utils/ajv';
-import {EditServiceContext, RecordServiceContext, ShareServiceContext} from './service-context';
+import type PCancelable from 'p-cancelable';
+import type {Format} from '../common/types';
+import type {Schema} from '../utils/ajv';
+import type {EditServiceContext, RecordServiceContext, ShareServiceContext} from './service-context';
 
-export interface Service<Config = any> {
+export type Service<Config = any> = {
   title: string;
   configDescription?: string;
   config?: {[P in keyof Config]: Schema};
-}
+};
 
-export interface ShareService<Config = any> extends Service<Config> {
+export type ShareService<Config = any> = {
   formats: Format[];
   action: (context: ShareServiceContext) => PromiseLike<void> | PCancelable<void>;
-}
+} & Service<Config>;
 
-export interface EditService<Config = any> extends Service<Config> {
+export type EditService<Config = any> = {
   action: (context: EditServiceContext) => PromiseLike<void> | PCancelable<void>;
-}
+} & Service<Config>;
 
 export type RecordServiceHook = 'willStartRecording' | 'didStartRecording' | 'didStopRecording';
 
-export type RecordService<Config = any> = Service<Config> & {
-  [key in RecordServiceHook]: ((context: RecordServiceContext<any>) => PromiseLike<void>) | undefined;
-} & {
+export type RecordService<Config = any> = Service<Config> & Record<RecordServiceHook, ((context: RecordServiceContext<any>) => PromiseLike<void>) | undefined> & {
   willEnable?: () => PromiseLike<boolean>;
   cleanUp?: (persistedState: Record<string, unknown>) => void;
 };

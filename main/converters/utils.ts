@@ -1,7 +1,7 @@
 import prettyMilliseconds from 'pretty-ms';
 import {timestampToMilliseconds} from '../common/time';
 
-export interface ConvertOptions {
+export type ConvertOptions = {
   inputPath: string;
   outputPath: string;
   shouldCrop: boolean;
@@ -17,7 +17,7 @@ export interface ConvertOptions {
     pluginName: string;
     serviceTitle: string;
   };
-}
+};
 
 export const makeEven = (number: number) => 2 * Math.round(number / 2);
 
@@ -27,8 +27,8 @@ export const extractProgressFromStderr = (stderr: string, conversionStartTime: n
   const conversionDuration = Date.now() - conversionStartTime;
   const data = stderr.trim();
 
-  const speed = Number.parseFloat(/speed=\s*(-?\d+(,\d+)*(\.\d+(e\d+)?)?)/gm.exec(data)?.[1] ?? '0');
-  const processedMs = timestampToMilliseconds(/time=\s*(\d\d:\d\d:\d\d.\d\d)/gm.exec(data)?.[1]);
+  const speed = Number.parseFloat(/speed=\s*(-?\d+(?:,\d+)*(?:\.\d+(?:e\d+)?)?)/.exec(data)?.[1] ?? '0');
+  const processedMs = timestampToMilliseconds(/time=\s*(\d\d:\d\d:\d\d.\d\d)/.exec(data)?.[1]);
 
   if (speed > 0) {
     const progress = processedMs / durationMs;
@@ -40,7 +40,7 @@ export const extractProgressFromStderr = (stderr: string, conversionStartTime: n
 
       return {
         progress,
-        estimate: prettyMilliseconds(Math.max(msRemaining, 1000), {compact: true})
+        estimate: prettyMilliseconds(Math.max(msRemaining, 1000), {compact: true}),
       };
     }
 
@@ -56,16 +56,14 @@ type ArgType = string[] | string | {args: string[]; if: boolean};
 //
 // conditionalArgs(['default', 'args'], {args: ['ignore', 'these'], if: false});
 // => ['default', 'args']
-export const conditionalArgs = (...args: ArgType[]): string[] => {
-  return args.flatMap(arg => {
-    if (typeof arg === 'string') {
-      return [arg];
-    }
+export const conditionalArgs = (...args: ArgType[]): string[] => args.flatMap(arg => {
+  if (typeof arg === 'string') {
+    return [arg];
+  }
 
-    if (Array.isArray(arg)) {
-      return arg;
-    }
+  if (Array.isArray(arg)) {
+    return arg;
+  }
 
-    return arg.if ? arg.args : [];
-  });
-};
+  return arg.if ? arg.args : [];
+});

@@ -82,7 +82,7 @@ export const getTimelineTimeForClipStart = (clips: TimelineClip[], clipId: strin
 
 export const getPlaybackPositionAtTimelineTime = (
   clips: TimelineClip[],
-  requestedTime: number
+  requestedTime: number,
 ): TimelinePlaybackPosition | undefined => {
   const timelineDuration = getTimelineDuration(clips);
   const boundedTime = Math.max(0, Math.min(timelineDuration, requestedTime));
@@ -99,7 +99,7 @@ export const getPlaybackPositionAtTimelineTime = (
         clip,
         clipIndex,
         timelineTime: boundedTime,
-        sourceTime
+        sourceTime,
       };
     }
 
@@ -112,7 +112,7 @@ export const getPlaybackPositionAtTimelineTime = (
 export const getTimelineTimeForClipSourceTime = (
   clips: TimelineClip[],
   clipId: string | undefined,
-  sourceTime: number
+  sourceTime: number,
 ): number => {
   let elapsed = 0;
 
@@ -120,11 +120,7 @@ export const getTimelineTimeForClipSourceTime = (
     const duration = Math.max(0, clipDuration(clip));
 
     if (clip.id === clipId) {
-      if (clip.freezeDuration === undefined) {
-        return elapsed + ((Math.max(clip.startTime, Math.min(clip.endTime, sourceTime)) - clip.startTime) / clip.speed);
-      }
-
-      return elapsed;
+      return clip.freezeDuration === undefined ? elapsed + ((Math.max(clip.startTime, Math.min(clip.endTime, sourceTime)) - clip.startTime) / clip.speed) : elapsed;
     }
 
     elapsed += duration;
@@ -136,21 +132,18 @@ export const getTimelineTimeForClipSourceTime = (
 export const findPlaybackClipForSourceTime = (
   clips: TimelineClip[],
   sourceTime: number,
-  preferredClipId?: string
+  preferredClipId?: string,
 ): TimelineClip | undefined => {
+  const isInClip = (clip: TimelineClip) => sourceTime >= clip.startTime && sourceTime <= clip.endTime;
   const preferredClip = clips.find(clip => clip.id === preferredClipId);
-  if (preferredClip && sourceTime >= preferredClip.startTime && sourceTime <= preferredClip.endTime) {
-    return preferredClip;
-  }
-
-  return clips.find(clip => sourceTime >= clip.startTime && sourceTime <= clip.endTime) ?? clips[clips.length - 1];
+  return preferredClip && isInClip(preferredClip) ? preferredClip : clips.find(clip => isInClip(clip)) ?? clips.at(-1);
 };
 
 export const snapTimelineTime = (
   requestedTime: number,
   clips: TimelineClip[],
   timelineWidth: number,
-  thresholdPixels = 8
+  thresholdPixels = 8,
 ): SnapResult => {
   const duration = getTimelineDuration(clips);
   const boundedTime = Math.max(0, Math.min(duration, requestedTime));
@@ -161,21 +154,23 @@ export const snapTimelineTime = (
 
   const thresholdTime = (thresholdPixels / timelineWidth) * duration;
   let closestPoint: number | undefined;
-  let closestDistance = Number.POSITIVE_INFINITY;
+  let closestDistance = Infinity;
 
   for (const snapPoint of getTimelineBoundaries(clips)) {
     const distance = Math.abs(snapPoint - boundedTime);
-    if (distance < closestDistance) {
-      closestDistance = distance;
-      closestPoint = snapPoint;
+    if (!(distance < closestDistance)) {
+      continue;
     }
+
+    closestDistance = distance;
+    closestPoint = snapPoint;
   }
 
   if (closestPoint !== undefined && closestDistance <= thresholdTime) {
     return {
       time: closestPoint,
       snapped: true,
-      snapPoint: closestPoint
+      snapPoint: closestPoint,
     };
   }
 
@@ -187,7 +182,7 @@ export const trimClipAtTimelineTime = ({
   clipId,
   edge,
   requestedTime,
-  mediaDuration
+  mediaDuration,
 }: TrimClipOptions): Partial<TimelineClip> | undefined => {
   let elapsedBeforeClip = 0;
   const clip = clips.find(item => {
@@ -210,19 +205,19 @@ export const trimClipAtTimelineTime = ({
     if (edge === 'start') {
       const nextDuration = Math.max(minClipDuration, clipEndOnTimeline - requestedTime);
       return {
-        startTime: clamp(clip.endTime - (nextDuration * clip.speed), 0, clip.endTime - minClipDuration)
+        startTime: clamp(clip.endTime - (nextDuration * clip.speed), 0, clip.endTime - minClipDuration),
       };
     }
 
     const nextDuration = Math.max(minClipDuration, requestedTime - elapsedBeforeClip);
     return {
-      endTime: clamp(clip.startTime + (nextDuration * clip.speed), clip.startTime + minClipDuration, mediaDuration)
+      endTime: clamp(clip.startTime + (nextDuration * clip.speed), clip.startTime + minClipDuration, mediaDuration),
     };
   }
 
   const nextDuration = edge === 'start' ? clipEndOnTimeline - requestedTime : requestedTime - elapsedBeforeClip;
 
   return {
-    freezeDuration: clamp(nextDuration, minFreezeDuration, maxFreezeDuration)
+    freezeDuration: clamp(nextDuration, minFreezeDuration, maxFreezeDuration),
   };
 };

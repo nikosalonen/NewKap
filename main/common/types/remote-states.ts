@@ -1,7 +1,7 @@
-import {App, Format} from './base';
-import {ExportStatus} from './conversion-options';
+import type {App, Format} from './base';
+import type {ExportStatus} from './conversion-options';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- the default is a remote state without actions
 export type RemoteState<State = any, Actions extends Record<string, (...args: any[]) => any> = {}> = {
   actions: Actions;
   state: State;
@@ -22,13 +22,13 @@ export type RemoteStateHandler<Base extends RemoteState> = Base extends RemoteSt
   getState: (id: string) => State | undefined;
 } : never;
 
-export interface ExportOptionsPlugin {
+export type ExportOptionsPlugin = {
   title: string;
   pluginName: string;
   pluginPath: string;
   apps?: App[];
   lastUsed: number;
-}
+};
 
 export type ExportOptionsFormat = {
   plugins: ExportOptionsPlugin[];
@@ -47,7 +47,7 @@ export type ExportOptionsEditService = {
 export type ExportOptions = {
   formats: ExportOptionsFormat[];
   editServices: ExportOptionsEditService[];
-  fpsHistory: {[key in Format]: number};
+  fpsHistory: Record<Format, number>;
 };
 
 export type EditorOptionsRemoteState = RemoteState<ExportOptions, {
@@ -61,7 +61,7 @@ export type EditorOptionsRemoteState = RemoteState<ExportOptions, {
   }) => void;
 }>;
 
-export interface ExportState {
+export type ExportState = {
   id: string;
   title: string;
   description: string;
@@ -76,7 +76,7 @@ export interface ExportState {
   disableOutputActions: boolean;
   canPreviewExport: boolean;
   titleWithFormat: string;
-}
+};
 
 export type ExportsRemoteState = RemoteState<ExportState, {
   copy: () => void;

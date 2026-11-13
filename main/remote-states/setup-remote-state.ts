@@ -1,9 +1,9 @@
-import {RemoteState, getChannelNames} from './utils';
+import type {BrowserWindow} from 'electron';
 import {ipcMain} from 'electron-better-ipc';
-import {BrowserWindow} from 'electron';
+import {getChannelNames} from './utils';
+import type {RemoteState} from './utils';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const setupRemoteState = async <State, Actions extends Record<string, Function>>(name: string, callback: RemoteState<State, Actions>) => {
+const setupRemoteState = async <State, Actions extends Record<string, (...args: any[]) => any>>(name: string, callback: RemoteState<State, Actions>) => {
   const channelNames = getChannelNames(name);
 
   const renderersMap = new Map<string, Set<BrowserWindow>>();
@@ -19,7 +19,7 @@ const setupRemoteState = async <State, Actions extends Record<string, Function>>
       return;
     }
 
-    for (const [windowId, renderers] of renderersMap.entries()) {
+    for (const [windowId, renderers] of renderersMap) {
       for (const renderer of renderers) {
         if (renderer && !renderer.isDestroyed()) {
           ipcMain.callRenderer(renderer, channelNames.stateUpdated, {state: state ?? (await getState?.(windowId))});
@@ -56,7 +56,7 @@ const setupRemoteState = async <State, Actions extends Record<string, Function>>
   });
 
   ipcMain.answerRenderer(channelNames.callAction, ({key, data, id: customId}: any, window: BrowserWindow) => {
-    const id = customId || window.id.toString();
+    const id = customId ?? window.id.toString();
     return (actions as any)[key]?.(id, ...data);
   });
 };

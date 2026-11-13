@@ -13,9 +13,9 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 
 export const validateCropperBounds = (
   cropper: CropperBounds | undefined,
-  display: {id: number; width: number; height: number}
+  display: {id: number; width: number; height: number},
 ): CropperBounds | undefined => {
-  if (!cropper || cropper.displayId !== display.id) {
+  if (cropper?.displayId !== display.id) {
     return undefined;
   }
 
@@ -37,6 +37,6 @@ export const validateCropperBounds = (
     width: boundedWidth,
     height: boundedHeight,
     ratio: Array.isArray(ratio) && ratio.length === 2 && ratio.every(value => isFiniteNumber(value)) ? ratio : undefined,
-    displayId: display.id
+    displayId: display.id,
   };
 };

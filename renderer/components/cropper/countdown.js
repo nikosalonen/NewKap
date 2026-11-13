@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import {connect, CropperContainer} from '../../containers';
 
@@ -8,8 +7,8 @@ const Countdown = ({countdown, countdownValue}) => {
   }
 
   return (
-    <div className="countdown-overlay">
-      <div key={countdownValue} className="countdown-number">{countdownValue}</div>
+    <div className='countdown-overlay'>
+      <div key={countdownValue} className='countdown-number'>{countdownValue}</div>
       <style jsx>{`
         .countdown-overlay {
           position: fixed;
@@ -57,10 +56,10 @@ const Countdown = ({countdown, countdownValue}) => {
 
 Countdown.propTypes = {
   countdown: PropTypes.bool,
-  countdownValue: PropTypes.number
+  countdownValue: PropTypes.number,
 };
 
 export default connect(
   [CropperContainer],
-  ({countdown, countdownValue}) => ({countdown, countdownValue})
+  ({countdown, countdownValue}) => ({countdown, countdownValue}),
 )(Countdown);

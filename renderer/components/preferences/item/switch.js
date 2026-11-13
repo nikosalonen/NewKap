@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
 import {SpinnerIcon} from '../../../vectors';
 import {handleKeyboardActivation} from '../../../utils/inputs';
 
@@ -17,7 +16,7 @@ class Switch extends React.Component {
         onClick={disabled ? undefined : onClick}
         onKeyDown={disabled ? undefined : handleKeyboardActivation(onClick)}
       >
-        <div className="toggle" onTransitionEnd={onTransitionEnd}>
+        <div className='toggle' onTransitionEnd={onTransitionEnd}>
           {loading && <SpinnerIcon/>}
         </div>
         <style jsx>{`
@@ -101,7 +100,7 @@ Switch.propTypes = {
   loading: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   onTransitionEnd: PropTypes.func,
-  tabIndex: PropTypes.number.isRequired
+  tabIndex: PropTypes.number.isRequired,
 };
 
 export default Switch;

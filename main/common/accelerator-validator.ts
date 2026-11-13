@@ -43,10 +43,10 @@ const codes = [
   'numadd',
   'numsub',
   'nummult',
-  'numdiv'
+  'numdiv',
 ] as const;
 
-const getKeyCodeRegex = () => new RegExp('^([\\dA-Z~`!@#$%^&*()_+=.,<>?;:\'"\\-\\/\\\\\\[\\]\\{\\}\\|]|F([1-9]|1[\\d]|2[0-4])|' + codes.join('|') + ')$');
+const getKeyCodeRegex = () => new RegExp('^([\\d!"#$%&\'()*+,\\-./:;<=>?@A-Z[\\\\\\]^_`{|}~]|F([1-9]|1\\d|2[0-4])|' + codes.join('|') + ')$');
 
 const shiftKeyMap = new Map([
   ['~', '`'],
@@ -69,7 +69,7 @@ const shiftKeyMap = new Map([
   ['"', '\''],
   ['<', ','],
   ['>', '.'],
-  ['?', '/']
+  ['?', '/'],
 ]);
 
 const numpadKeyMap = new Map([
@@ -87,7 +87,7 @@ const numpadKeyMap = new Map([
   ['+', 'numadd'],
   ['-', 'numsub'],
   ['*', 'nummult'],
-  ['/', 'numdiv']
+  ['/', 'numdiv'],
 ]);
 
 const namedKeyCodeMap = new Map([
@@ -97,7 +97,7 @@ const namedKeyCodeMap = new Map([
   ['ArrowDown', 'Down'],
   ['ArrowLeft', 'Left'],
   ['ArrowRight', 'Right'],
-  ['Clear', 'Numlock']
+  ['Clear', 'Numlock'],
 ]);
 
 export const checkAccelerator = (accelerator: string) => {
@@ -107,11 +107,7 @@ export const checkAccelerator = (accelerator: string) => {
 
   const parts = accelerator.split('+');
 
-  if (parts.length < 2) {
-    return false;
-  }
-
-  if (!getKeyCodeRegex().test(parts[parts.length - 1])) {
+  if (parts.length < 2 || !getKeyCodeRegex().test(parts.at(-1) ?? '')) {
     return false;
   }
 
@@ -119,10 +115,4 @@ export const checkAccelerator = (accelerator: string) => {
   return metaKeys.every(part => modifiers.includes(part)) && metaKeys.some(part => part !== 'Shift');
 };
 
-export const eventKeyToAccelerator = (key: string, location: number) => {
-  if (location === 3) {
-    return numpadKeyMap.get(key);
-  }
-
-  return namedKeyCodeMap.get(key) ?? shiftKeyMap.get(key) ?? key.toUpperCase();
-};
+export const eventKeyToAccelerator = (key: string, location: number) => location === 3 ? numpadKeyMap.get(key) : namedKeyCodeMap.get(key) ?? shiftKeyMap.get(key) ?? key.toUpperCase();

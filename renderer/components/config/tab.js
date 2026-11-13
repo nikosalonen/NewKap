@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Linkify from 'linkify-react';
-
 import Item, {linkOptions} from '../preferences/item';
 import Select from '../preferences/item/select';
 import Switch from '../preferences/item/switch';
@@ -11,14 +10,14 @@ import ShortcutInput from '../preferences/shortcut-input';
 
 const horizontalTypes = [
   'boolean',
-  'hexColor'
+  'hexColor',
 ];
 
 const ConfigInput = ({name, type, schema, value, onChange, hasErrors}) => {
   if (type === 'keyboardShortcut') {
     return (
       <div>
-        <ShortcutInput tabIndex={0} shortcut={value} onChange={value => onChange(name, value)}/>
+        <ShortcutInput tabIndex={0} shortcut={value} onChange={shortcut => onChange(name, shortcut)}/>
         <style jsx>{`
           div {
             margin-top: 8px;
@@ -29,19 +28,19 @@ const ConfigInput = ({name, type, schema, value, onChange, hasErrors}) => {
   }
 
   if (type === 'hexColor') {
-    return <ColorPicker value={value} name={name} hasErrors={hasErrors} onChange={value => onChange(name, value)}/>;
+    return <ColorPicker value={value} name={name} hasErrors={hasErrors} onChange={color => onChange(name, color)}/>;
   }
 
   if (type === 'select') {
-    const options = schema.enum.map(value => ({label: value, value}));
+    const options = schema.enum.map(option => ({label: option, value: option}));
 
-    if (!options.some(option => option.value === value)) {
+    if (options.every(option => option.value !== value)) {
       const newValue = options[0] && options[0].value;
       onChange(name, newValue);
-      return <Select full tabIndex={0} options={options} selected={newValue} onSelect={value => onChange(name, value)}/>;
+      return <Select full tabIndex={0} options={options} selected={newValue} onSelect={selected => onChange(name, selected)}/>;
     }
 
-    return <Select full tabIndex={0} options={options} selected={value} onSelect={value => onChange(name, value)}/>;
+    return <Select full tabIndex={0} options={options} selected={value} onSelect={selected => onChange(name, selected)}/>;
   }
 
   if (type === 'boolean') {
@@ -50,8 +49,8 @@ const ConfigInput = ({name, type, schema, value, onChange, hasErrors}) => {
 
   const className = hasErrors ? 'has-errors' : '';
   const handleChange = event => {
-    const value = type === 'number' ? Number.parseFloat(event.target.value) : event.currentTarget.value;
-    onChange(name, value);
+    const newValue = type === 'number' ? Number.parseFloat(event.target.value) : event.currentTarget.value;
+    onChange(name, newValue);
   };
 
   return (
@@ -104,10 +103,10 @@ ConfigInput.propTypes = {
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.bool,
-    PropTypes.number
+    PropTypes.number,
   ]),
   onChange: PropTypes.elementType.isRequired,
-  hasErrors: PropTypes.bool
+  hasErrors: PropTypes.bool,
 };
 
 class Tab extends React.Component {
@@ -118,17 +117,16 @@ class Tab extends React.Component {
     const allErrors = errors || [];
 
     return (
-      <div className="container">
+      <div className='container'>
         {
           description && (
-            <div className="description">
+            <div className='description'>
               <Linkify options={linkOptions}>{description}</Linkify>
             </div>
           )
         }
         {
-          [...Object.keys(config)].map(key => {
-            const schema = config[key];
+          Object.entries(config).map(([key, schema]) => {
             const type = schema.customType || (schema.enum ? 'select' : schema.type);
             const itemErrors = allErrors
               .filter(({dataPath}) => dataPath.endsWith(key))
@@ -157,13 +155,13 @@ class Tab extends React.Component {
         }
         {
           !serviceTitle && (
-            <Item subtitle="Open config file" onClick={openConfig}>
-              <div className="icon-container"><OpenConfigIcon fill="var(--kap)" hoverFill="var(--kap)" onClick={openConfig}/></div>
+            <Item subtitle='Open config file' onClick={openConfig}>
+              <div className='icon-container'><OpenConfigIcon fill='var(--kap)' hoverFill='var(--kap)' onClick={openConfig}/></div>
             </Item>
           )
         }
-        <Item last subtitle="View plugin on GitHub" onClick={viewOnGithub}>
-          <div className="icon-container"><OpenOnGithubIcon size="20px" fill="var(--kap)" hoverFill="var(--kap)" onClick={viewOnGithub}/></div>
+        <Item last subtitle='View plugin on GitHub' onClick={viewOnGithub}>
+          <div className='icon-container'><OpenOnGithubIcon size='20px' fill='var(--kap)' hoverFill='var(--kap)' onClick={viewOnGithub}/></div>
         </Item>
         <style jsx>{`
           .container {
@@ -200,7 +198,7 @@ Tab.propTypes = {
   onChange: PropTypes.elementType.isRequired,
   openConfig: PropTypes.elementType.isRequired,
   viewOnGithub: PropTypes.elementType.isRequired,
-  serviceTitle: PropTypes.string
+  serviceTitle: PropTypes.string,
 };
 
 export default Tab;
