@@ -1,5 +1,5 @@
 import {app} from 'electron';
-import execa from 'execa';
+import {execa} from 'execa';
 import Store from 'electron-store';
 import {windowManager} from '../windows/manager';
 import {getWindows, type HelperWindow} from './native-helper';

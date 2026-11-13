@@ -3,7 +3,7 @@ import {app} from 'electron';
 import {EventEmitter} from 'node:events';
 import path from 'node:path';
 import fs from 'node:fs';
-import execa from 'execa';
+import {execa} from 'execa';
 import packageJson from 'package-json';
 import type {NormalizedPackageJson} from 'read-pkg';
 import {notify} from '../utils/notifications';

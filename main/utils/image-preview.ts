@@ -2,7 +2,7 @@
 
 import {BrowserWindow, dialog} from 'electron';
 import fs from 'node:fs';
-import execa from 'execa';
+import {execa} from 'execa';
 import tempy from 'tempy';
 import type {Video} from '../video';
 import {generateTimestampedName} from './timestamped-name';

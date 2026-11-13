@@ -1,4 +1,4 @@
-import execa from 'execa';
+import {execa} from 'execa';
 import {timestampToMilliseconds} from '../../main/common/time';
 
 const ffmpegPath = require('ffmpeg-static');

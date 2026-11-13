@@ -1,7 +1,7 @@
 /* eslint-disable @stylistic/array-element-newline -- each ffmpeg flag stays on one line with its value */
 
 import path from 'node:path';
-import execa from 'execa';
+import {execa} from 'execa';
 import tempy from 'tempy';
 import ffmpegPath from './ffmpeg-path';
 

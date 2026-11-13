@@ -1,7 +1,7 @@
 import process from 'node:process';
 import path from 'node:path';
 import {app} from 'electron';
-import execa from 'execa';
+import {execaSync, execa} from 'execa';
 
 // Runs native/kap-helper.swift, built for Apple Silicon by `pnpm build-native`.
 
@@ -38,7 +38,7 @@ const runHelper = async (args: string[]) => {
   return JSON.parse(stdout);
 };
 
-const runHelperSync = (args: string[]) => JSON.parse(execa.sync(getHelperPath(), args).stdout);
+const runHelperSync = (args: string[]) => JSON.parse(execaSync(getHelperPath(), args).stdout);
 
 export const sortAudioInputs = (devices: AudioInput[]) => devices.toSorted((a, b) => {
   if (a.isBuiltIn !== b.isBuiltIn) {

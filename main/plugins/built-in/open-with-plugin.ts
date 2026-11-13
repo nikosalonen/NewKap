@@ -1,6 +1,6 @@
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import execa from 'execa';
+import {execa} from 'execa';
 import type {ShareServiceContext} from '../service-context';
 import {getFormatExtension} from '../../common/constants';
 import type {Format} from '../../common/types';

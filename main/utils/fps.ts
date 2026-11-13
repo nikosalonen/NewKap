@@ -1,4 +1,4 @@
-import execa from 'execa';
+import {execa} from 'execa';
 import ffmpegPath from './ffmpeg-path';
 
 const getFps = async (filePath: string) => {
