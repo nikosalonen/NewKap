@@ -247,7 +247,7 @@
   },
   "build": {
     "appId": "com.wulkano.kap",
-    "afterPack": "./scripts/patch-packaged-metadata.js",
+    "afterPack": "./scripts/after-pack.js",
     "afterSign": "electron-builder-notarize",
     "protocols": {
       "name": "kap",

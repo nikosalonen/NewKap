@@ -139,6 +139,8 @@ CSC_IDENTITY_AUTO_DISCOVERY=false pnpm run pack
 CSC_IDENTITY_AUTO_DISCOVERY=false pnpm exec electron-builder --mac dmg --arm64
 ```
 
+Packaging removes the Intel code from universal binaries and fails if any binary in the app has no arm64 code (`scripts/after-pack.js`).
+
 When Apple signing and notarization credentials are configured, omit `CSC_IDENTITY_AUTO_DISCOVERY=false` and verify signing and notarization before publishing artifacts.
 
 ## Project Shape
