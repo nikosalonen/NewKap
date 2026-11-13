@@ -1,8 +1,10 @@
 import Ajv, {type Options} from 'ajv';
-import type {Schema as JSONSchema} from 'electron-store';
+import type {JSONSchema} from 'json-schema-typed/draft-07';
 import type {Except} from 'type-fest';
 
-export type Schema<T extends {required: boolean} = any> = Except<JSONSchema<T>, 'required'> & {
+// Plugin config schemas are JSON Schema draft-07, the draft Ajv 6 checks.
+// `required` is a flag on each field here; PluginConfig turns it into the object's list.
+export type Schema = Except<Exclude<JSONSchema, boolean>, 'required'> & {
   required?: boolean;
   customType?: string;
 };

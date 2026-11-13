@@ -173,8 +173,8 @@ importers:
   .:
     dependencies:
       ajv:
-        specifier: ^6.12.2
-        version: 6.12.6
+        specifier: ^6.15.0
+        version: 6.15.0
       aperture:
         specifier: 6.1.2
         version: 6.1.2(patch_hash=2512d67aaca02f4086570cdf3f090ee74dfdfde629278f16452bbb5e28eae2fe)
@@ -320,6 +320,9 @@ importers:
       globals:
         specifier: 17.14.0
         version: 17.14.0
+      json-schema-typed:
+        specifier: ^8.0.2
+        version: 8.0.2
       module-alias:
         specifier: ^2.3.5
         version: 2.3.5
@@ -1528,9 +1531,6 @@ packages:
     peerDependenciesMeta:
       ajv:
         optional: true
-
-  ajv@6.12.6:
-    resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
   ajv@6.15.0:
     resolution: {integrity: sha512-fgFx7Hfoq60ytK2c7DhnF8jIvzYgOMxfugjLOSMHjLIPgenqa7S7oaagATUq99mV6IYvN2tRmC0wnTYX6iPbMw==}
@@ -6191,13 +6191,6 @@ snapshots:
   ajv-formats@3.0.1(ajv@8.20.0):
     optionalDependencies:
       ajv: 8.20.0
-
-  ajv@6.12.6:
-    dependencies:
-      fast-deep-equal: 3.1.3
-      fast-json-stable-stringify: 2.1.0
-      json-schema-traverse: 0.4.1
-      uri-js: 4.4.1
 
   ajv@6.15.0:
     dependencies:

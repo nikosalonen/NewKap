@@ -1,5 +1,6 @@
 import type {ValidateFunction} from 'ajv';
-import Store, {type Schema as JSONSchema} from 'electron-store';
+import Store from 'electron-store';
+import type {Except} from 'type-fest';
 import Ajv, {type Schema} from '../utils/ajv';
 import type {Service} from './service';
 
@@ -19,7 +20,7 @@ export default class PluginConfig extends Store {
       .filter(({config}) => Boolean(config))
       .map(service => {
         const config = service.config as Record<string, Schema>;
-        const schema: Record<string, JSONSchema<any>> = {};
+        const schema: Record<string, Except<Schema, 'required'>> = {};
         const requiredKeys = [];
 
         for (const [key, item] of Object.entries(config)) {

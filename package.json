@@ -30,7 +30,7 @@
     "dev": "next dev renderer"
   },
   "dependencies": {
-    "ajv": "^6.12.2",
+    "ajv": "^6.15.0",
     "aperture": "6.1.2",
     "baseline-browser-mapping": "^2.10.43",
     "caniuse-lite": "^1.0.30001806",
@@ -81,6 +81,7 @@
     "electron-builder": "^26.18.0",
     "eslint-config-xo-react": "^0.32.0",
     "globals": "17.14.0",
+    "json-schema-typed": "^8.0.2",
     "module-alias": "^2.3.5",
     "next": "^16.4.6",
     "sinon": "^22.1.0",
