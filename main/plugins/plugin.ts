@@ -1,6 +1,7 @@
 import {app, shell} from 'electron';
 import semver from 'semver';
 import {isMacosVersion} from '../utils/system-version';
+import {isSafeExternalUrl} from '../common/external-url';
 import path from 'path';
 import fs from 'fs';
 import readPkg from 'read-pkg';
@@ -53,7 +54,7 @@ class BasePlugin {
   }
 
   viewOnGithub() {
-    if (this.link) {
+    if (this.link && isSafeExternalUrl(this.link)) {
       shell.openExternal(this.link);
     }
   }

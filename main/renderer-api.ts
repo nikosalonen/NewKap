@@ -15,6 +15,7 @@ import {captureScreenshot} from './screenshot';
 import {windowManager} from './windows/manager';
 import {translateBoundsToDisplay} from './common/display-bounds';
 import {isMacosVersionAtLeast} from './utils/system-version';
+import {isSafeExternalUrl} from './common/external-url';
 
 const CONVERSION_WIDTH = 370;
 const CONVERSION_HEIGHT = 392;
@@ -245,7 +246,14 @@ export const setupRendererApi = () => {
     return checkForUpdates({silent: false});
   });
 
-  ipcMain.handle('kap:shell:open-external', (_event, url: string) => shell.openExternal(url));
+  ipcMain.handle('kap:shell:open-external', async (_event, url: string) => {
+    if (!isSafeExternalUrl(url)) {
+      console.warn('[renderer-api] refused to open a non-web URL:', url);
+      return;
+    }
+
+    return shell.openExternal(url);
+  });
   ipcMain.handle('kap:shell:open-path', (_event, filePath: string) => shell.openPath(filePath));
   ipcMain.handle('kap:system:get-audio-devices', () => getAudioDevices());
   ipcMain.handle('kap:system:get-default-input-device', () => getDefaultInputDevice());

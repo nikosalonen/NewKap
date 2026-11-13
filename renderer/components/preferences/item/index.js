@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import kap from '../../../utils/kap';
 import classNames from 'classnames';
 import Linkify from 'linkify-react';
+import {isSafeExternalUrl} from '../../../../main/common/external-url';
 import {HelpIcon} from '../../../vectors';
 
 export const Link = ({href, children}) => (
@@ -21,8 +22,9 @@ export const Link = ({href, children}) => (
 );
 
 // Renders the links that linkify-react finds in plain text with Kap's Link.
+// Plugin descriptions come from npm, so anything but web and email links stays plain text.
 export const linkOptions = {
-  render: ({attributes, content}) => <Link href={attributes.href}>{content}</Link>
+  render: ({attributes, content}) => isSafeExternalUrl(attributes.href) ? <Link href={attributes.href}>{content}</Link> : content
 };
 
 Link.propTypes = {
