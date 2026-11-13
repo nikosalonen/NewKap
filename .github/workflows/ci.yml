@@ -4,19 +4,45 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
+# A new push to the same branch cancels the run it replaces.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  validate:
-    runs-on: macos-latest
+  checks:
+    name: Typecheck, lint and renderer build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # Installs the pnpm version from package.json "packageManager".
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      # The install scripts download macOS binaries and build the Swift helper. These checks need neither.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm typecheck
       - run: pnpm lint
-      - run: pnpm test:main
       - run: pnpm build-renderer
+
+  test:
+    name: Tests
+    # The tests run the Swift helper, ffmpeg, lipo and clang, so they need macOS.
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # Also builds native/build/kap-helper.
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:main

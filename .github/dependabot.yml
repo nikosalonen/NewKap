@@ -1,0 +1,48 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One pull request a week for everything that stays on the same major version.
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # These majors are migrations done by hand, not drop-in updates.
+      - dependency-name: next
+        update-types: ["version-update:semver-major"]
+      - dependency-name: react
+        update-types: ["version-update:semver-major"]
+      - dependency-name: react-dom
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: xo
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@typescript-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      - dependency-name: ava
+        update-types: ["version-update:semver-major"]
+      - dependency-name: sinon
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/sinon"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: aperture
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
