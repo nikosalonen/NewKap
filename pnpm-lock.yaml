@@ -271,9 +271,6 @@ importers:
       tildify:
         specifier: ^2.0.0
         version: 2.0.0
-      unstated:
-        specifier: ^1.2.0
-        version: 1.2.0(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       unstated-next:
         specifier: ^1.1.0
         version: 1.1.0
@@ -1931,12 +1928,6 @@ packages:
 
   create-hmac@1.1.7:
     resolution: {integrity: sha512-MJG9liiZ+ogc4TzUwuvbER1JRdgvUFSB5+VR/g5h82fGaIRWMWddtKBHi7/sVhfjQZ6SehlyhvQYrcYkaUIpLg==}
-
-  create-react-context@0.1.6:
-    resolution: {integrity: sha512-eCnYYEUEc5i32LHwpE/W7NlddOB9oHwsPaWtWzYtflNkkwa3IfindIcoXdVWs12zCbwaMCavKNu84EXogVIWHw==}
-    peerDependencies:
-      prop-types: ^15.0.0
-      react: ^14.0.0 || ^15.0.0 || ^16.0.0
 
   cross-spawn@5.1.0:
     resolution: {integrity: sha512-pTgQJ5KC0d2hcY8eyL1IzlBPYjTkyH72XRZPnLyKus2mBfNjQs3klqbJU2VILqZryAZUt9JOb3h/mWMy23/f5A==}
@@ -5267,13 +5258,6 @@ packages:
   unstated-next@1.1.0:
     resolution: {integrity: sha512-AAn47ZncPvgBGOvMcn8tSRxsrqwf2VdAPxLASTuLJvZt4rhKfDvUkmYZLGfclImSfTVMv7tF4ynaVxin0JjDCA==}
 
-  unstated@1.2.0:
-    resolution: {integrity: sha512-nmI65VVuMRFm1UBxF1BEWTt8XoRldX1gEwcyBhcFJSsLycHuHFa8qjYnTv8wMISGs7e+HKWeXAtTi1DvEsg00w==}
-    peerDependencies:
-      prop-types: ^15.5.0
-      react: ^15.0.0 || ^16.0.0
-      react-dom: ^15.0.0 || ^16.0.0
-
   unzipper@0.12.5:
     resolution: {integrity: sha512-tXYOi9R57Uj/2Z25SOs5RRSzq886MBQj2gY8dPL+xl/kv6s6SvByoKfAtvfVeEuhntWDgjd2o9p2lb4TVPAz0A==}
 
@@ -7303,11 +7287,6 @@ snapshots:
       ripemd160: 2.0.2
       safe-buffer: 5.2.1
       sha.js: 2.4.11
-
-  create-react-context@0.1.6(prop-types@15.8.1)(react@17.0.2):
-    dependencies:
-      prop-types: 15.8.1
-      react: 17.0.2
 
   cross-spawn@5.1.0:
     dependencies:
@@ -11120,13 +11099,6 @@ snapshots:
       '@unrs/resolver-binding-win32-x64-msvc': 1.13.0
 
   unstated-next@1.1.0: {}
-
-  unstated@1.2.0(prop-types@15.8.1)(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
-    dependencies:
-      create-react-context: 0.1.6(prop-types@15.8.1)(react@17.0.2)
-      prop-types: 15.8.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
 
   unzipper@0.12.5:
     dependencies:

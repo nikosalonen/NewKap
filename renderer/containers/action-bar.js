@@ -1,5 +1,5 @@
-import {Container} from 'unstated';
 import kap from '../utils/kap';
+import {Container} from './container';
 
 const barWidth = 496;
 const barHeight = 64;

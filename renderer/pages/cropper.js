@@ -1,5 +1,5 @@
 import React from 'react';
-import {Provider} from 'unstated';
+import {Provider} from '../containers';
 import kap from '../utils/kap';
 import Overlay from '../components/cropper/overlay';
 import Cropper from '../components/cropper';
@@ -12,6 +12,7 @@ import ActionBarContainer from '../containers/action-bar';
 const cursorContainer = new CursorContainer();
 const cropperContainer = new CropperContainer();
 const actionBarContainer = new ActionBarContainer();
+const containers = [cursorContainer, cropperContainer, actionBarContainer];
 
 cropperContainer.bindCursor(cursorContainer);
 cropperContainer.bindActionBar(actionBarContainer);
@@ -191,7 +192,7 @@ export default class CropperPage extends React.Component {
   render() {
     return (
       <div className='cover-screen'>
-        <Provider inject={[cursorContainer, cropperContainer, actionBarContainer]}>
+        <Provider inject={containers}>
           <Overlay>
             <Cropper/>
             <Countdown/>

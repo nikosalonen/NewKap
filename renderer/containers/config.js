@@ -1,5 +1,5 @@
-import {Container} from 'unstated';
 import kap from '../utils/kap';
+import {Container} from './container';
 
 export default class ConfigContainer extends Container {
   state = {selectedTab: 0};

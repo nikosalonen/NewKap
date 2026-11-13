@@ -1,6 +1,6 @@
-import {Container} from 'unstated';
 import kap from '../utils/kap';
 import {ipcRenderer as ipc} from '../utils/ipc';
+import {Container} from './container';
 
 export default class PreferencesContainer extends Container {
   state = {

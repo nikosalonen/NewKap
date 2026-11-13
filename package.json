@@ -63,7 +63,6 @@
     "string-math": "^1.2.2",
     "tempy": "^1.0.0",
     "tildify": "^2.0.0",
-    "unstated": "^1.2.0",
     "unstated-next": "^1.1.0",
     "yarn": "^1.22.22"
   },

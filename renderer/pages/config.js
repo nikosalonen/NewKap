@@ -1,11 +1,11 @@
 import React from 'react';
-import {Provider} from 'unstated';
+import {Provider, ConfigContainer} from '../containers';
 import answerMain from '../utils/answer-main';
-import {ConfigContainer} from '../containers';
 import Config from '../components/config';
 import WindowHeader from '../components/window-header';
 
 const configContainer = new ConfigContainer();
+const containers = [configContainer];
 
 export default class ConfigPage extends React.Component {
   state = {title: ''};
@@ -28,7 +28,7 @@ export default class ConfigPage extends React.Component {
     return (
       <div className='root'>
         <div className='cover-window'>
-          <Provider inject={[configContainer]}>
+          <Provider inject={containers}>
             <WindowHeader title={title}/>
             <Config/>
           </Provider>

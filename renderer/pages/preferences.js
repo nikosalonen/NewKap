@@ -1,6 +1,6 @@
 import React from 'react';
-import {Provider} from 'unstated';
 import classNames from 'classnames';
+import {Provider} from '../containers';
 import answerMain from '../utils/answer-main';
 import {ipcRenderer} from '../utils/ipc';
 import kap from '../utils/kap';
@@ -10,6 +10,7 @@ import Categories from '../components/preferences/categories';
 import PreferencesContainer from '../containers/preferences';
 
 const preferencesContainer = new PreferencesContainer();
+const containers = [preferencesContainer];
 
 export default class PreferencesPage extends React.Component {
   state = {overlay: false};
@@ -34,7 +35,7 @@ export default class PreferencesPage extends React.Component {
     return (
       <div className='cover-window'>
         <div className={className}/>
-        <Provider inject={[preferencesContainer]}>
+        <Provider inject={containers}>
           <WindowHeader title='Preferences'>
             <PreferencesNavigation/>
           </WindowHeader>

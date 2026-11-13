@@ -1,5 +1,4 @@
 import nearestNormalAspectRatio from 'nearest-normal-aspect-ratio';
-import {Container} from 'unstated';
 import kap from '../utils/kap';
 import {
   minHeight,
@@ -7,6 +6,7 @@ import {
   resizeTo,
   setScreenSize,
 } from '../utils/inputs';
+import {Container} from './container';
 
 const getLargestCommonDivisor = (first, second) => {
   if (!first) {
