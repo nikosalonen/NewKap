@@ -21,6 +21,7 @@ export type Separator = {
   subMenu: never;
   type: never;
   checked: never;
+  click?: never;
   icon: never;
   separator: true;
 };
