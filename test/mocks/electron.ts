@@ -11,9 +11,14 @@ process.env.TZ = 'America/New_York';
 export const app = {
   getPath: (name: string) => path.resolve(temporaryDir, name),
   isPackaged: false,
-  getVersion: '',
+  getVersion: () => '0.0.0',
   focus: sinon.fake(),
   quit: sinon.fake(),
+};
+
+// The electron-store package registers an IPC handler for renderer stores.
+export const ipcMain = {
+  on: sinon.fake(),
 };
 
 export const shell = {

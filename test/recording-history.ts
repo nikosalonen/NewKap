@@ -35,6 +35,11 @@ const {
   cleanPastRecordings,
 } = require('../main/recording-history') as typeof RecordingHistoryModule;
 
+// Test fixtures fill in only the fields each test needs, so skip the store's value types.
+const setStoredHistory = (key: 'activeRecording' | 'recordings', value: unknown) => {
+  recordingHistory.set(key, value as any);
+};
+
 const incomplete = path.resolve(__dirname, 'fixtures', 'incomplete.mp4');
 const corrupt = path.resolve(__dirname, 'fixtures', 'corrupt.mp4');
 
@@ -69,7 +74,7 @@ test('`getPastRecordings()`', t => {
   fs.writeFileSync(existingPath, 'data');
   t.context.paths = [existingPath];
 
-  recordingHistory.set('recordings', [{filePath: existingPath}, {filePath: missingPath}]);
+  setStoredHistory('recordings', [{filePath: existingPath}, {filePath: missingPath}]);
 
   t.deepEqual(getPastRecordings(), [{filePath: existingPath} as PastRecording]);
   t.deepEqual(recordingHistory.get('recordings'), [{filePath: existingPath} as PastRecording]);
@@ -92,7 +97,7 @@ test('`hasActiveRecording()` with playable recording', async t => {
 
   plugins.recordingPlugins = [fakePlugin];
 
-  recordingHistory.set('activeRecording', {
+  setStoredHistory('activeRecording', {
     filePath: incomplete,
     name: 'Incomplete',
     date: new Date().toISOString(),
@@ -137,7 +142,7 @@ test('`hasActiveRecording()` with playable recording', async t => {
 });
 
 test('`hasActiveRecording()` with known corrupt recording', async t => {
-  recordingHistory.set('activeRecording', {
+  setStoredHistory('activeRecording', {
     filePath: corrupt,
     name: 'Corrupt',
     date: new Date().toISOString(),
@@ -175,7 +180,7 @@ test('`hasActiveRecording()` with unknown corrupt recording', async t => {
   fs.writeFileSync(filePath, 'data');
   t.context.paths = [filePath];
 
-  recordingHistory.set('activeRecording', {
+  setStoredHistory('activeRecording', {
     filePath,
     name: 'Bad',
     date: new Date().toISOString(),
@@ -220,7 +225,7 @@ test('`setCurrentRecording()`', t => {
 });
 
 test('`updatePluginState()`', t => {
-  recordingHistory.set('activeRecording', {
+  setStoredHistory('activeRecording', {
     name: 'Some name',
     plugins: {
       plugin1: {
@@ -256,7 +261,7 @@ test('`stopCurrentRecording()`', t => {
   fs.writeFileSync(filePath, 'data');
   t.context.paths = [filePath];
 
-  recordingHistory.set('activeRecording', {
+  setStoredHistory('activeRecording', {
     filePath,
     name: 'some name',
   });
@@ -266,7 +271,7 @@ test('`stopCurrentRecording()`', t => {
   t.false(recordingHistory.has('activeRecording'));
   t.deepEqual(recordingHistory.get('recordings'), [{filePath, name: 'some name', date: t.context.now.toISOString()}]);
 
-  recordingHistory.set('activeRecording', {
+  setStoredHistory('activeRecording', {
     filePath,
     name: 'some name',
   });
@@ -285,7 +290,7 @@ test('`cleanPastRecordings()`', t => {
   fs.writeFileSync(filePath, 'data');
   t.context.paths = [filePath];
 
-  recordingHistory.set('recordings', [
+  setStoredHistory('recordings', [
     {filePath},
     // Should ignore file that doesn't exist
     {filePath: tempy.file({extension: 'mp4'})},
