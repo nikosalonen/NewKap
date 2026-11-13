@@ -30,8 +30,8 @@
     "build": "pnpm build-native && pnpm build-main && pnpm build-renderer",
     "dist": "pnpm build && electron-builder",
     "pack": "pnpm build && electron-builder --dir",
+    "pack:local": "pnpm build && electron-builder --dir -c.mac.identity=- -c.mac.hardenedRuntime=false",
     "postinstall": "electron-builder install-app-deps && pnpm build-native",
-    "sentry-version": "echo \"$npm_package_name@$npm_package_version\"",
     "dev": "next dev renderer"
   },
   "bundle": {
@@ -99,8 +99,7 @@
     "ava": "^3.15.0",
     "babel-eslint": "^10.1.0",
     "electron": "45.3.1",
-    "electron-builder": "^23.3.3",
-    "electron-builder-notarize": "^1.4.0",
+    "electron-builder": "^26.18.0",
     "eslint-config-xo": "^0.35.0",
     "eslint-config-xo-react": "^0.24.0",
     "eslint-config-xo-typescript": "^0.38.0",
@@ -226,7 +225,6 @@
   "build": {
     "appId": "com.wulkano.kap",
     "afterPack": "./scripts/after-pack.js",
-    "afterSign": "electron-builder-notarize",
     "protocols": {
       "name": "kap",
       "schemes": [
@@ -254,7 +252,6 @@
     ],
     "mac": {
       "icon": "build/icon.icns",
-      "electronUpdaterCompatibility": ">=2.16",
       "category": "public.app-category.productivity",
       "minimumSystemVersion": "13.0.0",
       "darkModeSupport": true,

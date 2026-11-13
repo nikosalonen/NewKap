@@ -134,14 +134,16 @@ pnpm build-renderer
 Packaging:
 
 ```bash
-pnpm build
-CSC_IDENTITY_AUTO_DISCOVERY=false pnpm run pack
-CSC_IDENTITY_AUTO_DISCOVERY=false pnpm exec electron-builder --mac dmg --arm64
+# Test build for this Mac: dist/mac-arm64/Kap.app, signed ad hoc.
+pnpm run pack:local
+
+# Release DMG, signed with the Developer ID certificate in your keychain.
+pnpm dist
 ```
 
 Packaging removes the Intel code from universal binaries and fails if any binary in the app has no arm64 code (`scripts/after-pack.js`).
 
-When Apple signing and notarization credentials are configured, omit `CSC_IDENTITY_AUTO_DISCOVERY=false` and verify signing and notarization before publishing artifacts.
+`pnpm dist` notarizes the app when these environment variables are set: `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD` and `APPLE_TEAM_ID`, or `APPLE_API_KEY`, `APPLE_API_KEY_ID` and `APPLE_API_ISSUER`. The old `electron-builder-notarize` names `APPLE_ID_PASSWORD` and `APPLE_API_KEY_ISSUER` no longer work. Verify signing and notarization before publishing artifacts.
 
 ## Project Shape
 
