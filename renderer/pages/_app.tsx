@@ -3,7 +3,6 @@ import Head from 'next/head';
 import {useState, useEffect} from 'react';
 import useDarkMode from '../hooks/dark-mode';
 import GlobalStyles from '../utils/global-styles';
-import SentryErrorBoundary from '../utils/sentry-error-boundary';
 import {WindowStateProvider} from '../hooks/window-state';
 import classNames from 'classnames';
 
@@ -60,12 +59,10 @@ const MainApp = ({Component, pageProps}: AppProps) => {
         />
       </Head>
       <div className={className}>
-        <SentryErrorBoundary>
-          <WindowStateProvider>
-            <Component {...pageProps}/>
-            <GlobalStyles/>
-          </WindowStateProvider>
-        </SentryErrorBoundary>
+        <WindowStateProvider>
+          <Component {...pageProps}/>
+          <GlobalStyles/>
+        </WindowStateProvider>
       </div>
     </>
   );

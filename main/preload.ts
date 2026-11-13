@@ -192,7 +192,6 @@ contextBridge.exposeInMainWorld('kap', {
     onNativeThemeUpdated: (callback: () => void) => on('kap:system:native-theme-updated', callback),
     shouldUseDarkColors: () => ipcRenderer.sendSync('kap:system:should-use-dark-colors-sync')
   },
-  track: (event: string) => invoke('kap:analytics:track', event),
   updater: {
     check: () => invoke('kap:updater:check')
   },

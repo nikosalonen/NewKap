@@ -18,7 +18,6 @@ const getRandomFileName = (ext: Format = Format.mp4) => `${uniqueString()}.${get
 const input = path.resolve(__dirname, 'fixtures', 'input.mp4');
 const retinaInput = path.resolve(__dirname, 'fixtures', 'input@2x.mp4');
 
-mockImport('../common/analytics', 'analytics');
 mockImport('../plugins/service-context', 'service-context');
 mockImport('../plugins', 'plugins');
 const {settings} = mockImport('../common/settings', 'settings');

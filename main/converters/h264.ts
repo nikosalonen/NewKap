@@ -12,7 +12,7 @@ import fs from 'fs';
 const convertToGif = PCancelable.fn(async (options: ConvertOptions, onCancel: PCancelable.OnCancelFunction) => {
   const palettePath = tempy.file({extension: 'png'});
 
-  const paletteProcess = convert(palettePath, {shouldTrack: false}, conditionalArgs(
+  const paletteProcess = convert(palettePath, {}, conditionalArgs(
     '-i', options.inputPath,
     '-vf', `fps=${options.fps}${options.shouldCrop ? `,scale=${options.width}:${options.height}:flags=lanczos` : ''},palettegen`,
     {

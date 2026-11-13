@@ -2,8 +2,6 @@ import {Container} from 'unstated';
 import kap from '../utils/kap';
 import {ipcRenderer as ipc} from '../utils/ipc';
 
-const SETTINGS_ANALYTICS_BLACKLIST = ['kapturesDir'];
-
 export default class PreferencesContainer extends Container {
   state = {
     category: 'general',
@@ -17,7 +15,6 @@ export default class PreferencesContainer extends Container {
     this.defaultInputDeviceId = 'SYSTEM_DEFAULT';
     this.systemPermissions = kap.permissions;
     this.plugins = kap.plugins;
-    this.track = kap.track;
     this.showError = error => console.error(error);
 
     const pluginsInstalled = await this.plugins.getInstalled();
@@ -193,7 +190,6 @@ export default class PreferencesContainer extends Container {
   };
 
   openPluginsConfig = async name => {
-    this.track(`plugin/config/${name}`);
     this.scrollIntoView('installed', name);
     this.setState({category: 'plugins'});
     this.setOverlay(true);
@@ -209,16 +205,11 @@ export default class PreferencesContainer extends Container {
   };
 
   selectTab = tab => {
-    this.track(`preferences/tab/${tab}`);
     this.setState({tab});
   };
 
   toggleSetting = (setting, value) => {
     const newValue = value === undefined ? !this.state[setting] : value;
-    if (!SETTINGS_ANALYTICS_BLACKLIST.includes(setting)) {
-      this.track(`preferences/setting/${setting}/${newValue}`);
-    }
-
     this.setState({[setting]: newValue});
     this.settings.set(setting, newValue);
   };
@@ -226,7 +217,6 @@ export default class PreferencesContainer extends Container {
   setCountdownDuration = value => {
     const duration = Math.max(0, Math.min(60, Number.parseInt(value || 0, 10) || 0));
 
-    this.track(`preferences/setting/countdownDuration/${duration}`);
     this.setState({
       countdownDuration: duration,
       showCountdown: duration > 0
@@ -237,7 +227,6 @@ export default class PreferencesContainer extends Container {
 
   toggleRecordAudio = async () => {
     const newValue = !this.state.recordAudio;
-    this.track(`preferences/setting/recordAudio/${newValue}`);
 
     if (!newValue || await this.systemPermissions.ensureMicrophonePermissions()) {
       if (newValue) {

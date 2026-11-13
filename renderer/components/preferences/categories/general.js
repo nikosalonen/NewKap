@@ -48,7 +48,6 @@ class General extends React.Component {
     const {
       kapturesDir,
       openOnStartup,
-      allowAnalytics,
       showCursor,
       highlightClicks,
       record60fps,
@@ -212,14 +211,7 @@ class General extends React.Component {
             selected={defaultExportFormat}
             onSelect={value => toggleSetting('defaultExportFormat', value)}/>
         </Item>
-        <div className="section-heading"><h2>App</h2><span>Startup, notifications, privacy, and file storage</span></div>
-        <Item
-          key="allowAnalytics"
-          title="Allow analytics"
-          subtitle="Help us improve Kap by sending anonymous usage stats"
-        >
-          <Switch tabIndex={tabIndex} checked={allowAnalytics} onClick={() => toggleSetting('allowAnalytics')}/>
-        </Item>
+        <div className="section-heading"><h2>App</h2><span>Startup, notifications, and file storage</span></div>
         <Item
           key="openOnStartup"
           title="Start automatically"
@@ -340,7 +332,6 @@ General.propTypes = {
   recordAudio: PropTypes.bool,
   kapturesDir: PropTypes.string,
   openOnStartup: PropTypes.bool,
-  allowAnalytics: PropTypes.bool,
   loopExports: PropTypes.bool,
   countdownDuration: PropTypes.number,
   setCountdownDuration: PropTypes.elementType.isRequired,
@@ -365,7 +356,6 @@ export default connect(
     audioDevices,
     kapturesDir,
     openOnStartup,
-    allowAnalytics,
     loopExports,
     showCountdown,
     countdownDuration,
@@ -384,7 +374,6 @@ export default connect(
     audioDevices,
     kapturesDir,
     openOnStartup,
-    allowAnalytics,
     loopExports,
     showCountdown,
     countdownDuration,

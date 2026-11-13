@@ -72,7 +72,6 @@ const unavailable = {
     onNativeThemeUpdated: () => noop,
     shouldUseDarkColors: () => false
   },
-  track: asyncNoop,
   updater: {
     check: asyncNoop
   },

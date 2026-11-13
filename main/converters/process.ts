@@ -5,7 +5,6 @@ import PCancelable from 'p-cancelable';
 import tempy from 'tempy';
 import path from 'path';
 
-import {track} from '../common/analytics';
 import {conditionalArgs, extractProgressFromStderr} from './utils';
 import {settings} from '../common/settings';
 
@@ -26,15 +25,10 @@ const modes = new Map([
 ]);
 
 export interface ProcessOptions {
-  shouldTrack?: boolean;
   startTime?: number;
   endTime?: number;
   onProgress?: (progress: number, estimate?: string) => void;
 }
-
-const defaultProcessOptions = {
-  shouldTrack: true
-};
 
 const createProcess = (mode: Mode) => {
   const program = modes.get(mode)!;
@@ -42,28 +36,16 @@ const createProcess = (mode: Mode) => {
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   return (outputPath: string, options: ProcessOptions, args: string[]) => {
     const {
-      shouldTrack,
       startTime = 0,
       endTime = 0,
       onProgress
-    } = {
-      ...defaultProcessOptions,
-      ...options
-    };
-
-    const modeName = Mode[mode];
-    const trackConversionEvent = (eventName: string) => {
-      if (shouldTrack) {
-        track(`file/export/${modeName}/${eventName}`);
-      }
-    };
+    } = options;
 
     return new PCancelable<string>((resolve, reject, onCancel) => {
       const runner = execa(program, args);
       const conversionStartTime = Date.now();
 
       onCancel(() => {
-        trackConversionEvent('canceled');
         runner.kill();
       });
 
@@ -82,7 +64,6 @@ const createProcess = (mode: Mode) => {
       });
 
       const failWithError = (reason: unknown) => {
-        trackConversionEvent('failed');
         reject(reason);
       };
 
@@ -90,7 +71,6 @@ const createProcess = (mode: Mode) => {
 
       runner.on('exit', code => {
         if (code === 0) {
-          trackConversionEvent('completed');
           resolve(outputPath);
         } else {
           failWithError(new Error(`${program} exited with code: ${code ?? 0}\n\n${stderr}`));
@@ -119,7 +99,7 @@ export const compress = (outputPath: string, options: ProcessOptions, args: stri
 export const mute = PCancelable.fn(async (inputPath: string, onCancel: PCancelable.OnCancelFunction) => {
   const mutedPath = tempy.file({extension: path.extname(inputPath)});
 
-  const converter = convert(mutedPath, {shouldTrack: false}, [
+  const converter = convert(mutedPath, {}, [
     '-i',
     inputPath,
     '-an',

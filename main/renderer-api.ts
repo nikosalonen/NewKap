@@ -2,7 +2,6 @@
 import {app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, nativeImage, nativeTheme, shell, systemPreferences} from 'electron';
 import type {MenuItemConstructorOptions} from 'electron';
 import {settings} from './common/settings';
-import {track} from './common/analytics';
 import {ensureMicrophonePermissions} from './common/system-permissions';
 import {plugins} from './plugins';
 import {InstalledPlugin, NpmPlugin} from './plugins/plugin';
@@ -120,7 +119,6 @@ export const setupRendererApi = () => {
     event.returnValue = getSenderWindow(event).id;
   });
 
-  ipcMain.handle('kap:analytics:track', (_event, name: string) => track(name));
   ipcMain.handle('kap:app:get-info', () => ({
     isPackaged: app.isPackaged,
     name: app.name,

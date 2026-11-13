@@ -4,7 +4,6 @@ import path from 'path';
 import fs from 'fs';
 import makeDir from 'make-dir';
 import execa from 'execa';
-import {track} from '../common/analytics';
 import {InstalledPlugin, NpmPlugin} from './plugin';
 import {showError} from '../utils/errors';
 import {notify} from '../utils/notifications';
@@ -35,7 +34,6 @@ export class Plugins extends EventEmitter {
 
   async install(name: string): Promise<InstalledPlugin | void> {
     this.ensureLoaded();
-    track(`plugin/installed/${name}`);
 
     this.modifyMainPackageJson(pkg => {
       if (!pkg.dependencies) {
@@ -99,7 +97,6 @@ export class Plugins extends EventEmitter {
   }
 
   async uninstall(name: string) {
-    track(`plugin/uninstalled/${name}`);
     this.modifyMainPackageJson(pkg => {
       delete pkg.dependencies[name];
     });

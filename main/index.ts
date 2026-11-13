@@ -71,7 +71,6 @@ app.on('open-file', (event, filePath) => {
   event.preventDefault();
 
   if (app.isReady()) {
-    require('./common/analytics').track('editor/opened/running');
     require('./utils/open-files').openFiles(filePath);
   } else {
     filesToOpen.push(filePath);
@@ -228,23 +227,13 @@ app.on('window-all-closed', () => {
       mark('deferred windows loaded');
     });
 
-    // Electron-timber's renderer preload uses Electron's removed built-in
-    // remote API and fails before application code on current Electron.
-    try {
-      require('./utils/sentry');
-    } catch (error) {
-      console.error('[main] failed to initialize Sentry', error);
-    }
-
     await tick();
 
     const {initializeDevices} = require('./utils/devices');
-    const {initializeAnalytics} = require('./common/analytics');
     const {initializeGlobalAccelerators} = require('./global-accelerators');
     const {setUpExportsListeners} = require('./export');
 
     initializeDevices();
-    initializeAnalytics();
     initializeGlobalAccelerators();
     setUpExportsListeners();
 
@@ -255,7 +244,6 @@ app.on('window-all-closed', () => {
     await tick();
 
     if (filesToOpen.length > 0) {
-      require('./common/analytics').track('editor/opened/startup');
       require('./utils/open-files').openFiles(...filesToOpen);
       require('./recording-history').hasActiveRecording().catch(console.error);
     }

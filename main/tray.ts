@@ -5,7 +5,6 @@ import {KeyboardEvent} from 'electron/main';
 import path from 'path';
 import {buildBasicCogMenu, getCogMenuAsync} from './menus/cog';
 import {getRecordMenuTemplate} from './menus/record';
-import {track} from './common/analytics';
 import {openFiles} from './utils/open-files';
 import {windowManager} from './windows/manager';
 import {pauseRecording, resumeRecording, stopRecording} from './aperture';
@@ -64,7 +63,6 @@ export const initializeTray = (existingTray?: Tray) => {
   tray.on('click', openCropperWindow);
   tray.on('right-click', openContextMenu);
   tray.on('drop-files', (_, files) => {
-    track('editor/opened/tray');
     openFiles(...files);
   });
 

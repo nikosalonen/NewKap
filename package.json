@@ -38,8 +38,6 @@
     "name": "Kap"
   },
   "dependencies": {
-    "@sentry/browser": "^6.2.2",
-    "@sentry/electron": "^2.4.0",
     "@sindresorhus/to-milliseconds": "^1.2.0",
     "ajv": "^6.12.2",
     "aperture": "^6.1.2",
@@ -59,7 +57,6 @@
     "ffmpeg-static": "^4.4.1",
     "gifsicle": "^7.0.1",
     "got": "^9.6.0",
-    "is-online": "^8.4.0",
     "lodash": "^4.17.21",
     "macos-version": "^5.2.1",
     "make-dir": "^3.1.0",

@@ -1,7 +1,6 @@
 import {hasMicrophoneAccess} from '../common/system-permissions';
 import {settings} from '../common/settings';
 import {defaultInputDeviceId} from '../common/constants';
-import Sentry from './sentry';
 import {getAudioInputs, getAudioInputsSync} from './native-helper';
 const aperture = require('aperture');
 
@@ -38,8 +37,7 @@ export const getAudioDevices = async () => {
       const devices = await aperture.audioDevices();
 
       if (!Array.isArray(devices)) {
-        Sentry.captureException(new Error(`devices is not an array: ${JSON.stringify(devices)}`));
-        console.error('Audio device error:', error);
+        console.error('Audio device error:', error, 'aperture returned:', devices);
         return cachedDevices ?? [];
       }
 

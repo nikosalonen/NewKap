@@ -169,12 +169,6 @@ importers:
 
   .:
     dependencies:
-      '@sentry/browser':
-        specifier: ^6.2.2
-        version: 6.17.4
-      '@sentry/electron':
-        specifier: ^2.4.0
-        version: 2.5.4(supports-color@8.1.1)
       '@sindresorhus/to-milliseconds':
         specifier: ^1.2.0
         version: 1.2.0
@@ -232,9 +226,6 @@ importers:
       got:
         specifier: ^9.6.0
         version: 9.6.0
-      is-online:
-        specifier: ^8.4.0
-        version: 8.5.1
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -584,9 +575,6 @@ packages:
     resolution: {integrity: sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==}
     deprecated: Use @eslint/object-schema instead
 
-  '@leichtgewicht/ip-codec@2.0.3':
-    resolution: {integrity: sha512-nkalE/f1RvRGChwBnEIoBfSEYOXnCRdleKuv6+lePbMDrMZXeDQnqak5XDOeBgrPPyPfAdcCu/B5z+v3VhplGg==}
-
   '@malept/cross-spawn-promise@1.1.1':
     resolution: {integrity: sha512-RTBGWL5FWQcg9orDOCcp4LvItNzUPcyEU9bwaeJX0rJ1IQxzucC48Y0/sQLp/g6t99IQgAlGIaesJS+gTn7tVQ==}
     engines: {node: '>= 10'}
@@ -644,65 +632,6 @@ packages:
     resolution: {integrity: sha512-sDOAZcYwynHFTbLo6n8kIbLiVF3a3BLkrmehJUyEbT9F+Smbi47kLGS2gG2g0fjBLR/Lr1InPD7kXL7FaTqEkw==}
     engines: {node: '>=8.0.0'}
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-
-  '@sentry/browser@6.17.4':
-    resolution: {integrity: sha512-ezLZ/FP2ZJPPemzGKMiu8RCHvuRYfDYXbkQb9KhUbpylJokL4GSRZHy8EYkcHugnvAiov7p8cdj7QgOZQPDAgw==}
-    engines: {node: '>=6'}
-
-  '@sentry/browser@6.7.1':
-    resolution: {integrity: sha512-R5PYx4TTvifcU790XkK6JVGwavKaXwycDU0MaAwfc4Vf7BLm5KCNJCsDySu1RPAap/017MVYf54p6dWvKiRviA==}
-    engines: {node: '>=6'}
-
-  '@sentry/core@6.17.4':
-    resolution: {integrity: sha512-7QFgw+I9YK/X1Gie0c7phwT5pHMow66UCXHzDzHR2aK/0X3Lhn8OWlcGjIt5zmiBK/LHwNfQBNMskbktbYHgdA==}
-    engines: {node: '>=6'}
-
-  '@sentry/core@6.7.1':
-    resolution: {integrity: sha512-VAv8OR/7INn2JfiLcuop4hfDcyC7mfL9fdPndQEhlacjmw8gRrgXjR7qyhnCTgzFLkHI7V5bcdIzA83TRPYQpA==}
-    engines: {node: '>=6'}
-
-  '@sentry/electron@2.5.4':
-    resolution: {integrity: sha512-tCCK+P581TmdjsDpHBQz7qYcldzGdUk1Fd6FPxPy1JKGzeY4uf/uSLKzR80Lzs5kTpEZFOwiMHSA8yjwFp5qoA==}
-
-  '@sentry/hub@6.17.4':
-    resolution: {integrity: sha512-6+EvPcrPCwUmayeieIpm1ZrRNWriqMHWZFyw+MzunFLgG8IH8G45cJU1zNnTY9Jwwg4sFIS9xrHy3AOkctnIGw==}
-    engines: {node: '>=6'}
-
-  '@sentry/hub@6.7.1':
-    resolution: {integrity: sha512-eVCTWvvcp6xa0A5GGNHMQEWslmKPlisE5rGmsV/kjvSUv3zSrI0eIDfb51ikdnCiBjHpK2NBWP8Vy8cZOEJegg==}
-    engines: {node: '>=6'}
-
-  '@sentry/minimal@6.17.4':
-    resolution: {integrity: sha512-p1A8UTtRt7bhV4ygu7yDNCannFr9E9dmqgeZWC7HrrTfygcnhNRFvTXTj92wEb0bFKuZr67wPSKnoXlkqkGxsw==}
-    engines: {node: '>=6'}
-
-  '@sentry/minimal@6.7.1':
-    resolution: {integrity: sha512-HDDPEnQRD6hC0qaHdqqKDStcdE1KhkFh0RCtJNMCDn0zpav8Dj9AteF70x6kLSlliAJ/JFwi6AmQrLz+FxPexw==}
-    engines: {node: '>=6'}
-
-  '@sentry/node@6.7.1':
-    resolution: {integrity: sha512-rtZo1O8ROv4lZwuljQz3iFZW89oXSlgXCG2VqkxQyRspPWu89abROpxLjYzsWwQ8djnur1XjFv51kOLDUTS6Qw==}
-    engines: {node: '>=6'}
-
-  '@sentry/tracing@6.7.1':
-    resolution: {integrity: sha512-wyS3nWNl5mzaC1qZ2AIp1hjXnfO9EERjMIJjCihs2LWBz1r3efxrHxJHs8wXlNWvrT3KLhq/7vvF5CdU82uPeQ==}
-    engines: {node: '>=6'}
-
-  '@sentry/types@6.17.4':
-    resolution: {integrity: sha512-RUyiXCKf61k2GIMP7FQX0naoSew4zLxe+UrtbjwVcWU4AFPZfH7tLNtTpVE85zAKbxsaiq3OD2FPtTZarHcwxQ==}
-    engines: {node: '>=6'}
-
-  '@sentry/types@6.7.1':
-    resolution: {integrity: sha512-9AO7HKoip2MBMNQJEd6+AKtjj2+q9Ze4ooWUdEvdOVSt5drg7BGpK221/p9JEOyJAZwEPEXdcMd3VAIMiOb4MA==}
-    engines: {node: '>=6'}
-
-  '@sentry/utils@6.17.4':
-    resolution: {integrity: sha512-+ENzZbrlVL1JJ+FoK2EOS27nbA/yToeaJPFlyVOnbthUxVyN3TTi9Uzn9F05fIE/2BTkOEk89wPtgcHafgrD6A==}
-    engines: {node: '>=6'}
-
-  '@sentry/utils@6.7.1':
-    resolution: {integrity: sha512-Tq2otdbWlHAkctD+EWTYKkEx6BL1Qn3Z/imkO06/PvzpWvVhJWQ5qHAzz5XnwwqNHyV03KVzYB6znq1Bea9HuA==}
-    engines: {node: '>=6'}
 
   '@sindresorhus/is@0.14.0':
     resolution: {integrity: sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==}
@@ -1550,10 +1479,6 @@ packages:
     resolution: {integrity: sha512-cj09EBuObp9gZNQCzc7hByQyrs6jVGE+o9kSJmeUoj+GiPiJvi5LYqEH/Hmme4+MTLHM+Ejtq+FChpjjEnsPdQ==}
     engines: {node: '>= 4'}
 
-  cookie@0.4.2:
-    resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
-    engines: {node: '>= 0.6'}
-
   copy-descriptor@0.1.1:
     resolution: {integrity: sha512-XgZ0pFcakEUlbwQEVNg3+QAis1FyTL3Qel9FYy8pSkQqoG3PNoT0bOCQtOXcOkur21r2Eq2kI+IE+gsmAEVlYw==}
     engines: {node: '>=0.10.0'}
@@ -1784,14 +1709,6 @@ packages:
     engines: {node: '>=8'}
     os: [darwin]
     hasBin: true
-
-  dns-packet@5.3.0:
-    resolution: {integrity: sha512-Nce7YLu6YCgWRvOmDBsJMo9M5/jV3lEZ5vUWnWXYmwURvPylHvq7nkDWhNmk1ZQoZZOP7oQh/S0lSxbisKOfHg==}
-    engines: {node: '>=6'}
-
-  dns-socket@4.2.2:
-    resolution: {integrity: sha512-BDeBd8najI4/lS00HSKpdFia+OvUMytaVjfzR9n5Lq8MlZRSvtbI+uLtx1+XmQFls5wFU9dssccTmQQ6nfpjdg==}
-    engines: {node: '>=6'}
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -2724,10 +2641,6 @@ packages:
     resolution: {integrity: sha512-TcdjPibTksa1NQximqep2r17ISRiNE9fwlfbg3F8ANdvP5/yrFTew86VcO//jk4QTaMlbjypPBq76HN2zaKfZQ==}
     engines: {node: '>=4'}
 
-  ip-regex@4.3.0:
-    resolution: {integrity: sha512-B9ZWJxHHOHUhUjCPrMpLD4xEq35bUTClHM1S6CBU5ixQnkZmwipwgc96vAd7AAGM9TGHvJR+Uss+/Ak6UphK+Q==}
-    engines: {node: '>=8'}
-
   irregular-plurals@3.3.0:
     resolution: {integrity: sha512-MVBLKUTangM3EfRPFROhmWQQKRDsrgI83J8GS3jXy+OwYqiR2/aoWndYQ5416jLE3uaGgLH7ncme3X9y09gZ3g==}
     engines: {node: '>=8'}
@@ -2855,10 +2768,6 @@ packages:
     resolution: {integrity: sha512-2HvIEKRoqS62guEC+qBjpvRubdX910WCMuJTZ+I9yvqKU2/12eSL549HMwtabb4oupdj2sMP50k+XJfB/8JE6w==}
     engines: {node: '>=8'}
 
-  is-ip@3.1.0:
-    resolution: {integrity: sha512-35vd5necO7IitFPjd/YBeqwWnyDWbuLH9ZXQdMfDA8TEo7pv5X8yfrvVO3xbJbLUlERCMvf6X0hTUamQxCYJ9Q==}
-    engines: {node: '>=8'}
-
   is-js-type@2.0.0:
     resolution: {integrity: sha512-Aj13l47+uyTjlQNHtXBV8Cji3jb037vxwMWCgopRR8h6xocgBGW3qG8qGlIOEmbXQtkKShKuBM9e8AA1OeQ+xw==}
 
@@ -2902,10 +2811,6 @@ packages:
 
   is-object@1.0.2:
     resolution: {integrity: sha512-2rRIahhZr2UWb45fIOuvZGpFtz0TyOZLf32KxBbSoUCeZR495zCKlWUKKUByk3geS2eAs7ZAABt0Y/Rx0GiQGA==}
-
-  is-online@8.5.1:
-    resolution: {integrity: sha512-RKyTQx/rJqw2QOXHwy7TmXdlkpe0Hhj7GBsr6TQJaj4ebNOfameZCMspU5vYbwBBzJ2brWArdSvNVox6T6oCTQ==}
-    engines: {node: '>=8'}
 
   is-path-cwd@2.2.0:
     resolution: {integrity: sha512-w942bTcih8fdJPJmQHFzkS76NEP8Kzzvmw92cXsazb8intwLqPibPPdXf4ANdKV3rYMuuQYGIWtvz9JilB3NFQ==}
@@ -3215,9 +3120,6 @@ packages:
   lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
-
-  lru_map@0.3.3:
-    resolution: {integrity: sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==}
 
   macos-version@5.2.1:
     resolution: {integrity: sha512-OHJU8nTNxHYL1FQhD+nZawWgXKXAqDGr4kluLtaqKO4au3cR41y1mKuVShOU5U4rOYiuPanljq6oFGmV2B9DFA==}
@@ -3573,10 +3475,6 @@ packages:
     resolution: {integrity: sha512-uksVLsqG3pVdzzPvmAHpBK0wKxYItuzZr7SziusRPoz67tGV8rL1szZ6IdeUrbqLjGDwApBtN29eEE3IqGHOjg==}
     engines: {node: '>=4'}
 
-  p-any@2.1.0:
-    resolution: {integrity: sha512-JAERcaMBLYKMq+voYw36+x5Dgh47+/o7yuv2oQYuSSUml4YeqJEFznBrY2UeEkoSHqBua6hz518n/PsowTYLLg==}
-    engines: {node: '>=8'}
-
   p-cancelable@0.3.0:
     resolution: {integrity: sha512-RVbZPLso8+jFeq1MfNvgXtCRED2raz/dKpacfTNxsx6pLEpEomM7gah6VeHSYV3+vo0OAi4MkArtQcWWXuQoyw==}
     engines: {node: '>=4'}
@@ -3659,10 +3557,6 @@ packages:
 
   p-reduce@2.1.0:
     resolution: {integrity: sha512-2USApvnsutq8uoxZBGbbWM0JIYLiEMJ9RlaN7fAzVNb9OZN0SHjjTTfIcb667XynS5Y1VhwDJVDa72TnPzAYWw==}
-    engines: {node: '>=8'}
-
-  p-some@4.1.0:
-    resolution: {integrity: sha512-MF/HIbq6GeBqTrTIl5OJubzkGU+qfFhAFi0gnTAK6rgEIJIknEiABHOTtQu4e6JiXjIwuMPMUFQzyHh5QjCl1g==}
     engines: {node: '>=8'}
 
   p-timeout@1.2.1:
@@ -3906,10 +3800,6 @@ packages:
 
   public-encrypt@4.0.3:
     resolution: {integrity: sha512-zVpa8oKZSz5bTMTFClc1fQOnyyEzpl5ozpi1B5YcvBrdohMjH2rfsBtyXcuNuwjsDIXmBYlF2N5FlJYhR29t8Q==}
-
-  public-ip@4.0.4:
-    resolution: {integrity: sha512-EJ0VMV2vF6Cu7BIPo3IMW1Maq6ME+fbR0NcPmqDfpfNGIRPue1X8QrGjrg/rfjDkOsIkKHIf2S5FlEa48hFMTA==}
-    engines: {node: '>=8'}
 
   pump@3.0.0:
     resolution: {integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==}
@@ -4637,9 +4527,6 @@ packages:
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
 
-  tslib@2.3.1:
-    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
-
   tsutils@3.21.0:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
@@ -5222,8 +5109,6 @@ snapshots:
 
   '@humanwhocodes/object-schema@1.2.0': {}
 
-  '@leichtgewicht/ip-codec@2.0.3': {}
-
   '@malept/cross-spawn-promise@1.1.1':
     dependencies:
       cross-spawn: 7.0.3
@@ -5285,108 +5170,6 @@ snapshots:
       '@opentelemetry/context-base': 0.14.0
 
   '@opentelemetry/context-base@0.14.0': {}
-
-  '@sentry/browser@6.17.4':
-    dependencies:
-      '@sentry/core': 6.17.4
-      '@sentry/types': 6.17.4
-      '@sentry/utils': 6.17.4
-      tslib: 1.14.1
-
-  '@sentry/browser@6.7.1':
-    dependencies:
-      '@sentry/core': 6.7.1
-      '@sentry/types': 6.7.1
-      '@sentry/utils': 6.7.1
-      tslib: 1.14.1
-
-  '@sentry/core@6.17.4':
-    dependencies:
-      '@sentry/hub': 6.17.4
-      '@sentry/minimal': 6.17.4
-      '@sentry/types': 6.17.4
-      '@sentry/utils': 6.17.4
-      tslib: 1.14.1
-
-  '@sentry/core@6.7.1':
-    dependencies:
-      '@sentry/hub': 6.7.1
-      '@sentry/minimal': 6.7.1
-      '@sentry/types': 6.7.1
-      '@sentry/utils': 6.7.1
-      tslib: 1.14.1
-
-  '@sentry/electron@2.5.4(supports-color@8.1.1)':
-    dependencies:
-      '@sentry/browser': 6.7.1
-      '@sentry/core': 6.7.1
-      '@sentry/minimal': 6.7.1
-      '@sentry/node': 6.7.1(supports-color@8.1.1)
-      '@sentry/types': 6.7.1
-      '@sentry/utils': 6.7.1
-      tslib: 2.3.1
-    transitivePeerDependencies:
-      - supports-color
-
-  '@sentry/hub@6.17.4':
-    dependencies:
-      '@sentry/types': 6.17.4
-      '@sentry/utils': 6.17.4
-      tslib: 1.14.1
-
-  '@sentry/hub@6.7.1':
-    dependencies:
-      '@sentry/types': 6.7.1
-      '@sentry/utils': 6.7.1
-      tslib: 1.14.1
-
-  '@sentry/minimal@6.17.4':
-    dependencies:
-      '@sentry/hub': 6.17.4
-      '@sentry/types': 6.17.4
-      tslib: 1.14.1
-
-  '@sentry/minimal@6.7.1':
-    dependencies:
-      '@sentry/hub': 6.7.1
-      '@sentry/types': 6.7.1
-      tslib: 1.14.1
-
-  '@sentry/node@6.7.1(supports-color@8.1.1)':
-    dependencies:
-      '@sentry/core': 6.7.1
-      '@sentry/hub': 6.7.1
-      '@sentry/tracing': 6.7.1
-      '@sentry/types': 6.7.1
-      '@sentry/utils': 6.7.1
-      cookie: 0.4.2
-      https-proxy-agent: 5.0.0(supports-color@8.1.1)
-      lru_map: 0.3.3
-      tslib: 1.14.1
-    transitivePeerDependencies:
-      - supports-color
-
-  '@sentry/tracing@6.7.1':
-    dependencies:
-      '@sentry/hub': 6.7.1
-      '@sentry/minimal': 6.7.1
-      '@sentry/types': 6.7.1
-      '@sentry/utils': 6.7.1
-      tslib: 1.14.1
-
-  '@sentry/types@6.17.4': {}
-
-  '@sentry/types@6.7.1': {}
-
-  '@sentry/utils@6.17.4':
-    dependencies:
-      '@sentry/types': 6.17.4
-      tslib: 1.14.1
-
-  '@sentry/utils@6.7.1':
-    dependencies:
-      '@sentry/types': 6.7.1
-      tslib: 1.14.1
 
   '@sindresorhus/is@0.14.0': {}
 
@@ -6432,8 +6215,6 @@ snapshots:
 
   convert-to-spaces@1.0.2: {}
 
-  cookie@0.4.2: {}
-
   copy-descriptor@0.1.1: {}
 
   core-assert@0.2.1:
@@ -6725,14 +6506,6 @@ snapshots:
       smart-buffer: 4.2.0
       verror: 1.10.0
     optional: true
-
-  dns-packet@5.3.0:
-    dependencies:
-      '@leichtgewicht/ip-codec': 2.0.3
-
-  dns-socket@4.2.2:
-    dependencies:
-      dns-packet: 5.3.0
 
   doctrine@2.1.0:
     dependencies:
@@ -7901,8 +7674,6 @@ snapshots:
       from2: 2.3.0
       p-is-promise: 1.1.0
 
-  ip-regex@4.3.0: {}
-
   irregular-plurals@3.3.0: {}
 
   is-absolute@1.0.0:
@@ -8018,10 +7789,6 @@ snapshots:
 
   is-interactive@1.0.0: {}
 
-  is-ip@3.1.0:
-    dependencies:
-      ip-regex: 4.3.0
-
   is-js-type@2.0.0:
     dependencies:
       js-types: 1.0.0
@@ -8057,13 +7824,6 @@ snapshots:
   is-obj@2.0.0: {}
 
   is-object@1.0.2: {}
-
-  is-online@8.5.1:
-    dependencies:
-      got: 9.6.0
-      p-any: 2.1.0
-      p-timeout: 3.2.0
-      public-ip: 4.0.4
 
   is-path-cwd@2.2.0: {}
 
@@ -8342,8 +8102,6 @@ snapshots:
   lru-cache@6.0.0:
     dependencies:
       yallist: 4.0.0
-
-  lru_map@0.3.3: {}
 
   macos-version@5.2.1:
     dependencies:
@@ -8796,12 +8554,6 @@ snapshots:
     dependencies:
       arch: 2.2.0
 
-  p-any@2.1.0:
-    dependencies:
-      p-cancelable: 2.1.1
-      p-some: 4.1.0
-      type-fest: 0.3.1
-
   p-cancelable@0.3.0: {}
 
   p-cancelable@0.4.1: {}
@@ -8867,11 +8619,6 @@ snapshots:
   p-reduce@1.0.0: {}
 
   p-reduce@2.1.0: {}
-
-  p-some@4.1.0:
-    dependencies:
-      aggregate-error: 3.1.0
-      p-cancelable: 2.1.1
 
   p-timeout@1.2.1:
     dependencies:
@@ -9082,12 +8829,6 @@ snapshots:
       parse-asn1: 5.1.6
       randombytes: 2.1.0
       safe-buffer: 5.2.1
-
-  public-ip@4.0.4:
-    dependencies:
-      dns-socket: 4.2.2
-      got: 9.6.0
-      is-ip: 3.1.0
 
   pump@3.0.0:
     dependencies:
@@ -9867,8 +9608,6 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@1.14.1: {}
-
-  tslib@2.3.1: {}
 
   tsutils@3.21.0(typescript@4.5.5):
     dependencies:

@@ -1,7 +1,6 @@
 import {ipcMain} from 'electron';
 
 import {ipcMain as ipc} from 'electron-better-ipc';
-import {track} from '../common/analytics';
 import KapWindow from './kap-window';
 import {windowManager} from './manager';
 
@@ -10,7 +9,6 @@ let prefsKapWindow: KapWindow | undefined;
 export type PreferencesWindowOptions = any;
 
 const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
-  track('preferences/opened');
   windowManager.cropper?.close();
 
   const prefsWindow = prefsKapWindow?.browserWindow;

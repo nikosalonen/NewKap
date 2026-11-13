@@ -1,7 +1,6 @@
 import path from 'path';
 import tempy from 'tempy';
 import {Encoding, Format} from '../common/types';
-import {track} from '../common/analytics';
 import h264Converters, {crop as h264Crop} from './h264';
 import {ConvertOptions} from './utils';
 import {getFormatExtension} from '../common/constants';
@@ -35,9 +34,6 @@ export const convertTo = (
   if (!converter) {
     throw new Error(`Unsupported file format for ${encoding}: ${format}`);
   }
-
-  track(`file/export/encoding/${encoding}`);
-  track(`file/export/format/${format}`);
 
   const conversionOptions = {
     outputPath: path.join(tempy.directory(), `${options.defaultFileName}.${getFormatExtension(format)}`),
@@ -98,7 +94,6 @@ const convertWithEditPlugin = PCancelable.fn(
       try {
         const process = convert(
           '', {
-            shouldTrack: false,
             startTime: options.startTime,
             endTime: options.endTime,
             onProgress: (progress, estimate) => {
@@ -164,8 +159,6 @@ const convertWithEditPlugin = PCancelable.fn(
     if (isCanceled) {
       return '';
     }
-
-    track(`plugins/used/edit/${options.editService?.pluginName}`);
 
     const conversionProcess = options.converter({
       ...options,
