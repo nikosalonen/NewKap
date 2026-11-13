@@ -1,8 +1,6 @@
 import type {ValidateFunction} from 'ajv';
-import Store from 'electron-store';
-import type {Schema as JSONSchema} from 'electron-store';
-import Ajv from '../utils/ajv';
-import type {Schema} from '../utils/ajv';
+import Store, {type Schema as JSONSchema} from 'electron-store';
+import Ajv, {type Schema} from '../utils/ajv';
 import type {Service} from './service';
 
 export default class PluginConfig extends Store {

@@ -1,3 +1,4 @@
+import process from 'node:process';
 import {
   BrowserWindow,
   systemPreferences,
@@ -7,8 +8,8 @@ import {
   app,
   globalShortcut,
   ipcMain,
+  type Display,
 } from 'electron';
-import type {Display} from 'electron';
 import path from 'node:path';
 import {setTimeout as delay} from 'node:timers/promises';
 import {settings} from '../common/settings';

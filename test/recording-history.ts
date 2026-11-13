@@ -1,14 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import ava from 'ava';
-import type {TestFn} from 'ava';
+import ava, {type TestFn} from 'ava';
 import tempy from 'tempy';
-import sinon from 'sinon';
-import type {SinonFakeTimers} from 'sinon';
+import sinon, {type SinonFakeTimers} from 'sinon';
 import type * as RecordingHistoryModule from '../main/recording-history';
 import type {Video} from '../main/video';
-import {windowManager} from './mocks/window-manager';
-import type {MockWindowManager} from './mocks/window-manager';
+import {windowManager, type MockWindowManager} from './mocks/window-manager';
 import {mockImport, mockModule} from './helpers/mocks';
 import {shell} from './mocks/electron';
 import * as dialog from './mocks/dialog';

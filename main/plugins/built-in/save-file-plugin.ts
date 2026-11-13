@@ -1,7 +1,6 @@
 'use strict';
 
-import {dialog} from 'electron';
-import type {BrowserWindow} from 'electron';
+import {dialog, type BrowserWindow} from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import type {ShareServiceContext} from '../service-context';

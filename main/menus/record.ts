@@ -3,8 +3,7 @@ import {pauseRecording, resumeRecording, stopRecording} from '../aperture';
 import {settings} from '../common/settings';
 import {formatTime} from '../common/time';
 import {getCurrentDurationStart, getOverallDuration} from '../utils/track-duration';
-import {MenuItemId} from './utils';
-import type {MenuOptions} from './utils';
+import {MenuItemId, type MenuOptions} from './utils';
 
 const menuAccelerator = (shortcut: string) => shortcut || undefined;
 

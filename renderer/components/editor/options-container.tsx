@@ -1,8 +1,7 @@
 import {useState, useEffect, useMemo} from 'react';
 import {createContainer} from 'unstated-next';
 import {debounce, DebouncedFunc} from 'lodash';
-import useEditorOptions from 'hooks/editor/use-editor-options';
-import type {EditorOptionsState} from 'hooks/editor/use-editor-options';
+import useEditorOptions, {type EditorOptionsState} from 'hooks/editor/use-editor-options';
 import type {Format, App} from 'common/types';
 import useEditorWindowState from 'hooks/editor/use-editor-window-state';
 import kap from '../../utils/kap';

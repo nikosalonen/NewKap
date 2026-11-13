@@ -1,3 +1,4 @@
+import process from 'node:process';
 import ava from 'ava';
 import {isMacosVersion, isMacosVersionAtLeast} from '../main/utils/system-version';
 

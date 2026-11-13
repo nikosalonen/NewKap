@@ -1,3 +1,4 @@
+import process from 'node:process';
 import path from 'node:path';
 import {clipboard, app} from 'electron';
 import ensureError from 'ensure-error';

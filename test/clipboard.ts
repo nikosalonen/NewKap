@@ -1,3 +1,4 @@
+import {Buffer} from 'node:buffer';
 import ava from 'ava';
 import sinon from 'sinon';
 import {copyFilesToClipboard, copyImageToClipboard} from '../main/utils/clipboard';

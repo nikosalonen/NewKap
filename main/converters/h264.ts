@@ -11,8 +11,8 @@ import {
   conditionalArgs,
 
   makeEven,
+  type ConvertOptions,
 } from './utils';
-import type {ConvertOptions} from './utils';
 
 // `time ffmpeg -i original.mp4 -vf fps=30,scale=480:-1::flags=lanczos,palettegen palette.png`
 // `time ffmpeg -i original.mp4 -i palette.png -filter_complex 'fps=30,scale=-1:-1:flags=lanczos[x]; [x][1:v]paletteuse' palette.gif`

@@ -1,7 +1,5 @@
-import React from 'react';
-import type {FunctionComponent} from 'react';
-import Svg from './svg';
-import type {SvgProps} from './svg';
+import React, {type FunctionComponent} from 'react';
+import Svg, {type SvgProps} from './svg';
 
 const BackPlainIcon: FunctionComponent<SvgProps> = props => (
   <Svg {...props}>

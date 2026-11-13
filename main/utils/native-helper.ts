@@ -1,3 +1,4 @@
+import process from 'node:process';
 import path from 'node:path';
 import {app} from 'electron';
 import execa from 'execa';

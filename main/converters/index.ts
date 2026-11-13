@@ -1,10 +1,8 @@
 import path from 'node:path';
 import tempy from 'tempy';
-import PCancelable from 'p-cancelable';
-import type {OnCancelFunction} from 'p-cancelable';
+import PCancelable, {type OnCancelFunction} from 'p-cancelable';
 import type {Except} from 'type-fest';
-import {Encoding} from '../common/types';
-import type {Format} from '../common/types';
+import {Encoding, type Format} from '../common/types';
 import {getFormatExtension} from '../common/constants';
 import {plugins} from '../plugins';
 import {EditServiceContext} from '../plugins/service-context';

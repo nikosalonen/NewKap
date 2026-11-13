@@ -1,12 +1,11 @@
 import type {CreateExportOptions} from 'common/types';
 import {
   createContext,
-
-  useContext,
+  use,
   useMemo,
   useState,
+  type PropsWithChildren,
 } from 'react';
-import type {PropsWithChildren} from 'react';
 import {ipcRenderer} from '../../utils/ipc';
 import {requireConversionId} from '../../../main/common/export-start';
 
@@ -27,7 +26,7 @@ export const ConversionIdContextProvider = (props: PropsWithChildren<Record<stri
   };
 
   const updateConversionId = (id: string) => {
-    savedConversionId = savedConversionId || id;
+    savedConversionId ||= id;
     setConversionId(id || savedConversionId);
   };
 
@@ -38,12 +37,12 @@ export const ConversionIdContextProvider = (props: PropsWithChildren<Record<stri
   }), [conversionId, setConversionId]);
 
   return (
-    <ConversionIdContext.Provider value={value}>
+    <ConversionIdContext value={value}>
       {props.children}
-    </ConversionIdContext.Provider>
+    </ConversionIdContext>
   );
 };
 
-const useConversionIdContext = () => useContext(ConversionIdContext);
+const useConversionIdContext = () => use(ConversionIdContext);
 
 export default useConversionIdContext;

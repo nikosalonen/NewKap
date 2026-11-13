@@ -1,6 +1,6 @@
 import {
   createContext,
-  useContext,
+  use,
   useEffect,
   useMemo,
   useReducer,
@@ -10,7 +10,7 @@ import {
 const ContainerContext = createContext(new Map());
 
 export const Provider = ({inject, children}) => {
-  const parentContainers = useContext(ContainerContext);
+  const parentContainers = use(ContainerContext);
 
   // Pages keep `inject` in a module-level array, so this map stays the same
   // between renders and connected components don't render again for nothing.
@@ -25,14 +25,14 @@ export const Provider = ({inject, children}) => {
   }, [parentContainers, inject]);
 
   return (
-    <ContainerContext.Provider value={containers}>
+    <ContainerContext value={containers}>
       {children}
-    </ContainerContext.Provider>
+    </ContainerContext>
   );
 };
 
 const useContainers = containerClasses => {
-  const containers = useContext(ContainerContext);
+  const containers = use(ContainerContext);
   const [, rerender] = useReducer(count => count + 1, 0);
 
   const instances = containerClasses.map(ContainerClass => {

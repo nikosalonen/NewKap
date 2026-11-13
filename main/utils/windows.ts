@@ -2,8 +2,7 @@ import {app} from 'electron';
 import execa from 'execa';
 import Store from 'electron-store';
 import {windowManager} from '../windows/manager';
-import {getWindows} from './native-helper';
-import type {HelperWindow} from './native-helper';
+import {getWindows, type HelperWindow} from './native-helper';
 
 export type MacWindow = HelperWindow;
 

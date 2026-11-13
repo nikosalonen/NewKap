@@ -1,3 +1,4 @@
+import {Buffer} from 'node:buffer';
 import {dialog, nativeImage, shell} from 'electron';
 import fs from 'node:fs';
 import {copyImageToClipboard} from '../utils/clipboard';

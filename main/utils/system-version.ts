@@ -1,3 +1,4 @@
+import process from 'node:process';
 import semver from 'semver';
 
 // Electron adds process.getSystemVersion(), which reports the macOS version, for example "14.4.1" or "26.1".

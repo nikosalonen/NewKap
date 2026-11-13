@@ -1,5 +1,4 @@
-import {app} from 'electron';
-import type {BrowserWindow} from 'electron';
+import {app, type BrowserWindow} from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import {is} from 'electron-util';

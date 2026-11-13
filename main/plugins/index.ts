@@ -1,3 +1,4 @@
+import process from 'node:process';
 import {app} from 'electron';
 import {EventEmitter} from 'node:events';
 import path from 'node:path';

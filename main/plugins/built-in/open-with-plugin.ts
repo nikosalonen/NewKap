@@ -4,8 +4,7 @@ import execa from 'execa';
 import type {ShareServiceContext} from '../service-context';
 import {getFormatExtension} from '../../common/constants';
 import type {Format} from '../../common/types';
-import {getAppsForExtensionsSync} from '../../utils/native-helper';
-import type {OpenWithApp} from '../../utils/native-helper';
+import {getAppsForExtensionsSync, type OpenWithApp} from '../../utils/native-helper';
 
 const action = async (context: ShareServiceContext & {appUrl: string}) => {
   const filePath = await context.filePath();

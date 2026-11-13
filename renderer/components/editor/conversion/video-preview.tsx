@@ -1,6 +1,5 @@
 import {CancelIcon, SpinnerIcon} from 'vectors';
-import {UseConversion} from 'hooks/editor/use-conversion';
-import type {UseConversionState} from 'hooks/editor/use-conversion';
+import {UseConversion, type UseConversionState} from 'hooks/editor/use-conversion';
 import {ExportStatus} from 'common/types';
 import useEditorWindowState from 'hooks/editor/use-editor-window-state';
 import useConversionIdContext from 'hooks/editor/use-conversion-id';

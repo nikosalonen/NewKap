@@ -1,3 +1,4 @@
+import process from 'node:process';
 import {app, dialog, shell} from 'electron';
 import semver from 'semver';
 

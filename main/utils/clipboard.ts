@@ -1,6 +1,5 @@
 import {pathToFileURL} from 'node:url';
-import {clipboard, ClipboardItem} from 'electron';
-import type {NativeImage} from 'electron';
+import {clipboard, ClipboardItem, type NativeImage} from 'electron';
 
 // Since Electron 45 the clipboard follows the W3C Clipboard API: writes are asynchronous ClipboardItems.
 

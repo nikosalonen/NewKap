@@ -1,7 +1,6 @@
 import type {BrowserWindow} from 'electron';
 import {ipcMain} from 'electron-better-ipc';
-import {getChannelNames} from './utils';
-import type {RemoteState} from './utils';
+import {getChannelNames, type RemoteState} from './utils';
 
 const setupRemoteState = async <State, Actions extends Record<string, (...args: any[]) => any>>(name: string, callback: RemoteState<State, Actions>) => {
   const channelNames = getChannelNames(name);

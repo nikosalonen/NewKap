@@ -1,3 +1,4 @@
+import process from 'node:process';
 import {app, nativeImage} from 'electron';
 import path from 'node:path';
 

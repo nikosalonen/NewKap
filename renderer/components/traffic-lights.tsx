@@ -1,5 +1,4 @@
-import {useState, useEffect} from 'react';
-import type {FunctionComponent} from 'react';
+import {useState, useEffect, type FunctionComponent} from 'react';
 import kap from '../utils/kap';
 
 type TrafficLightsProps = {

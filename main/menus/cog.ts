@@ -16,8 +16,7 @@ import {
   getPreferencesMenuItem,
   getSendFeedbackMenuItem,
 } from './common';
-import {MenuItemId} from './utils';
-import type {MenuOptions} from './utils';
+import {MenuItemId, type MenuOptions} from './utils';
 
 const menuAccelerator = (shortcut: string) => shortcut || undefined;
 

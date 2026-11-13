@@ -185,8 +185,8 @@ export default class CropperContainer extends Container {
   };
   setSize = ({width: defaultWidth, height: defaultHeight}) => {
     let {width, height} = this.state;
-    width = width || defaultWidth;
-    height = height || defaultHeight;
+    width ||= defaultWidth;
+    height ||= defaultHeight;
     const updates = {width, height};
     this.settings.set('cropper', updates);
     this.setState(updates);

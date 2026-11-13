@@ -8,9 +8,9 @@ import {
   getTimelineDuration,
   snapTimelineTime,
   trimClipAtTimelineTime,
+  type TrimEdge,
 
 } from '../../../main/common/timeline';
-import type {TrimEdge} from '../../../main/common/timeline';
 import TimelineContainer from './timeline-container';
 import VideoTimeContainer from './video-time-container';
 import VideoControlsContainer from './video-controls-container';

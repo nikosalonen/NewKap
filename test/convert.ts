@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import ava from 'ava';
-import type {TestFn} from 'ava';
+import ava, {type TestFn} from 'ava';
 import sinon from 'sinon';
 import uniqueString from 'unique-string';
 import type {Except, SetOptional} from 'type-fest';

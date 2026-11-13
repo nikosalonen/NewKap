@@ -3,8 +3,7 @@ import {app, BrowserWindow, Menu} from 'electron';
 import {once} from 'node:events';
 import path from 'node:path';
 import {ipcMain as ipc} from 'electron-better-ipc';
-import {customApplicationMenu, defaultApplicationMenu} from '../menus/application';
-import type {MenuModifier} from '../menus/application';
+import {customApplicationMenu, defaultApplicationMenu, type MenuModifier} from '../menus/application';
 import {loadRoute} from '../utils/routes';
 import {setDockVisible} from '../utils/dock';
 

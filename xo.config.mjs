@@ -31,7 +31,7 @@ const xoConfig = [
   {
     settings: {
       'react-x': {
-        version: '17',
+        version: '19',
       },
     },
     rules: {
@@ -90,45 +90,15 @@ const xoConfig = [
         },
       ],
 
-      // Next 10 compiles the renderer with Babel 7.12, which can't parse inline
-      // type specifiers (`import {type A}`). Use `import type` everywhere.
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          fixStyle: 'separate-type-imports',
-        },
-      ],
-      '@typescript-eslint/consistent-type-exports': [
-        'error',
-        {
-          fixMixedExportsWithInlineTypeSpecifier: false,
-        },
-      ],
-      'import-x/consistent-type-specifier-style': [
-        'error',
-        'prefer-top-level',
-      ],
-      'import-x/no-duplicates': [
-        'error',
-        {
-          'prefer-inline': false,
-        },
-      ],
-
-      // Electron provides `process` and `Buffer` in every window, and Next 10's
-      // webpack 4 can't bundle `node:` imports for the renderer.
-      'n/prefer-global/process': 'off',
-      'n/prefer-global/buffer': 'off',
-
       // Kap is an app: modules such as main/index.ts set things up when loaded.
       'unicorn/no-top-level-side-effects': 'off',
 
-      // The React 19 move replaces the class components and unstated
-      // containers. Revisit the React Compiler rules then.
+      // Turning these on means rewriting components, not fixing lint: 25 class
+      // components (the cropper, action bar, preferences and config windows),
+      // and effects that copy props into state (editor options and timeline,
+      // dialog, shortcut input).
       '@eslint-react/no-class-component': 'off',
       'react-hooks/set-state-in-effect': 'off',
-      'react-hooks/refs': 'off',
-      'react-hooks/static-components': 'off',
 
       // TypeScript only allows the `v` flag when targeting ES2024 or later.
       'require-unicode-regexp': 'off',
@@ -159,35 +129,6 @@ const xoConfig = [
             'jsx',
             'global',
           ],
-        },
-      ],
-    },
-  },
-  {
-    // Next 10 bundles this code with webpack 4, which can't parse `node:`
-    // imports or logical assignment (`||=`, `??=`), and Babel 7.12, which
-    // can't parse `export type *`. The renderer also bundles main/common
-    // through the renderer/common symlink.
-    files: [
-      'renderer/**/*.{js,ts,tsx}',
-      'main/common/**/*.ts',
-    ],
-    rules: {
-      'unicorn/prefer-node-protocol': 'off',
-      'unicorn/logical-assignment-operators': 'off',
-      '@typescript-eslint/consistent-type-exports': 'off',
-    },
-  },
-  {
-    // Same reason: don't suggest `??=` in code the renderer bundles.
-    files: [
-      'main/common/**/*.ts',
-    ],
-    rules: {
-      '@typescript-eslint/prefer-nullish-coalescing': [
-        'error',
-        {
-          ignoreIfStatements: true,
         },
       ],
     },

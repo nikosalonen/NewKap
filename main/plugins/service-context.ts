@@ -1,7 +1,6 @@
 import {app, clipboard} from 'electron';
 import type Store from 'electron-store';
-import got from 'got';
-import type {GotFn, GotPromise} from 'got';
+import got, {type GotFn, type GotPromise} from 'got';
 import type PCancelable from 'p-cancelable';
 import type {ApertureOptions, Format} from '../common/types';
 import {addPluginPromise} from '../utils/deep-linking';

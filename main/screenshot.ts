@@ -1,5 +1,4 @@
-import {spawn} from 'node:child_process';
-import type {ChildProcess} from 'node:child_process';
+import {spawn, type ChildProcess} from 'node:child_process';
 import path from 'node:path';
 import os from 'node:os';
 import {nativeImage} from 'electron';

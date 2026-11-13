@@ -2,8 +2,9 @@ import {
   Notification,
 
   app,
+  type NotificationConstructorOptions,
+  type NotificationAction,
 } from 'electron';
-import type {NotificationConstructorOptions, NotificationAction} from 'electron';
 import {settings} from '../common/settings';
 
 // Need to persist the notifications, otherwise it is garbage collected and the actions don't trigger

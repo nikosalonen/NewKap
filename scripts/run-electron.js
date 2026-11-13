@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+const process = require('node:process');
 const {spawn} = require('node:child_process');
 const {execFileSync} = require('node:child_process');
 const crypto = require('node:crypto');

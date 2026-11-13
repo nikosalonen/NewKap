@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/promise-function-async, unicorn/no-array-callback-reference -- IPC handlers pass promises through unchanged and map with the serializers below */
+import process from 'node:process';
 import {
   app,
   BrowserWindow,
@@ -10,14 +11,12 @@ import {
   nativeTheme,
   shell,
   systemPreferences,
-
+  type MenuItemConstructorOptions,
 } from 'electron';
-import type {MenuItemConstructorOptions} from 'electron';
 import {settings} from './common/settings';
 import {ensureMicrophonePermissions} from './common/system-permissions';
 import {plugins} from './plugins';
-import {InstalledPlugin} from './plugins/plugin';
-import type {NpmPlugin} from './plugins/plugin';
+import {InstalledPlugin, type NpmPlugin} from './plugins/plugin';
 import {getAudioDevices, getDefaultInputDevice, getSelectedInputDeviceId} from './utils/devices';
 import {showError} from './utils/errors';
 import {activateApp, getWindowList} from './utils/windows';

@@ -1,5 +1,4 @@
-import {useEffect, useMemo} from 'react';
-import type {DependencyList} from 'react';
+import {useEffect, useMemo, type DependencyList} from 'react';
 
 export const useKeyboardAction = (keyOrFilter: string | ((key: string, eventType: string) => boolean), action: () => void, deps: DependencyList = []) => {
   const isArgFilter = typeof keyOrFilter === 'function';

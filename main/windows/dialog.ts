@@ -1,7 +1,6 @@
 'use strict';
 
-import {BrowserWindow} from 'electron';
-import type {Rectangle} from 'electron';
+import {BrowserWindow, type Rectangle} from 'electron';
 import path from 'node:path';
 import {ipcMain as ipc} from 'electron-better-ipc';
 import {loadRoute} from '../utils/routes';

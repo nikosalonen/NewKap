@@ -1,5 +1,4 @@
-import React, {useRef} from 'react';
-import type {FunctionComponent} from 'react';
+import React, {useRef, type FunctionComponent} from 'react';
 import type {SvgProps} from 'vectors/svg';
 import {popupMenu} from '../utils/menu-actions';
 

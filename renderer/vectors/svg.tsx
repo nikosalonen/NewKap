@@ -1,5 +1,4 @@
-import React from 'react';
-import type {FunctionComponent, ReactNode} from 'react';
+import React, {type FunctionComponent, type ReactNode} from 'react';
 import classNames from 'classnames';
 import {handleKeyboardActivation} from '../utils/inputs';
 

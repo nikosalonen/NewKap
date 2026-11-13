@@ -1,8 +1,7 @@
 import {ipcMain, dialog, app} from 'electron';
 import {EventEmitter} from 'node:events';
 import path from 'node:path';
-import PCancelable from 'p-cancelable';
-import type {CancelError, OnCancelFunction} from 'p-cancelable';
+import PCancelable, {type CancelError, type OnCancelFunction} from 'p-cancelable';
 import {ipcMain as ipc} from 'electron-better-ipc';
 import type TypedEventEmitter from 'typed-emitter';
 import Conversion from './conversion';
@@ -16,9 +15,11 @@ import {
 
   ExportStatus,
   Format,
+  type ConversionOptions,
+  type ExportState,
+  type CreateExportOptions,
 
 } from './common/types';
-import type {ConversionOptions, ExportState, CreateExportOptions} from './common/types';
 import {showError} from './utils/errors';
 import {plugins} from './plugins';
 import {askForTargetFilePath} from './plugins/built-in/save-file-plugin';

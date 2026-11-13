@@ -1,11 +1,9 @@
 import path from 'node:path';
-import {nativeImage, screen} from 'electron';
-import type {NativeImage} from 'electron';
+import {nativeImage, screen, type NativeImage} from 'electron';
 import fs from 'node:fs';
 import getFps from './utils/fps';
 import {getEncoding, convertToH264} from './utils/encoding';
-import {Encoding} from './common/types';
-import type {ApertureOptions} from './common/types';
+import {Encoding, type ApertureOptions} from './common/types';
 import {generateTimestampedName} from './utils/timestamped-name';
 import {generatePreviewImage} from './utils/image-preview';
 import {windowManager} from './windows/manager';

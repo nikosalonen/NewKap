@@ -1,5 +1,4 @@
-import Ajv from 'ajv';
-import type {Options} from 'ajv';
+import Ajv, {type Options} from 'ajv';
 import type {Schema as JSONSchema} from 'electron-store';
 import type {Except} from 'type-fest';
 

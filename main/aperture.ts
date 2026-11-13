@@ -10,12 +10,10 @@ import {settings} from './common/settings';
 import {plugins} from './plugins';
 import {getRecordingAudioDeviceId} from './utils/devices';
 import {showError} from './utils/errors';
-import {RecordServiceContext} from './plugins/service-context';
-import type {RecordServiceState} from './plugins/service-context';
+import {RecordServiceContext, type RecordServiceState} from './plugins/service-context';
 import {setCurrentRecording, updatePluginState, stopCurrentRecording} from './recording-history';
 import {Recording} from './video';
-import {Encoding} from './common/types';
-import type {ApertureOptions, StartRecordingOptions} from './common/types';
+import {Encoding, type ApertureOptions, type StartRecordingOptions} from './common/types';
 import type {InstalledPlugin} from './plugins/plugin';
 import type {RecordService, RecordServiceHook} from './plugins/service';
 import {
