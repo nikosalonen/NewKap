@@ -402,14 +402,14 @@ const openCropperWindow = async () => {
 
 const preventDefault = (event: any) => event.preventDefault();
 
-const selectApp = async (window: MacWindow, activateWindow: (ownerName: string) => Promise<void>) => {
+const selectApp = async (window: MacWindow, activateWindow: (window: MacWindow) => Promise<void>) => {
   for (const cropper of croppers.values()) {
     if (!cropper.isDestroyed()) {
       cropper.prependListener('blur', preventDefault);
     }
   }
 
-  await activateWindow(window.ownerName);
+  await activateWindow(window);
 
   const {x, y, width, height, ownerName} = window;
 

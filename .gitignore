@@ -10,3 +10,4 @@ coverage
 /app/dist
 /dist
 /dist-js
+/native/build

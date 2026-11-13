@@ -11,7 +11,8 @@ import {settings} from '../common/settings';
 
 import ffmpegPath from '../utils/ffmpeg-path';
 
-const gifsicle = require('gifsicle');
+// Gifsicle 7 is an ES module; its default export is the binary path.
+const {default: gifsicle} = require('gifsicle');
 const gifsiclePath = util.fixPathForAsarUnpack(gifsicle);
 
 enum Mode {

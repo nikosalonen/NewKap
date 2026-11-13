@@ -21,7 +21,7 @@ export enum Encoding {
 export type App = {
   url: string;
   isDefault: boolean;
-  icon: string;
+  icon?: string;
   name: string;
 };
 

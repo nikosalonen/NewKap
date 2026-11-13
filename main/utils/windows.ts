@@ -1,20 +1,10 @@
-import {Menu, MenuItem, nativeImage} from 'electron';
+import {app} from 'electron';
+import execa from 'execa';
 import Store from 'electron-store';
 import {windowManager} from '../windows/manager';
+import {getWindows, HelperWindow} from './native-helper';
 
-const {getWindows, activateWindow} = require('mac-windows');
-const {getAppIconListByPid} = require('node-mac-app-icon');
-
-export interface MacWindow {
-  pid: number;
-  ownerName: string;
-  name: string;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  number: number;
-}
+export type MacWindow = HelperWindow;
 
 const APP_BLACKLIST = [
   'Kap',
@@ -32,67 +22,40 @@ const store = new Store<{
 
 const usageHistory = store.get('appUsageHistory', {});
 
-const isValidApp = ({ownerName}: MacWindow) => !APP_BLACKLIST.includes(ownerName);
-
-const getWindowList = async () => {
-  const windows = await getWindows() as MacWindow[];
-  const images = await getAppIconListByPid(windows.map(win => win.pid), {
-    size: 16,
-    failOnError: false
-  }) as Array<{
-    pid: number;
-    icon: Buffer;
-  }>;
-
-  let maxLastUsed = 0;
-
-  return windows.filter(window => isValidApp(window)).map(win => {
-    const iconImage = images.find(img => img.pid === win.pid);
-    const icon = iconImage?.icon ? nativeImage.createFromBuffer(iconImage.icon) : undefined;
-
-    const window = {
-      ...win,
-      icon2x: icon,
-      icon: icon?.resize({width: 16, height: 16}),
-      count: 0,
-      lastUsed: 0,
-      ...usageHistory[win.pid]
-    };
-
-    maxLastUsed = Math.max(maxLastUsed, window.lastUsed);
-    return window;
-  }).sort((a, b) => {
-    if (a.lastUsed === maxLastUsed) {
-      return -1;
-    }
-
-    if (b.lastUsed === maxLastUsed) {
-      return 1;
-    }
-
-    return b.count - a.count;
-  });
-};
-
-export const buildWindowsMenu = async (selected: string) => {
-  const menu = new Menu();
-  const windows = await getWindowList();
-
-  for (const win of windows) {
-    menu.append(
-      new MenuItem({
-        label: win.ownerName,
-        icon: win.icon,
-        type: 'checkbox',
-        checked: win.ownerName === selected,
-        click: () => {
-          activateApp(win);
-        }
-      })
-    );
+const getAppIconDataUrl = async (appPath?: string) => {
+  if (!appPath) {
+    return undefined;
   }
 
-  return menu;
+  try {
+    return (await app.getFileIcon(appPath, {size: 'small'})).toDataURL();
+  } catch {
+    return undefined;
+  }
+};
+
+const getAppWindows = async () => {
+  try {
+    return await getWindows();
+  } catch (error) {
+    console.error('Could not list windows:', error);
+    return [];
+  }
+};
+
+export const getWindowList = async () => {
+  const windows = (await getAppWindows()).filter(window => !APP_BLACKLIST.includes(window.ownerName));
+  const windowsWithIcons = await Promise.all(windows.map(async window => ({
+    ...window,
+    icon: await getAppIconDataUrl(window.appPath)
+  })));
+
+  return windowsWithIcons.sort((a, b) => a.ownerName.localeCompare(b.ownerName));
+};
+
+// Launch Services brings a running app to the front without asking for Automation access.
+const bringAppToFront = async (window: MacWindow) => {
+  await execa('/usr/bin/open', ['-a', window.appPath ?? window.ownerName]);
 };
 
 const updateAppUsageHistory = (app: MacWindow) => {
@@ -108,5 +71,5 @@ const updateAppUsageHistory = (app: MacWindow) => {
 
 export const activateApp = (window: MacWindow) => {
   updateAppUsageHistory(window);
-  windowManager.cropper?.selectApp(window, activateWindow);
+  windowManager.cropper?.selectApp(window, bringAppToFront);
 };

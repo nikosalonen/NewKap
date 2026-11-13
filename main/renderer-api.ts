@@ -8,7 +8,7 @@ import {plugins} from './plugins';
 import {InstalledPlugin, NpmPlugin} from './plugins/plugin';
 import {getAudioDevices, getDefaultInputDevice, getSelectedInputDeviceId} from './utils/devices';
 import {showError} from './utils/errors';
-import {activateApp, MacWindow} from './utils/windows';
+import {activateApp, getWindowList} from './utils/windows';
 import {getCogMenuAsync} from './menus/cog';
 import {startRecording} from './aperture';
 import {flags} from './common/flags';
@@ -87,29 +87,6 @@ const loadPluginConfig = ({pluginName, serviceTitle}: {pluginName: string; servi
       title: validator.title
     }))
   };
-};
-
-const getWindowList = async () => {
-  const {getWindows} = require('mac-windows');
-  const {getAppIconListByPid} = require('node-mac-app-icon');
-  const windows = await getWindows() as MacWindow[];
-  const images = await getAppIconListByPid(windows.map(win => win.pid), {
-    size: 16,
-    failOnError: false
-  }) as Array<{pid: number; icon: Buffer}>;
-
-  return windows
-    .filter(window => !['Kap', 'Kap Beta'].includes(window.ownerName))
-    .map(window => {
-      const iconImage = images.find(img => img.pid === window.pid);
-      const icon = iconImage?.icon ? nativeImage.createFromBuffer(iconImage.icon).resize({width: 16, height: 16}).toDataURL() : undefined;
-
-      return {
-        ...window,
-        icon
-      };
-    })
-    .sort((a, b) => a.ownerName.localeCompare(b.ownerName));
 };
 
 const sanitizeMenuTemplate = (template: any[]): MenuItemConstructorOptions[] => template.map((item, index) => {

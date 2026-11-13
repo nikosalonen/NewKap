@@ -24,6 +24,8 @@ Download Kap v5.1 from [GitHub Releases](https://github.com/jacobpowaza/NewKap/r
 
 To check which Mac you have, open **Apple menu -> About This Mac**. Macs that show **Chip** are Apple Silicon. Macs that show an Intel **Processor** use the x64 build.
 
+Kap 5.1.0 is the last release for Intel Macs. Later releases support Apple Silicon only.
+
 Install:
 
 1. Download the correct DMG.
@@ -87,10 +89,10 @@ For audio recording, grant Microphone permission and choose an input in Preferen
 
 Kap v5.1 is packaged for macOS 12 Monterey or later. Electron 43 is the runtime in this release; Electron v38 and newer require macOS 12 or later because Chromium removed older macOS support.
 
-Supported downloads:
+Supported Macs:
 
-- Apple Silicon: `arm64`
-- Intel Mac: `x64`
+- Apple Silicon: `arm64`.
+- Intel Macs: Kap 5.1.0 is the last release with an `x64` build.
 
 Known limitations:
 
@@ -107,7 +109,7 @@ Requirements:
 - Node from `.nvmrc` or any Node version in the supported range `>=20 <23`.
 - pnpm, at the version in `package.json` `packageManager`. Run `corepack enable` once to get it.
 - Xcode command-line tools.
-- Native build tools required by Aperture and related recording dependencies.
+- An Apple Silicon Mac. `pnpm install` builds the native helper (`native/kap-helper.swift`) for arm64 with `swiftc`.
 
 Install and run:
 
@@ -134,7 +136,6 @@ Packaging:
 ```bash
 pnpm build
 CSC_IDENTITY_AUTO_DISCOVERY=false pnpm run pack
-CSC_IDENTITY_AUTO_DISCOVERY=false pnpm exec electron-builder --mac dmg --x64
 CSC_IDENTITY_AUTO_DISCOVERY=false pnpm exec electron-builder --mac dmg --arm64
 ```
 

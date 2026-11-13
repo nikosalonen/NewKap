@@ -1,8 +1,8 @@
 import {hasMicrophoneAccess} from '../common/system-permissions';
-import * as audioDevices from 'macos-audio-devices';
 import {settings} from '../common/settings';
 import {defaultInputDeviceId} from '../common/constants';
 import Sentry from './sentry';
+import {getAudioInputs, getAudioInputsSync} from './native-helper';
 const aperture = require('aperture');
 
 let cachedDevices: Array<{id: string; name: string}> | undefined;
@@ -28,23 +28,9 @@ export const getAudioDevices = async () => {
   }
 
   try {
-    const devices = await audioDevices.getInputDevices();
+    const {devices} = await getAudioInputs();
 
-    cachedDevices = devices.sort((a, b) => {
-      if (a.transportType === b.transportType) {
-        return a.name.localeCompare(b.name);
-      }
-
-      if (a.transportType === 'builtin') {
-        return -1;
-      }
-
-      if (b.transportType === 'builtin') {
-        return 1;
-      }
-
-      return 0;
-    }).map(device => ({id: device.uid, name: device.name}));
+    cachedDevices = devices.map(device => ({id: device.id, name: device.name}));
     cacheTimestamp = Date.now();
     return cachedDevices;
   } catch (error) {
@@ -69,12 +55,26 @@ export const getAudioDevices = async () => {
 
 export const getDefaultInputDevice = () => {
   try {
-    const device = audioDevices.getDefaultInputDevice.sync();
-    setCachedDefaultDeviceId(device.uid);
+    const {defaultId, devices} = getAudioInputsSync();
+    const device = devices.find(input => input.id === defaultId);
+
+    if (!device) {
+      return undefined;
+    }
+
+    setCachedDefaultDeviceId(device.id);
     return {
-      id: device.uid,
+      id: device.id,
       name: device.name
     };
+  } catch {
+    return undefined;
+  }
+};
+
+const getDefaultInputDeviceId = async () => {
+  try {
+    return (await getAudioInputs()).defaultId;
   } catch {
     return undefined;
   }
@@ -113,15 +113,9 @@ export const getRecordingAudioDeviceId = async () => {
     return audioInputDeviceId;
   }
 
-  try {
-    const device = await audioDevices.getDefaultInputDevice();
-    setCachedDefaultDeviceId(device.uid);
-    return device.uid;
-  } catch {
-    const [defaultAudioDevice] = await getAudioDevices();
-    setCachedDefaultDeviceId(defaultAudioDevice?.id);
-    return defaultAudioDevice?.id;
-  }
+  const deviceId = await getDefaultInputDeviceId() ?? (await getAudioDevices())[0]?.id;
+  setCachedDefaultDeviceId(deviceId);
+  return deviceId;
 };
 
 export const getSelectedInputDeviceId = () => {

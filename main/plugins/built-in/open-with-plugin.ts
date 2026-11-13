@@ -1,24 +1,40 @@
-import {ShareServiceContext} from '../service-context';
 import path from 'path';
+import {fileURLToPath} from 'url';
+import execa from 'execa';
+import {ShareServiceContext} from '../service-context';
 import {getFormatExtension} from '../../common/constants';
 import {Format} from '../../common/types';
-
-const {getAppsThatOpenExtension, openFileWithApp} = require('mac-open-with');
+import {getAppsForExtensionsSync, OpenWithApp} from '../../utils/native-helper';
 
 const action = async (context: ShareServiceContext & {appUrl: string}) => {
   const filePath = await context.filePath();
-  openFileWithApp(filePath, context.appUrl);
+  await execa('/usr/bin/open', ['-a', fileURLToPath(context.appUrl), filePath]);
 };
 
 export interface App {
   url: string;
   isDefault: boolean;
-  icon: string;
+  icon?: string;
   name: string;
 }
 
-const getAppsForFormat = (format: Format) => {
-  return (getAppsThatOpenExtension.sync(getFormatExtension(format)) as App[])
+const openWithFormats = ['mp4', 'gif', 'apng', 'webm', 'av1', 'hevc'] as Format[];
+
+const loadAppsByExtension = (): Record<string, OpenWithApp[]> => {
+  const extensions = [...new Set(openWithFormats.map(format => getFormatExtension(format)))];
+
+  try {
+    return getAppsForExtensionsSync(extensions);
+  } catch (error) {
+    console.error('Could not list the apps that open exported files:', error);
+    return {};
+  }
+};
+
+const appsByExtension = loadAppsByExtension();
+
+const getAppsForFormat = (format: Format): App[] => {
+  return (appsByExtension[getFormatExtension(format)] ?? [])
     .map(app => ({...app, name: decodeURI(path.parse(app.url).name)}))
     .filter(app => !['Kap', 'Kap Beta'].includes(app.name))
     .sort((a, b) => {
@@ -30,7 +46,7 @@ const getAppsForFormat = (format: Format) => {
     });
 };
 
-const appsForFormat = (['mp4', 'gif', 'apng', 'webm', 'av1', 'hevc'] as Format[])
+const appsForFormat = openWithFormats
   .map(format => ({
     format,
     apps: getAppsForFormat(format)
