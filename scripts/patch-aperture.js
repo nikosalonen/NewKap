@@ -44,7 +44,7 @@ if (patched) {
 
 // Patch ALL copies of electron-util: disable enforceMacOSAppLocation everywhere
 // There are multiple nested copies (mac-open-with, macos-audio-devices,
-// mac-screen-capture-permissions, electron-timber) that each bundle their own
+// electron-timber) that each bundle their own
 // electron-util with the enforce function still active.
 const noopEnforce = '\'use strict\';\n// Patched by NewKap: disabled — unreliable and shows wrong branding.\nmodule.exports = () => {};\n';
 const nodeModulesDir = path.join(__dirname, '..', 'node_modules');

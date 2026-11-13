@@ -1,0 +1,109 @@
+import {serial as test} from 'ava';
+import fs from 'fs';
+import path from 'path';
+import sinon from 'sinon';
+import {ensureMicrophonePermissions, ensureScreenCapturePermissions} from '../main/common/system-permissions';
+
+// The test mock from test/mocks/electron.ts, typed loosely so tests can swap its fakes.
+const electron: any = require('electron');
+
+const screenCaptureRequestedMarker = path.join(electron.app.getPath('userData'), '.has-app-requested-screen-capture-permissions');
+
+const givenAccess = (statuses: {screen?: string; microphone?: string}) => {
+  electron.systemPreferences.getMediaAccessStatus = sinon.fake((mediaType: 'screen' | 'microphone') => statuses[mediaType]);
+};
+
+const givenScreenCaptureWasRequestedBefore = () => {
+  fs.mkdirSync(path.dirname(screenCaptureRequestedMarker), {recursive: true});
+  fs.writeFileSync(screenCaptureRequestedMarker, '');
+};
+
+const givenDialogAnswer = (response: number) => {
+  electron.dialog.showMessageBox = sinon.fake.resolves({response});
+};
+
+test.beforeEach(() => {
+  givenAccess({});
+  givenDialogAnswer(1);
+  electron.systemPreferences.askForMediaAccess = sinon.fake.resolves(false);
+  electron.desktopCapturer.getSources = sinon.fake.resolves([]);
+  electron.shell.openExternal = sinon.fake.resolves(undefined);
+  electron.app.focus = sinon.fake();
+  electron.app.quit = sinon.fake();
+  fs.rmSync(screenCaptureRequestedMarker, {force: true});
+});
+
+test('screen capture is allowed when macOS reports access as granted', async t => {
+  givenAccess({screen: 'granted'});
+
+  t.true(await ensureScreenCapturePermissions());
+  t.is(electron.dialog.showMessageBox.callCount, 0);
+  t.is(electron.desktopCapturer.getSources.callCount, 0);
+});
+
+test('first screen capture check asks macOS and does not show the Kap dialog', async t => {
+  givenAccess({screen: 'denied'});
+
+  t.false(await ensureScreenCapturePermissions());
+  t.is(electron.desktopCapturer.getSources.callCount, 1);
+  t.is(electron.dialog.showMessageBox.callCount, 0);
+});
+
+test('later screen capture checks show the Kap dialog instead of asking macOS again', async t => {
+  givenAccess({screen: 'denied'});
+  givenScreenCaptureWasRequestedBefore();
+
+  t.false(await ensureScreenCapturePermissions());
+  t.is(electron.dialog.showMessageBox.callCount, 1);
+  t.is(electron.desktopCapturer.getSources.callCount, 0);
+});
+
+test('opening System Settings for screen capture quits Kap so the grant can apply', async t => {
+  givenAccess({screen: 'denied'});
+  givenScreenCaptureWasRequestedBefore();
+  givenDialogAnswer(0);
+
+  await ensureScreenCapturePermissions();
+
+  t.regex(electron.shell.openExternal.lastArg, /Privacy_ScreenCapture/);
+  t.is(electron.app.quit.callCount, 1);
+});
+
+test('microphone access is requested from macOS when it was never asked', async t => {
+  givenAccess({microphone: 'not-determined'});
+  electron.systemPreferences.askForMediaAccess = sinon.fake.resolves(true);
+
+  t.true(await ensureMicrophonePermissions());
+  t.is(electron.systemPreferences.askForMediaAccess.lastArg, 'microphone');
+});
+
+test('declining the macOS microphone prompt does not show a second dialog', async t => {
+  givenAccess({microphone: 'not-determined'});
+
+  t.false(await ensureMicrophonePermissions());
+  t.is(electron.dialog.showMessageBox.callCount, 0);
+});
+
+test('denied microphone access shows the Kap dialog', async t => {
+  givenAccess({microphone: 'denied'});
+
+  t.false(await ensureMicrophonePermissions());
+  t.is(electron.dialog.showMessageBox.callCount, 1);
+});
+
+test('restricted microphone access shows the Kap dialog', async t => {
+  givenAccess({microphone: 'restricted'});
+
+  t.false(await ensureMicrophonePermissions());
+  t.is(electron.dialog.showMessageBox.callCount, 1);
+});
+
+test('opening System Settings for the microphone does not quit Kap', async t => {
+  givenAccess({microphone: 'denied'});
+  givenDialogAnswer(0);
+
+  await ensureMicrophonePermissions();
+
+  t.regex(electron.shell.openExternal.lastArg, /Privacy_Microphone/);
+  t.is(electron.app.quit.callCount, 0);
+});

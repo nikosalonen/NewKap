@@ -1,55 +1,14 @@
-import {systemPreferences, shell, dialog, app} from 'electron';
-
-// Safe wrapper for mac-screen-capture-permissions (unreliable on macOS Sonoma+)
-let hasScreenCapturePermission: () => boolean;
-let hasPromptedForPermission: () => boolean;
-
-const darwinMajor = Number.parseInt(require('os').release().split('.')[0], 10);
-const isSonomaOrNewer = darwinMajor >= 23;
-
-if (isSonomaOrNewer) {
-  // On Sonoma+, mac-screen-capture-permissions can be unreliable.
-  // We still try to use it, but fall back gracefully.
-  try {
-    const macPerms = require('mac-screen-capture-permissions');
-    hasScreenCapturePermission = macPerms.hasScreenCapturePermission;
-    hasPromptedForPermission = macPerms.hasPromptedForPermission;
-  } catch (error) {
-    console.error('mac-screen-capture-permissions failed on Sonoma:', error);
-    // On failure, assume permission granted and let aperture handle errors
-    hasScreenCapturePermission = () => true;
-    hasPromptedForPermission = () => true;
-  }
-} else {
-  try {
-    const macPerms = require('mac-screen-capture-permissions');
-    hasScreenCapturePermission = macPerms.hasScreenCapturePermission;
-    hasPromptedForPermission = macPerms.hasPromptedForPermission;
-  } catch (error) {
-    console.error('mac-screen-capture-permissions failed to load:', error);
-    hasScreenCapturePermission = () => true;
-    hasPromptedForPermission = () => true;
-  }
-}
+import fs from 'fs';
+import path from 'path';
+import {systemPreferences, shell, dialog, app, desktopCapturer} from 'electron';
 
 let isDialogShowing = false;
 
-// Use the correct URL scheme for macOS Sonoma+ (System Settings vs System Preferences)
-const getSystemSettingsUrl = (privacySection: string) => {
-  const majorVersion = Number.parseInt(require('os').release().split('.')[0], 10);
-  // MacOS Sonoma (14.x) = Darwin 23.x, uses new System Settings URL scheme
-  if (majorVersion >= 23) {
-    const sectionMap: Record<string, string> = {
-      Privacy_Microphone: 'x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone',
-      Privacy_ScreenCapture: 'x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture'
-    };
-    return sectionMap[privacySection] ?? `x-apple.systempreferences:com.apple.preference.security?${privacySection}`;
-  }
+const getSystemSettingsUrl = (privacySection: string) => `x-apple.systempreferences:com.apple.preference.security?${privacySection}`;
 
-  return `x-apple.systempreferences:com.apple.preference.security?${privacySection}`;
-};
+export const openSystemPreferences = async (privacySection: string) => shell.openExternal(getSystemSettingsUrl(privacySection));
 
-const promptSystemPreferences = (options: {message: string; detail: string; systemPreferencesPath: string}) => async ({hasAsked}: {hasAsked?: boolean} = {}) => {
+const promptSystemPreferences = (options: {message: string; detail: string; systemPreferencesPath: string; quitAfterOpening: boolean}) => async ({hasAsked}: {hasAsked?: boolean} = {}) => {
   if (hasAsked || isDialogShowing) {
     return false;
   }
@@ -67,7 +26,10 @@ const promptSystemPreferences = (options: {message: string; detail: string; syst
     });
     if (response === 0) {
       await openSystemPreferences(options.systemPreferencesPath);
-      app.quit();
+
+      if (options.quitAfterOpening) {
+        app.quit();
+      }
     }
   } finally {
     isDialogShowing = false;
@@ -76,16 +38,16 @@ const promptSystemPreferences = (options: {message: string; detail: string; syst
   return false;
 };
 
-export const openSystemPreferences = async (path: string) => shell.openExternal(getSystemSettingsUrl(path));
-
 // Microphone
 
 const getMicrophoneAccess = () => systemPreferences.getMediaAccessStatus('microphone');
 
+// A microphone grant applies right away, so Kap keeps running.
 const microphoneFallback = promptSystemPreferences({
   message: 'Kap cannot access the microphone.',
-  detail: 'Kap requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. Afterwards, relaunch Kap.',
-  systemPreferencesPath: 'Privacy_Microphone'
+  detail: 'Kap requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. If the setting is locked, Screen Time or your organization manages it.',
+  systemPreferencesPath: 'Privacy_Microphone',
+  quitAfterOpening: false
 });
 
 export const ensureMicrophonePermissions = async (fallback = microphoneFallback) => {
@@ -95,52 +57,73 @@ export const ensureMicrophonePermissions = async (fallback = microphoneFallback)
     return true;
   }
 
-  if (access !== 'denied') {
+  if (access === 'not-determined' || access === 'unknown') {
     const granted = await systemPreferences.askForMediaAccess('microphone');
 
     if (granted) {
       return true;
     }
 
+    // The user just answered the macOS prompt, so the default fallback stays quiet.
     return fallback({hasAsked: true});
   }
 
+  // 'denied' or 'restricted': macOS will not ask again, so explain what to do.
   return fallback();
 };
 
 export const hasMicrophoneAccess = () => getMicrophoneAccess() === 'granted';
 
-// Screen Capture (10.15 and newer)
+// Screen Capture
 
-const screenCaptureFallback = promptSystemPreferences({
-  message: 'Kap cannot record the screen.',
-  detail: 'Kap requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. Afterwards, relaunch Kap.',
-  systemPreferencesPath: 'Privacy_ScreenCapture'
-});
+// Same file name that mac-screen-capture-permissions used, so existing installs keep their state.
+const getScreenCaptureRequestedMarker = () => path.join(app.getPath('userData'), '.has-app-requested-screen-capture-permissions');
 
-export const ensureScreenCapturePermissions = (fallback = screenCaptureFallback) => {
+const hasRequestedScreenCapture = () => fs.existsSync(getScreenCaptureRequestedMarker());
+
+const markScreenCaptureRequested = () => {
   try {
-    const hadAsked = hasPromptedForPermission();
-    const hasAccess = hasScreenCapturePermission();
-
-    if (hasAccess) {
-      return true;
-    }
-
-    fallback({hasAsked: !hadAsked});
-    return false;
+    const marker = getScreenCaptureRequestedMarker();
+    fs.mkdirSync(path.dirname(marker), {recursive: true});
+    fs.writeFileSync(marker, '');
   } catch (error) {
-    console.error('Screen capture permission check failed:', error);
-    // On failure, show the permission prompt rather than silently failing
-    fallback({hasAsked: false});
-    return false;
+    console.error('Could not save that screen capture access was requested:', error);
   }
 };
 
-export const hasScreenCaptureAccess = () => {
+// Listing the screens makes macOS show its own prompt the first time
+// and adds Kap to the Screen Recording list in System Settings.
+const requestScreenCaptureAccess = async () => {
   try {
-    return hasScreenCapturePermission();
-  } catch {
+    await desktopCapturer.getSources({types: ['screen'], thumbnailSize: {width: 0, height: 0}});
+  } catch (error) {
+    console.error('Requesting screen capture access failed:', error);
+  }
+};
+
+// MacOS applies a screen capture grant only after Kap restarts.
+const screenCaptureFallback = promptSystemPreferences({
+  message: 'Kap cannot record the screen.',
+  detail: 'Kap requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. Afterwards, relaunch Kap.',
+  systemPreferencesPath: 'Privacy_ScreenCapture',
+  quitAfterOpening: true
+});
+
+export const hasScreenCaptureAccess = () => systemPreferences.getMediaAccessStatus('screen') === 'granted';
+
+export const ensureScreenCapturePermissions = async (fallback = screenCaptureFallback) => {
+  if (hasScreenCaptureAccess()) {
+    return true;
+  }
+
+  // Electron reports 'denied' both before and after the user was asked,
+  // so Kap remembers whether it has already asked macOS.
+  if (!hasRequestedScreenCapture()) {
+    markScreenCaptureRequested();
+    void requestScreenCaptureAccess();
     return false;
   }
+
+  await fallback();
+  return false;
 };

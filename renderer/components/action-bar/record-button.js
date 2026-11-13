@@ -5,26 +5,7 @@ import classNames from 'classnames';
 import {connect, CropperContainer} from '../../containers';
 import {handleKeyboardActivation} from '../../utils/inputs';
 import kap from '../../utils/kap';
-
-const getMediaNode = async deviceId => new Promise((resolve, reject) => {
-  navigator.getUserMedia({
-    audio: {deviceId}
-  }, stream => {
-    const audioContext = new AudioContext();
-    const analyser = audioContext.createAnalyser();
-    const microphone = audioContext.createMediaStreamSource(stream);
-    const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
-
-    analyser.smoothingTimeConstant = 0.8;
-    analyser.fftSize = 1024;
-
-    microphone.connect(analyser);
-    analyser.connect(javascriptNode);
-    javascriptNode.connect(audioContext.destination);
-
-    resolve({javascriptNode, analyser});
-  }, reject);
-});
+import {startAudioLevelMeter} from '../../utils/audio-level-meter';
 
 const RecordButton = ({
   cropperExists,
@@ -42,45 +23,27 @@ const RecordButton = ({
   const [mode, setMode] = useState('record');
 
   useEffect(() => {
-    let node;
-
-    const connectToDevice = async () => {
-      try {
-        const {javascriptNode, analyser} = await getMediaNode(audioInputDeviceId);
-
-        javascriptNode.onaudioprocess = () => {
-          const array = new Uint8Array(analyser.frequencyBinCount);
-          analyser.getByteFrequencyData(array);
-          let total = 0;
-          for (const value of array) {
-            total += value;
-          }
-
-          const avg = total / array.length;
-          if (avg >= 36) {
-            setShowFirstRipple(true);
-            setShowSecondRipple(true);
-            setShouldStop(false);
-          } else {
-            setShouldStop(true);
-          }
-        };
-
-        node = javascriptNode;
-      } catch (error) {
-        console.error('An error occurred when trying to get audio levels:', error);
-      }
-    };
-
-    if (recordAudio && audioInputDeviceId) {
-      connectToDevice();
+    if (!recordAudio || !audioInputDeviceId) {
+      return;
     }
 
-    return () => {
-      if (node && typeof node.disconnect === 'function') {
-        node.disconnect();
+    const meter = startAudioLevelMeter({
+      deviceId: audioInputDeviceId,
+      onLevel: level => {
+        if (level >= 36) {
+          setShowFirstRipple(true);
+          setShowSecondRipple(true);
+          setShouldStop(false);
+        } else {
+          setShouldStop(true);
+        }
+      },
+      onError: error => {
+        console.error('An error occurred when trying to get audio levels:', error);
       }
-    };
+    });
+
+    return meter.stop;
   }, [recordAudio, audioInputDeviceId]);
 
   const shouldFirstStop = () => {

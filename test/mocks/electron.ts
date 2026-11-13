@@ -10,15 +10,31 @@ process.env.TZ = 'America/New_York';
 export const app = {
   getPath: (name: string) => path.resolve(temporaryDir, name),
   isPackaged: false,
-  getVersion: ''
+  getVersion: '',
+  focus: sinon.fake(),
+  quit: sinon.fake()
 };
 
 export const shell = {
-  showItemInFolder: sinon.fake()
+  showItemInFolder: sinon.fake(),
+  openExternal: sinon.fake.resolves(undefined)
 };
 
 export const clipboard = {
   writeText: sinon.fake()
+};
+
+export const systemPreferences = {
+  getMediaAccessStatus: sinon.fake.returns('granted'),
+  askForMediaAccess: sinon.fake.resolves(true)
+};
+
+export const dialog = {
+  showMessageBox: sinon.fake.resolves({response: 1})
+};
+
+export const desktopCapturer = {
+  getSources: sinon.fake.resolves([])
 };
 
 export const remote = {};

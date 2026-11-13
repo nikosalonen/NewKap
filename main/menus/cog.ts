@@ -6,6 +6,7 @@ import {getAudioDevices, getDefaultInputDevice} from '../utils/devices';
 import {settings} from '../common/settings';
 import {defaultInputDeviceId} from '../common/constants';
 import {hasMicrophoneAccess} from '../common/system-permissions';
+import {getSelectedAudioInput} from '../common/audio-input';
 import {recordingHistory} from '../recording-history';
 import {windowManager} from '../windows/manager';
 
@@ -145,10 +146,13 @@ const getMicrophoneItem = async (): Promise<MenuOptions[number]> => {
   const isRecordAudioEnabled = settings.get('recordAudio');
   const currentDefaultDevice = canRecordAudio ? getDefaultInputDevice() : undefined;
 
-  let audioInputDeviceId = settings.get('audioInputDeviceId');
-  if (!devices.some(device => device.id === audioInputDeviceId)) {
+  const {selectedId: audioInputDeviceId, shouldResetSaved} = getSelectedAudioInput({
+    savedId: settings.get('audioInputDeviceId'),
+    devices,
+    canRecordAudio
+  });
+  if (shouldResetSaved) {
     settings.set('audioInputDeviceId', defaultInputDeviceId);
-    audioInputDeviceId = defaultInputDeviceId;
   }
 
   return {
