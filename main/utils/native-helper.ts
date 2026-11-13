@@ -1,7 +1,5 @@
-import process from 'node:process';
-import path from 'node:path';
-import {app} from 'electron';
 import {execaSync, execa} from 'execa';
+import {getNativeBinaryPath} from './native-binary';
 
 // Runs native/kap-helper.swift, built for Apple Silicon by `pnpm build-native`.
 
@@ -28,10 +26,7 @@ export type OpenWithApp = {
   isDefault: boolean;
 };
 
-// Packaged builds ship the helper in Contents/Resources (see "extraResources" in package.json).
-const getHelperPath = () => app.isPackaged
-  ? path.join(process.resourcesPath, 'kap-helper')
-  : path.join(__dirname, '..', '..', 'native', 'build', 'kap-helper');
+const getHelperPath = () => getNativeBinaryPath('kap-helper');
 
 const runHelper = async (args: string[]) => {
   const {stdout} = await execa(getHelperPath(), args);

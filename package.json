@@ -21,12 +21,13 @@
     "start": "tsc && node scripts/run-electron.js .",
     "build-main": "tsc",
     "build-native": "mkdir -p native/build && swiftc -O -target arm64-apple-macos13.0 native/kap-helper.swift -o native/build/kap-helper",
+    "fetch-gifsicle": "node scripts/fetch-gifsicle.js",
     "build-renderer": "next build renderer",
-    "build": "pnpm build-native && pnpm build-main && pnpm build-renderer",
+    "build": "pnpm build-native && pnpm fetch-gifsicle && pnpm build-main && pnpm build-renderer",
     "dist": "pnpm build && electron-builder",
     "pack": "pnpm build && electron-builder --dir",
     "pack:local": "pnpm build && electron-builder --dir -c.mac.identity=- -c.mac.hardenedRuntime=false",
-    "postinstall": "electron-builder install-app-deps && pnpm build-native",
+    "postinstall": "electron-builder install-app-deps && pnpm build-native && pnpm fetch-gifsicle",
     "dev": "next dev renderer"
   },
   "dependencies": {
@@ -42,7 +43,6 @@
     "ensure-error": "^3.0.1",
     "execa": "^10.2.1",
     "ffmpeg-static": "^5.3.0",
-    "gifsicle": "^7.0.1",
     "got": "^9.6.0",
     "linkify-react": "^4.4.0",
     "linkifyjs": "^4.4.0",
@@ -144,6 +144,10 @@
       {
         "from": "native/build/kap-helper",
         "to": "kap-helper"
+      },
+      {
+        "from": "native/build/gifsicle",
+        "to": "gifsicle"
       }
     ],
     "mac": {

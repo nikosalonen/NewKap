@@ -11,8 +11,6 @@ autoInstallPeers: false
 allowBuilds:
   # Downloads the ffmpeg binary for this Mac.
   ffmpeg-static: true
-  # Downloads the gifsicle binary.
-  gifsicle: true
   # Its preinstall script only cleans up global Yarn installs.
   yarn: false
   # tsx's compiler. Its postinstall only checks the binary, which pnpm already

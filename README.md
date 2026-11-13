@@ -109,7 +109,7 @@ Requirements:
 - Node 24, the version Electron 45 runs. `.nvmrc` pins the exact version; `package.json` `engines` allows any 24.x.
 - pnpm, at the version in `package.json` `packageManager`. Run `corepack enable` once to get it.
 - Xcode command-line tools.
-- An Apple Silicon Mac. `pnpm install` builds the native helper (`native/kap-helper.swift`) for arm64 with `swiftc`.
+- An Apple Silicon Mac. `pnpm install` builds the native helper (`native/kap-helper.swift`) for arm64 with `swiftc` and downloads the gifsicle binary into `native/build` (`scripts/fetch-gifsicle.js` checks its SHA-256).
 
 Install and run:
 

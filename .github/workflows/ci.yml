@@ -45,9 +45,10 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       # The project's own postinstall builds the Swift helper, which needs macOS.
-      # Run only the install scripts that download ffmpeg and gifsicle.
+      # Run only the steps that download ffmpeg and gifsicle.
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - run: pnpm rebuild ffmpeg-static gifsicle
+      - run: pnpm fetch-gifsicle
+      - run: pnpm rebuild ffmpeg-static
         env:
           # ffmpeg-static's default release has ffmpeg 7.0.2 for Linux but 6.0
           # for macOS arm64, which Kap bundles. Test against the same 6.0.
