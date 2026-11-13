@@ -61,7 +61,8 @@ After 3+ merged PRs, you can request maintainer access by opening a Discussion. 
 |---------|-------------|
 | `pnpm start` | Run in development mode |
 | `pnpm build` | Build main + renderer |
-| `pnpm dist` | Build distributable DMG |
+| `pnpm run pack:local` | Build a test app in `dist/mac-arm64` |
+| `pnpm dist` | Build the release DMG, signed with "Kap Local Signing" (see `maintaining.md`) |
 | `npx tsc` | Compile TypeScript only |
 
 ### Important Notes

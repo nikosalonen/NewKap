@@ -1,17 +1,23 @@
 'use strict';
 
-// Packages a launchable test build in dist/mac-arm64 without a Developer ID.
-// It signs with the "Kap Local Signing" certificate when the keychain has it
-// (scripts/create-local-signing-identity.sh), so macOS keeps Kap's Screen
-// Recording and Microphone grants from build to build. Otherwise it signs ad
-// hoc, and every build needs the grants again.
+// Packages Kap signed with the self-signed "Kap Local Signing" certificate
+// (scripts/create-local-signing-identity.sh). macOS ties Screen Recording and
+// Microphone grants to the signature, so with the same certificate the grants
+// carry over from build to build and from release to release.
+//
+//   node scripts/pack-local.js            test build in dist/mac-arm64; signs ad hoc
+//                                         when the certificate is missing
+//   node scripts/pack-local.js --release  release DMG in dist/; needs the certificate
+//
 // Hardened runtime stays off: without an Apple Team ID, its library validation
-// stops Kap from loading Electron Framework.
+// stops Kap from loading Electron Framework. A notarized build needs a
+// Developer ID certificate instead (`pnpm dist:developer-id`).
 
 const {execFileSync} = require('node:child_process');
 const process = require('node:process');
 
 const localIdentity = 'Kap Local Signing';
+const isRelease = process.argv.includes('--release');
 
 const hasLocalIdentity = () => {
   try {
@@ -22,16 +28,34 @@ const hasLocalIdentity = () => {
   }
 };
 
-const identity = hasLocalIdentity() ? localIdentity : '-';
+const getIdentity = () => {
+  if (hasLocalIdentity()) {
+    console.log(`Signing with "${localIdentity}".`);
+    return localIdentity;
+  }
 
-if (identity === '-') {
+  if (isRelease) {
+    // A release signed with another key would make every user grant the permissions again.
+    console.error(`Release builds must be signed with "${localIdentity}", which is not in your keychain. Import the backed-up certificate (see maintaining.md).`);
+    return undefined;
+  }
+
   console.log('Signing ad hoc, so macOS asks for permissions again after this build. Run scripts/create-local-signing-identity.sh once to keep them.');
-} else {
-  console.log(`Signing with "${identity}".`);
-}
+  return '-';
+};
 
-try {
-  execFileSync('electron-builder', ['--dir', `-c.mac.identity=${identity}`, '-c.mac.hardenedRuntime=false'], {stdio: 'inherit'});
-} catch (error) {
-  process.exitCode = error.status ?? 1;
+const identity = getIdentity();
+
+if (identity) {
+  try {
+    execFileSync('electron-builder', [
+      ...(isRelease ? [] : ['--dir']),
+      `-c.mac.identity=${identity}`,
+      '-c.mac.hardenedRuntime=false',
+    ], {stdio: 'inherit'});
+  } catch (error) {
+    process.exitCode = error.status ?? 1;
+  }
+} else {
+  process.exitCode = 1;
 }

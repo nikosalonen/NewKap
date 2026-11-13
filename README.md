@@ -6,42 +6,30 @@
 
 Kap is a lightweight macOS screen recorder and screenshot tool that lives in the menu bar. This repository is a community-maintained Kap fork that keeps the original workflow alive on modern macOS and Electron while adding the v5.1 editor, screenshot, packaging, and branding fixes.
 
-[![Latest release](https://img.shields.io/github/v/release/jacobpowaza/NewKap?label=release)](https://github.com/jacobpowaza/NewKap/releases/latest)
-[![CI](https://github.com/jacobpowaza/NewKap/actions/workflows/ci.yml/badge.svg)](https://github.com/jacobpowaza/NewKap/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/nikosalonen/NewKap?label=release)](https://github.com/nikosalonen/NewKap/releases)
+[![CI](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml/badge.svg)](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml)
 [![macOS](https://img.shields.io/badge/macOS-13%2B-blue)](#compatibility)
-[![Intel x64](https://img.shields.io/badge/Intel-x64-informational)](#download)
 [![Apple Silicon arm64](https://img.shields.io/badge/Apple%20Silicon-arm64-informational)](#download)
-[![License](https://img.shields.io/github/license/jacobpowaza/NewKap)](LICENSE.md)
+[![License](https://img.shields.io/github/license/nikosalonen/NewKap)](LICENSE.md)
 
 ## Download
 
-Download Kap v5.1 from [GitHub Releases](https://github.com/jacobpowaza/NewKap/releases/latest).
+Download Kap from this fork's [GitHub Releases](https://github.com/nikosalonen/NewKap/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 13 Ventura or later, as `Kap-<version>-mac-arm64.dmg`.
 
-| Mac | File |
-| --- | --- |
-| Apple Silicon Mac, including M1, M2, M3, M4, and newer | `Kap-5.1.0-mac-arm64.dmg` |
-| Intel Mac | `Kap-5.1.0-mac-x64.dmg` |
-
-To check which Mac you have, open **Apple menu -> About This Mac**. Macs that show **Chip** are Apple Silicon. Macs that show an Intel **Processor** use the x64 build.
-
-Kap 5.1.0 is the last release for Intel Macs. Later releases support Apple Silicon only.
+For an Intel Mac, use Kap 5.1.0 from the [upstream NewKap releases](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0), the last release with an Intel build. To check which Mac you have, open **Apple menu -> About This Mac**: Macs that show **Chip** are Apple Silicon.
 
 Install:
 
-1. Download the correct DMG.
-2. Open the DMG.
-3. Drag `Kap.app` into Applications.
-4. Open Kap from Applications.
-5. Grant Screen Recording permission when macOS asks.
-6. Grant Microphone permission only if you want audio capture.
-
-If macOS blocks an unsigned or unnotarized build, open **System Settings -> Privacy & Security** and review the message for `Kap.app`. Each GitHub Release states the exact signing and notarization status for its artifacts.
+1. Download the DMG, open it, and drag `Kap.app` into Applications.
+2. Open Kap from Applications. macOS refuses to open it the first time, because releases are signed with this fork's own certificate instead of an Apple Developer ID and are not notarized. Close the message, open **System Settings -> Privacy & Security**, and click **Open Anyway** next to the message about Kap. macOS asks this once for each downloaded version.
+3. Grant Screen Recording permission when macOS asks.
+4. Grant Microphone permission only if you want audio capture.
 
 ## Updating
 
-Kap checks the latest public GitHub Release and can open the correct architecture-specific DMG for your Mac. Use **Check for Updates...** from the application menu or Preferences. The updater does not silently install updates; replace the app in Applications with the downloaded `Kap.app`.
+Kap checks this fork's latest GitHub Release and can open its DMG for you. Use **Check for Updates...** from the application menu or Preferences. The updater does not silently install updates; replace the app in Applications with the downloaded `Kap.app`, and confirm **Open Anyway** once more for the new version.
 
-Users currently on Kap v5.0 can detect Kap v5.1 after the `v5.1.0` release is published with `Kap-5.1.0-mac-x64.dmg` and `Kap-5.1.0-mac-arm64.dmg` assets.
+Every release is signed with the same certificate, so Screen Recording and Microphone permissions carry over to the new version.
 
 ## Kap v5.1
 
@@ -114,7 +102,7 @@ Requirements:
 Install and run:
 
 ```bash
-git clone https://github.com/jacobpowaza/NewKap.git
+git clone https://github.com/nikosalonen/NewKap.git
 cd NewKap
 nvm use
 pnpm install --frozen-lockfile
@@ -137,15 +125,19 @@ Packaging:
 # Test build for this Mac: dist/mac-arm64/Kap.app.
 pnpm run pack:local
 
-# Release DMG, signed with the Developer ID certificate in your keychain.
+# Release DMG in dist/, signed with the "Kap Local Signing" certificate.
+# See maintaining.md for the release steps.
 pnpm dist
+
+# Signed with a Developer ID certificate and notarized, if you have one.
+pnpm dist:developer-id
 ```
 
 macOS ties Screen Recording and Microphone access to the app's signature. By default `pack:local` signs ad hoc, which gives every build a new signature, so each build needs the permissions again. Run `scripts/create-local-signing-identity.sh` once: it creates a self-signed "Kap Local Signing" certificate in your login keychain (macOS asks for your password to trust it), and `pack:local` then signs with it, so the permissions carry over between builds. Keep one copy of the test build, such as `/Applications/Kap.app`: copies with different signatures share one permission entry and take it from each other, and macOS's "Quit & Reopen" may start the other copy.
 
 Packaging removes the Intel code from universal binaries and fails if any binary in the app has no arm64 code (`scripts/after-pack.js`).
 
-`pnpm dist` notarizes the app when these environment variables are set: `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD` and `APPLE_TEAM_ID`, or `APPLE_API_KEY`, `APPLE_API_KEY_ID` and `APPLE_API_ISSUER`. The old `electron-builder-notarize` names `APPLE_ID_PASSWORD` and `APPLE_API_KEY_ISSUER` no longer work. Verify signing and notarization before publishing artifacts.
+`pnpm dist:developer-id` notarizes the app when these environment variables are set: `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD` and `APPLE_TEAM_ID`, or `APPLE_API_KEY`, `APPLE_API_KEY_ID` and `APPLE_API_ISSUER`. The old `electron-builder-notarize` names `APPLE_ID_PASSWORD` and `APPLE_API_KEY_ISSUER` no longer work. Verify signing and notarization before publishing artifacts.
 
 ## Project Shape
 
@@ -196,7 +188,7 @@ Open **Apple menu -> About This Mac**. If it says **Chip**, use `arm64`. If it s
 
 ### macOS warns about Gatekeeper
 
-Check the GitHub Release notes for signing and notarization status. Unsigned or unnotarized builds may require manual approval in **System Settings -> Privacy & Security**.
+Releases from this fork are self-signed and not notarized, so macOS blocks the first launch of each downloaded version. Open **System Settings -> Privacy & Security** and click **Open Anyway** next to the message about Kap.
 
 ### Cropper opens but the overlay is invisible or blocks clicks
 

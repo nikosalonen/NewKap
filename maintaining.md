@@ -8,25 +8,32 @@ We strongly recommend installing an [XO editor plugin](https://github.com/sindre
 
 ## Releasing a new version
 
-*(You can do all the steps on github.com)*
+Releases are built on a Mac and published to [this fork's GitHub Releases](https://github.com/nikosalonen/NewKap/releases). They are signed with the self-signed "Kap Local Signing" certificate and are not notarized.
 
-- Go to https://github.com/wulkano/kap/releases
-- Click `Draft a new release`
-- Write the new version, prefixed with `v`, in the `Tag version` field (Example: `v2.0.0`)
-- Leave the `Release title` field blank
-- Write release notes
-- Click `Save draft`
-- Change `version` [here](https://github.com/wulkano/kap/blob/main/package.json#L4) to the new version and use the version number as the commit title (Example: `2.0.0`)
-- CircleCI will now build the app and add the binaries to the release
-- When CircleCI has attached the binaries to the release, click `Edit` on the release, and then click `Publish release`
+Sign every release with the same certificate. macOS ties Screen Recording and Microphone permissions to it, so a release signed with another key makes every user grant those permissions again.
 
-## Releasing a new beta version
+### One-time setup
 
-- Check out the `beta` branch: `git checkout beta`
-- Rebase from the `main` branch: `git pull --rebase origin main`
-- Change the `version` number in `package.json`
-- Amend the "Beta build customizations" commit: `git add . && git commit --amend`
-- Force push to the `beta` branch: `git push --force`
-- Tag a release with the version number in package.json and push it: `git tag -a "v2.0.0-beta.3" -m "v2.0.0-beta.3" && git push --follow-tags`
-- Wait for CircleCI to add the binaries to a new GitHub Releases draft
-- Go to the release draft that is created for you, check `This is a pre-release`, and press `Publish release`
+1. Run `scripts/create-local-signing-identity.sh`. It creates the certificate in your login keychain; macOS asks for your password to trust it for code signing.
+2. Back up the certificate with its private key. In Keychain Access, open **login -> My Certificates**, right-click **Kap Local Signing**, choose **Export**, and save the `.p12` file with a strong password somewhere safe. To release from another Mac, double-click the `.p12` there, then open the certificate in Keychain Access and set **Trust -> Code Signing** to **Always Trust**.
+3. Log in to the GitHub CLI: `gh auth login`.
+
+### Steps
+
+1. Set `version` in `package.json` to the new version, commit with the version as the message (for example `5.2.0`), and push.
+2. Build the DMG with `pnpm dist`. It writes `dist/Kap-<version>-mac-arm64.dmg` and stops if the certificate is missing.
+3. Test the DMG: install Kap from it, record a clip, and export a GIF. `codesign -dv --verbose=2 /Applications/Kap.app` should show `Authority=Kap Local Signing`.
+4. Create a draft release with the DMG:
+
+   ```bash
+   gh release create v5.2.0 dist/Kap-5.2.0-mac-arm64.dmg --repo nikosalonen/NewKap --draft --title "Kap 5.2.0" --notes-file release-notes.md
+   ```
+
+   The release notes must say that the release needs an Apple Silicon Mac and macOS 13 or later, and that the first launch needs **Open Anyway** in **System Settings -> Privacy & Security**.
+5. Review the draft on GitHub and publish it.
+
+Kap's update check reads `releases/latest`, which skips drafts and pre-releases, and offers the asset whose name ends in `.dmg` and contains `mac-arm64`. Keep the file name that `pnpm dist` produces.
+
+### Pre-releases
+
+Add `--prerelease` to `gh release create`. The update check ignores pre-releases, so only people who download one get it.

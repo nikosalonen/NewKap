@@ -65,7 +65,7 @@ export const getSendFeedbackMenuItem = () => ({
   label: 'Send Feedback…',
   click() {
     openNewGitHubIssue({
-      repoUrl: 'https://github.com/jacobpowaza/NewKap',
+      repoUrl: 'https://github.com/nikosalonen/NewKap',
       body: issueBody,
     });
   },

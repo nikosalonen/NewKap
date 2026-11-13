@@ -1,6 +1,6 @@
 #!/bin/sh
 # Creates "Kap Local Signing", a self-signed code signing certificate in the
-# login keychain. `pnpm run pack:local` signs with it when it exists.
+# login keychain. `pnpm run pack:local` and `pnpm dist` sign with it.
 #
 # Why: macOS ties Screen Recording and Microphone grants to the app's code
 # signature. An ad hoc signature changes with every build, so each local build

@@ -4,9 +4,9 @@
   "private": true,
   "description": "Community-driven Kap fork focused on reliability and community maintenance",
   "license": "MIT",
-  "repository": "jacobpowaza/NewKap",
-  "homepage": "https://github.com/jacobpowaza/NewKap",
-  "author": "Kap Contributors (https://github.com/jacobpowaza/NewKap)",
+  "repository": "nikosalonen/NewKap",
+  "homepage": "https://github.com/nikosalonen/NewKap",
+  "author": "Kap Contributors (https://github.com/nikosalonen/NewKap)",
   "main": "./dist-js/index.js",
   "engines": {
     "node": ">=24 <25"
@@ -24,8 +24,8 @@
     "fetch-gifsicle": "node scripts/fetch-gifsicle.js",
     "build-renderer": "next build renderer",
     "build": "pnpm build-native && pnpm fetch-gifsicle && pnpm build-main && pnpm build-renderer",
-    "dist": "pnpm build && electron-builder",
-    "pack": "pnpm build && electron-builder --dir",
+    "dist": "pnpm build && node scripts/pack-local.js --release",
+    "dist:developer-id": "pnpm build && electron-builder",
     "pack:local": "pnpm build && node scripts/pack-local.js",
     "postinstall": "electron-builder install-app-deps && pnpm build-native && pnpm fetch-gifsicle",
     "dev": "next dev renderer"

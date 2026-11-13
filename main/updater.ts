@@ -4,7 +4,7 @@ import semver from 'semver';
 
 const got = require('got');
 
-const REPO_OWNER = 'jacobpowaza';
+const REPO_OWNER = 'nikosalonen';
 const REPO_NAME = 'NewKap';
 const RELEASES_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
 const LATEST_RELEASE_API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
@@ -42,17 +42,27 @@ export const getReleaseDownloadUrl = (release: GithubRelease, arch = process.arc
   return matchingAsset?.browser_download_url;
 };
 
-const fetchLatestRelease = async () => {
-  const response = await got(LATEST_RELEASE_API_URL, {
-    headers: {
-      accept: 'application/vnd.github+json',
-      'user-agent': `Kap/${app.getVersion()}`,
-    },
-    json: true,
-    timeout: 10_000,
-  }) as {body: GithubRelease};
+// Returns undefined while the repository has no release: GitHub then answers
+// 404 for releases/latest.
+const fetchLatestRelease = async (): Promise<GithubRelease | undefined> => {
+  try {
+    const response = await got(LATEST_RELEASE_API_URL, {
+      headers: {
+        accept: 'application/vnd.github+json',
+        'user-agent': `Kap/${app.getVersion()}`,
+      },
+      json: true,
+      timeout: 10_000,
+    }) as {body: GithubRelease};
 
-  return response.body;
+    return response.body;
+  } catch (error) {
+    if ((error as {statusCode?: number}).statusCode === 404) {
+      return undefined;
+    }
+
+    throw error;
+  }
 };
 
 const showUpdateAvailableDialog = async (release: GithubRelease) => {
@@ -85,7 +95,7 @@ export const checkForUpdates = async ({silent = true}: {silent?: boolean} = {}) 
 
   try {
     const release = await fetchLatestRelease();
-    if (isReleaseNewer(release.tag_name, app.getVersion())) {
+    if (release && isReleaseNewer(release.tag_name, app.getVersion())) {
       await showUpdateAvailableDialog(release);
       return;
     }
