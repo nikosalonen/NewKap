@@ -19,10 +19,11 @@ Module._extensions['.js'] = function (module, filename) {
   return load.call(this, module, filename);
 };
 
-// ESM dependencies such as electron-store import 'electron', which module-alias points
-// to test/mocks/electron.ts. Load our own TypeScript files through the CommonJS loader
-// (and so through tsx) even when an ES module imports them, so every importer gets the
-// same mock instance instead of a second copy that Node can't compile.
+// Load our own TypeScript files through the CommonJS loader (and so through tsx) even
+// when they are imported as ES modules. AVA imports the test files that way, and ESM
+// dependencies such as electron-store import 'electron', which module-alias points to
+// test/mocks/electron.ts. This way every importer gets the same module instance, not a
+// second copy that Node can only type-strip.
 Module.registerHooks({
   load(url, context, nextLoad) {
     const isOurTypeScript = url.startsWith('file:') && url.endsWith('.ts') && !url.includes('/node_modules/');
