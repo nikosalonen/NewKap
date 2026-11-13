@@ -78,8 +78,9 @@ export const renderTimeline = PCancelable.fn(async ({
     '-map',
     '[vout]',
     ...(hasAudio ? ['-map', '[aout]'] : []),
-    '-vsync',
-    '0',
+    // Replaces -vsync 0, which newer ffmpeg versions removed. Needs ffmpeg 5.1 or newer.
+    '-fps_mode',
+    'passthrough',
     '-c:v',
     'libx264',
     '-preset',
