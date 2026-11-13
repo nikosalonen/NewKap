@@ -256,9 +256,6 @@ importers:
       semver:
         specifier: ^7.8.6
         version: 7.8.6
-      string-math:
-        specifier: ^1.2.2
-        version: 1.2.2
       tempy:
         specifier: ^1.0.0
         version: 1.0.1
@@ -4054,9 +4051,6 @@ packages:
   stat-mode@1.0.0:
     resolution: {integrity: sha512-jH9EhtKIjuXZ2cWxmXS8ZP80XyC3iasQxMDV8jzhNJpfDb7VbQLVW4Wvsxz9QZvzV+G4YoSfBUVKDOyxLzi/sg==}
     engines: {node: '>= 6'}
-
-  string-math@1.2.2:
-    resolution: {integrity: sha512-rfRZpMZbIy+0pepaW8iDCR+iW+GONxyi0jXfdyW4MgpFATH/Vlz+d3vt8UMu/a1RjA9xiejBDFayvTXzs/ROTw==}
 
   string-ts@2.4.0:
     resolution: {integrity: sha512-JOrTlmqL2wGvXZI+4RLzSAAqvhQL3rXOmSCLoacd9MC5hIj20xoa7CfYBEApBDncf+hhvbGi6atCy7LyweWRKQ==}
@@ -8618,8 +8612,6 @@ snapshots:
       escape-string-regexp: 2.0.0
 
   stat-mode@1.0.0: {}
-
-  string-math@1.2.2: {}
 
   string-ts@2.4.0: {}
 

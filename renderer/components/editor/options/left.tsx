@@ -1,10 +1,10 @@
 import css from 'styled-jsx/css';
 import {useState, useEffect, useMemo} from 'react';
-import * as stringMath from 'string-math';
 import OptionsContainer from '../options-container';
 import KeyboardNumberInput from '../../keyboard-number-input';
 import VideoMetadataContainer from '../video-metadata-container';
 import {shake} from '../../../utils/inputs';
+import {evaluateArithmetic} from '../../../utils/arithmetic';
 import Slider from './slider';
 import Select, {Separator} from './select';
 
@@ -64,10 +64,7 @@ const LeftOptions = () => {
     const {currentTarget} = event;
     const {name} = currentTarget;
 
-    let value: number;
-    try {
-      value = stringMath(currentTarget.value);
-    } catch {}
+    let value = evaluateArithmetic(currentTarget.value);
 
     // Fallback to last valid
     const updates = {width, height};
