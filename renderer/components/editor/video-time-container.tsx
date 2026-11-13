@@ -2,7 +2,7 @@ import {createContainer} from 'unstated-next';
 import {useRef, useState, useEffect} from 'react';
 
 const useVideoTime = () => {
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);

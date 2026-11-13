@@ -37,7 +37,7 @@ type Props<T> = {
 const noOptions: never[] = [];
 
 const Select = <T, >(props: Props<T>) => {
-  const selectRef = useRef<HTMLDivElement>();
+  const selectRef = useRef<HTMLDivElement>(null);
   const {options = noOptions, value} = props;
 
   const selectedOption = options.find(opt => opt.value === value);

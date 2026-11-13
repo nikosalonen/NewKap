@@ -5,7 +5,7 @@ const DEFAULT_EDITOR_WIDTH = 768;
 const DEFAULT_EDITOR_HEIGHT = 480;
 
 export const useEditorWindowSizeEffect = (isConversionWindowState: boolean) => {
-  const previousWindowSizeRef = useRef<{width: number; height: number}>();
+  const previousWindowSizeRef = useRef<{width: number; height: number}>(undefined);
 
   useEffect(() => {
     if (!previousWindowSizeRef.current) {

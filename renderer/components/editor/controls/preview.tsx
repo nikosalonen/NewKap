@@ -10,7 +10,7 @@ type Props = {
 };
 
 const Preview = ({time, labelTime, duration, hidePreview}: Props) => {
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const {filePath} = useEditorWindowState();
   const src = `file://${filePath}`;
 

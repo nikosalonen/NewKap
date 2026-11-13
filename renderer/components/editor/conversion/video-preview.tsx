@@ -13,7 +13,7 @@ const VideoPreview = ({conversion, cancel, showInFolder}: {conversion: UseConver
   const {conversionId} = useConversionIdContext();
   const {filePath} = useEditorWindowState();
   const [tooltipShowing, setTooltipShowing] = useState(!kap.flags.get('editorDragTooltip'));
-  const tooltipRef = useRef();
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const src = `file://${filePath}`;
 
   const percentage = conversion?.progress ?? 0;

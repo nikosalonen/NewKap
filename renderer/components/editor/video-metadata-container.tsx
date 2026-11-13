@@ -3,7 +3,7 @@ import {useRef, useState} from 'react';
 import {useShowWindow} from '../../hooks/use-show-window';
 
 const useVideoMetadata = () => {
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);

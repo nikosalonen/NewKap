@@ -11,3 +11,4 @@ coverage
 /dist
 /dist-js
 /native/build
+/renderer/next-env.d.ts

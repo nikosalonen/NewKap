@@ -136,10 +136,10 @@ const ScreenshotPreview = () => {
   const state = useWindowState<ScreenshotState>();
   useShowWindow(true);
 
-  const canvasRef = useRef<HTMLCanvasElement>();
-  const imageRef = useRef<HTMLImageElement>();
-  const cropStartRef = useRef<Point>();
-  const draftCropRef = useRef<Crop>();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const cropStartRef = useRef<Point>(undefined);
+  const draftCropRef = useRef<Crop>(undefined);
   const historyRef = useRef<EditSnapshot[]>([]);
   const drawingRef = useRef(false);
   const [imageSize, setImageSize] = useState({width: 0, height: 0});

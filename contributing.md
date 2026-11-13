@@ -67,7 +67,6 @@ After 3+ merged PRs, you can request maintainer access by opening a Discussion. 
 ### Important Notes
 
 - Always `unset ELECTRON_RUN_AS_NODE` when running from VS Code terminal
-- Use `NODE_OPTIONS="--openssl-legacy-provider"` for production builds
 - Follow [`docs/electron-security.md`](docs/electron-security.md) when adding renderer access to Electron or main-process functionality
 
 ## Code of Conduct

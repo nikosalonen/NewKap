@@ -19,7 +19,7 @@ const Timeline = () => {
   const {duration} = VideoTimeContainer.useContainer();
   const {isPaused, pause, play} = VideoControlsContainer.useContainer();
   const {clips, selectedClip, activeClip, copiedClip, timelineTime, select, seek, split, remove, freeze, copy, paste, cut, duplicate, updateSelected, updateClip} = TimelineContainer.useContainer();
-  const trackRef = useRef<HTMLDivElement>();
+  const trackRef = useRef<HTMLDivElement>(null);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [trimTarget, setTrimTarget] = useState<{clipId: string; edge: TrimEdge}>();
   const [snapPoint, setSnapPoint] = useState<number>();

@@ -2,9 +2,9 @@ import {createContainer} from 'unstated-next';
 import {useRef, useState, useEffect} from 'react';
 
 const useVideoControls = () => {
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const wasPausedRef = useRef(true);
-  const transitioningPauseStateRef = useRef<Promise<void>>();
+  const transitioningPauseStateRef = useRef<Promise<void>>(undefined);
 
   const [hasStarted, setHasStarted] = useState(false);
   const [isMuted, setIsMuted] = useState(false);

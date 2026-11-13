@@ -28,7 +28,7 @@ const getVideoProps = (propsArray: Array<React.DetailedHTMLProps<React.VideoHTML
 };
 
 const Video = () => {
-  const videoRef = useRef<HTMLVideoElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const {filePath} = useEditorWindowState();
   const src = `file://${filePath}`;
 

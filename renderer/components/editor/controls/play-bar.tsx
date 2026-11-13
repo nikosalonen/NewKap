@@ -6,7 +6,7 @@ import Preview from './preview';
 const PlayBar = () => {
   const [resizing, setResizing] = useState(false);
   const [hoverTime, setHoverTime] = useState(0);
-  const progressRef = useRef<HTMLProgressElement>();
+  const progressRef = useRef<HTMLProgressElement>(null);
 
   const {play, pause} = VideoControlsContainer.useContainer();
   const {
