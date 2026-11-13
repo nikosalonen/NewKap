@@ -106,7 +106,7 @@ Known limitations:
 Requirements:
 
 - macOS 13 or later, which Electron 45 requires.
-- Node from `.nvmrc` or any Node version in the supported range `>=20 <23`.
+- Node 24, the version Electron 45 runs. `.nvmrc` pins the exact version; `package.json` `engines` allows any 24.x.
 - pnpm, at the version in `package.json` `packageManager`. Run `corepack enable` once to get it.
 - Xcode command-line tools.
 - An Apple Silicon Mac. `pnpm install` builds the native helper (`native/kap-helper.swift`) for arm64 with `swiftc`.

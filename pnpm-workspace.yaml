@@ -16,7 +16,11 @@ allowBuilds:
   # Its preinstall script only cleans up global Yarn installs.
   yarn: false
 
-# aperture: wait up to 30 seconds for recording to start on newer macOS, and
-# resolve as soon as the helper reports the start instead of one second later.
 patchedDependencies:
+  # Wait up to 30 seconds for recording to start on newer macOS, and resolve as
+  # soon as the helper reports the start instead of one second later.
   aperture@6.1.2: patches/aperture@6.1.2.patch
+  # Lint only (xo 0.38 -> eslint-plugin-ava -> deep-strict-equal). Node 23
+  # removed util.isDate and util.isRegExp; use util.types instead. Drop this
+  # with the xo upgrade.
+  core-assert@0.2.1: patches/core-assert@0.2.1.patch
