@@ -40,8 +40,12 @@ class ServiceContext {
     click: action,
   });
 
+  // Plugins call this without waiting for it. electron-store 12 rejects when the file
+  // can't be opened, so log that instead of leaving an unhandled rejection.
   openConfigFile = () => {
-    this.config.openInEditor();
+    this.config.openInEditor().catch((error: unknown) => {
+      console.error('Could not open the plugin config file:', error);
+    });
   };
 
   waitForDeepLink = async () => new Promise(resolve => {
