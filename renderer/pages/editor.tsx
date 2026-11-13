@@ -69,16 +69,16 @@ const EditorPage = () => {
         }
 
         .tooltip {
-          padding: 0 !important;
           max-width: 300px;
+        }
+
+        /* Padding goes on .tooltip-content instead, so the whole tooltip is clickable. */
+        .tooltip .react-tooltip-content-wrapper {
+          padding: 0;
         }
 
         .tooltip-content {
           padding: 8px 21px;
-        }
-
-        .hide-tooltip .tooltip {
-          display: none;
         }
       `}</style>
     </div>
