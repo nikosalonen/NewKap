@@ -15,7 +15,7 @@ const getSystemSettingsUrl = (privacySection: string) => `x-apple.systempreferen
 
 export const openSystemPreferences = async (privacySection: string) => shell.openExternal(getSystemSettingsUrl(privacySection));
 
-const promptSystemPreferences = (options: {message: string; detail: string; systemPreferencesPath: string; quitAfterOpening: boolean}) => async ({hasAsked = false}: {hasAsked?: boolean} = {}) => {
+const promptSystemPreferences = (options: {message: string; detail: string; systemPreferencesPath: string}) => async ({hasAsked = false}: {hasAsked?: boolean} = {}) => {
   if (hasAsked || isDialogShowing) {
     return false;
   }
@@ -33,10 +33,6 @@ const promptSystemPreferences = (options: {message: string; detail: string; syst
     });
     if (response === 0) {
       await openSystemPreferences(options.systemPreferencesPath);
-
-      if (options.quitAfterOpening) {
-        app.quit();
-      }
     }
   } finally {
     isDialogShowing = false;
@@ -49,13 +45,11 @@ const promptSystemPreferences = (options: {message: string; detail: string; syst
 
 const getMicrophoneAccess = () => systemPreferences.getMediaAccessStatus('microphone');
 
-// A microphone grant applies right away, so Kap keeps running.
 const microphoneFallback = promptSystemPreferences({
   message: 'Kap cannot access the microphone.',
   detail: 'Kap requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. '
     + 'If the setting is locked, Screen Time or your organization manages it.',
   systemPreferencesPath: 'Privacy_Microphone',
-  quitAfterOpening: false,
 });
 
 export const ensureMicrophonePermissions = async (fallback = microphoneFallback) => {
@@ -123,12 +117,14 @@ const requestScreenCaptureAccess = async () => {
   }
 };
 
-// MacOS applies a screen capture grant only after Kap restarts.
+// MacOS applies a screen capture grant only after Kap restarts. Kap keeps
+// running: when the user turns access on, System Settings offers to quit and
+// reopen Kap itself.
 const screenCaptureFallback = promptSystemPreferences({
   message: 'Kap cannot record the screen.',
-  detail: 'Kap requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. Afterwards, relaunch Kap.',
+  detail: 'Kap requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. '
+    + 'When you turn it on, macOS offers to quit and reopen Kap.',
   systemPreferencesPath: 'Privacy_ScreenCapture',
-  quitAfterOpening: true,
 });
 
 export const hasScreenCaptureAccess = () => systemPreferences.getMediaAccessStatus('screen') === 'granted';

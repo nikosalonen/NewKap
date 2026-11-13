@@ -80,7 +80,8 @@ test('a new build asks macOS again, even if an earlier build already asked', asy
   t.is(electron.dialog.showMessageBox.callCount, 0);
 });
 
-test('opening System Settings for screen capture quits Kap so the grant can apply', async t => {
+// System Settings offers "Quit & Reopen" itself once the user turns access on.
+test('opening System Settings for screen capture keeps Kap running', async t => {
   givenAccess({screen: 'denied'});
   await givenScreenCaptureWasRequestedBefore();
   givenDialogAnswer(0);
@@ -88,7 +89,7 @@ test('opening System Settings for screen capture quits Kap so the grant can appl
   await ensureScreenCapturePermissions();
 
   t.regex(electron.shell.openExternal.lastArg, /Privacy_ScreenCapture/);
-  t.is(electron.app.quit.callCount, 1);
+  t.is(electron.app.quit.callCount, 0);
 });
 
 test('microphone access is requested from macOS when it was never asked', async t => {
