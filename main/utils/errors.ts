@@ -3,10 +3,10 @@ import path from 'node:path';
 import {clipboard, app} from 'electron';
 import ensureError from 'ensure-error';
 import cleanStack from 'clean-stack';
-import {openNewGitHubIssue} from 'electron-util';
 import {windowManager} from '../windows/manager';
 import type {InstalledPlugin} from '../plugins/plugin';
 import macosRelease from './macos-release';
+import {openNewGitHubIssue} from './github-issue';
 
 const ERRORS_TO_IGNORE = [
   /net::ERR_CONNECTION_TIMED_OUT/,

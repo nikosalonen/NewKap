@@ -199,9 +199,6 @@ importers:
       electron-store:
         specifier: ^7.0.2
         version: 7.0.3
-      electron-util:
-        specifier: ^0.14.2
-        version: 0.14.2
       ensure-error:
         specifier: ^3.0.1
         version: 3.0.1

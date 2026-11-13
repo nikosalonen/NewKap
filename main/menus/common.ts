@@ -1,9 +1,9 @@
 import {app, dialog} from 'electron';
 import {setTimeout as delay} from 'node:timers/promises';
-import {openNewGitHubIssue} from 'electron-util';
 import macosRelease from '../utils/macos-release';
 import {supportedVideoExtensions} from '../common/constants';
 import {openFiles} from '../utils/open-files';
+import {openNewGitHubIssue} from '../utils/github-issue';
 import {windowManager} from '../windows/manager';
 import {getCurrentMenuItem, MenuItemId} from './utils';
 
@@ -65,8 +65,7 @@ export const getSendFeedbackMenuItem = () => ({
   label: 'Send Feedback…',
   click() {
     openNewGitHubIssue({
-      user: 'jacobpowaza',
-      repo: 'NewKap',
+      repoUrl: 'https://github.com/jacobpowaza/NewKap',
       body: issueBody,
     });
   },

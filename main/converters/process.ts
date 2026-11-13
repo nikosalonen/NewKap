@@ -1,16 +1,16 @@
 import path from 'node:path';
-import util from 'electron-util';
 import execa from 'execa';
 import PCancelable from 'p-cancelable';
 import tempy from 'tempy';
 import {settings} from '../common/settings';
 import ffmpegPath from '../utils/ffmpeg-path';
+import {fixPathForAsarUnpack} from '../utils/asar';
 import {conditionalArgs, extractProgressFromStderr} from './utils';
 
 // Gifsicle 7 is an ES module; its default export is the binary path.
 const {default: gifsicle} = require('gifsicle');
 
-const gifsiclePath = util.fixPathForAsarUnpack(gifsicle);
+const gifsiclePath = fixPathForAsarUnpack(gifsicle);
 
 enum Mode {
   convert,

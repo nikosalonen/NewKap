@@ -166,22 +166,19 @@ app.on('window-all-closed', () => {
     const prepareNext = require('electron-next');
     await prepareNext('./renderer');
 
-    if (!hasStaticBuild) {
-      // Pre-compile the cropper page by loading it in a hidden window.
-      // Only needed in dev mode (static builds serve instantly).
-      const {is: isDev} = require('electron-util');
-      if (isDev.development) {
-        const preloadWin = new BrowserWindow({
-          show: false,
-          webPreferences: {
-            contextIsolation: true,
-            nodeIntegration: false,
-            preload: path.join(__dirname, 'preload.js'),
-          },
-        });
-        await preloadWin.loadURL('http://localhost:8000/cropper');
-        preloadWin.destroy();
-      }
+    // Pre-compile the cropper page by loading it in a hidden window.
+    // Only needed in dev mode (static builds serve instantly).
+    if (!hasStaticBuild && !app.isPackaged) {
+      const preloadWin = new BrowserWindow({
+        show: false,
+        webPreferences: {
+          contextIsolation: true,
+          nodeIntegration: false,
+          preload: path.join(__dirname, 'preload.js'),
+        },
+      });
+      await preloadWin.loadURL('http://localhost:8000/cropper');
+      preloadWin.destroy();
     }
 
     await tick();
@@ -244,8 +241,7 @@ app.on('window-all-closed', () => {
       require('./recording-history').hasActiveRecording().catch(console.error);
     }
 
-    const {is} = require('electron-util');
-    if (app.isPackaged && !is.development) {
+    if (app.isPackaged) {
       const {plugins} = require('./plugins');
       plugins.upgrade().catch((error: any) => {
         console.log('Plugin upgrade failed (non-fatal):', error);
@@ -253,7 +249,7 @@ app.on('window-all-closed', () => {
     }
 
     setTimeout(() => {
-      if (!app.isPackaged || is.development) {
+      if (!app.isPackaged) {
         return;
       }
 

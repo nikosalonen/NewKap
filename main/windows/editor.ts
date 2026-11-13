@@ -1,6 +1,5 @@
-import {BrowserWindow, dialog} from 'electron';
+import {app, BrowserWindow, dialog} from 'electron';
 import fs from 'node:fs';
-import {is} from 'electron-util';
 import type {EditorWindowState} from '../common/types';
 import type {Video} from '../video';
 import {MenuItemId} from '../menus/utils';
@@ -39,7 +38,7 @@ const open = async (video: Video) => {
     backgroundColor: '#222222',
     dock: true,
     webPreferences: {
-      webSecurity: !is.development, // Disable webSecurity in dev to load video over file:// protocol while serving over insecure http, this is not needed in production where we use file:// protocol for html serving.
+      webSecurity: app.isPackaged, // Disable webSecurity in dev to load video over file:// protocol while serving over insecure http, this is not needed in production where we use file:// protocol for html serving.
     },
     frame: false,
     transparent: true,
