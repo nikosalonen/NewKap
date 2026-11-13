@@ -291,9 +291,6 @@ importers:
       '@types/lodash':
         specifier: ^4.14.168
         version: 4.14.178
-      '@types/module-alias':
-        specifier: ^2.0.0
-        version: 2.0.1
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
@@ -346,8 +343,8 @@ importers:
         specifier: ^4.2.0
         version: 4.3.0(eslint@7.32.0(supports-color@8.1.1))
       module-alias:
-        specifier: ^2.2.2
-        version: 2.2.2
+        specifier: ^2.3.5
+        version: 2.3.5
       next:
         specifier: ^10.0.8
         version: 10.2.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2)(supports-color@8.1.1)(typescript@5.9.3)
@@ -876,9 +873,6 @@ packages:
 
   '@types/minimist@1.2.2':
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
-
-  '@types/module-alias@2.0.1':
-    resolution: {integrity: sha512-DN/CCT1HQG6HquBNJdLkvV+4v5l/oEuwOHUPLxI+Eub0NED+lk0YUfba04WGH90EINiUrNgClkNnwGmbICeWMQ==}
 
   '@types/ms@0.7.31':
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
@@ -3571,8 +3565,8 @@ packages:
     resolution: {integrity: sha512-WRoDn//mXBiJ1H40rqa3vH0toePwSsGb45iInWlTySa+Uu4k3tYUSxa2v1KqAiLtvlrSzaExqS1gtk96A9zvEA==}
     engines: {node: '>=0.10.0'}
 
-  module-alias@2.2.2:
-    resolution: {integrity: sha512-A/78XjoX2EmNvppVWEhM2oGk3x4lLxnkEA4jTbaK97QKSDjkIoOsKQlfylt/d3kKKi596Qy3NP5XrXJ6fZIC9Q==}
+  module-alias@2.3.5:
+    resolution: {integrity: sha512-hbei6S1tXkg/P+ZJTyUqqL66LOeg/40WGcZYPFzIeBltTCRm+O4IZ/KRtR9hGanXaJxuvPj9q9ldl/cmbV6Osw==}
 
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
@@ -5801,8 +5795,6 @@ snapshots:
   '@types/minimatch@3.0.5': {}
 
   '@types/minimist@1.2.2': {}
-
-  '@types/module-alias@2.0.1': {}
 
   '@types/ms@0.7.31': {}
 
@@ -9068,7 +9060,7 @@ snapshots:
       for-in: 1.0.2
       is-extendable: 1.0.1
 
-  module-alias@2.2.2: {}
+  module-alias@2.3.5: {}
 
   ms@2.0.0: {}
 
