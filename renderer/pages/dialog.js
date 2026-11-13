@@ -27,11 +27,18 @@ const Dialog = () => {
     return ipc.callMain(`dialog-action-${data.id}`, index);
   }, [data, isDisabled, setIsDisabled]);
 
-  useEffect(() => answerMain('data', async newData => new Promise(resolve => {
-    setData(newData);
-    setMeasureSize(true);
-    measureResolve = resolve;
-  })), []);
+  useEffect(() => {
+    const stopAnswering = answerMain('data', async newData => new Promise(resolve => {
+      setData(newData);
+      setMeasureSize(true);
+      measureResolve = resolve;
+    }));
+
+    // Main sends the first data only after this, when the page can receive it.
+    ipc.callMain('dialog-ready').catch(console.error);
+
+    return stopAnswering;
+  }, []);
 
   useEffect(() => {
     if (data) {

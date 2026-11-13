@@ -7,6 +7,20 @@ import {ipcMain as ipc} from 'electron-better-ipc';
 import {loadRoute} from '../utils/routes';
 import {windowManager} from './manager';
 
+// The page asks for its plugin once it listens for it. Sending the plugin on
+// did-finish-load is too early: React mounts the page after the load event,
+// the message gets lost, and the window never shows.
+const showWhenReady = async (configWindow: BrowserWindow, sendPlugin: () => Promise<unknown>) => {
+  const stopAnswering = ipc.answerRenderer(configWindow, 'config-ready', async () => {
+    await sendPlugin();
+    configWindow.show();
+  });
+
+  loadRoute(configWindow, 'config');
+  await once(configWindow, 'closed');
+  stopAnswering();
+};
+
 const openConfigWindow = async (pluginName: string) => {
   const prefsWindow = await windowManager.preferences?.open();
   const configWindow = new BrowserWindow({
@@ -28,14 +42,7 @@ const openConfigWindow = async (pluginName: string) => {
     },
   });
 
-  loadRoute(configWindow, 'config');
-
-  configWindow.webContents.on('did-finish-load', async () => {
-    await ipc.callRenderer(configWindow, 'plugin', pluginName);
-    configWindow.show();
-  });
-
-  await once(configWindow, 'closed');
+  await showWhenReady(configWindow, async () => ipc.callRenderer(configWindow, 'plugin', pluginName));
 };
 
 const openEditorConfigWindow = async (pluginName: string, serviceTitle: string, editorWindow: BrowserWindow) => {
@@ -58,14 +65,7 @@ const openEditorConfigWindow = async (pluginName: string, serviceTitle: string, 
     },
   });
 
-  loadRoute(configWindow, 'config');
-
-  configWindow.webContents.on('did-finish-load', async () => {
-    await ipc.callRenderer(configWindow, 'edit-service', {pluginName, serviceTitle});
-    configWindow.show();
-  });
-
-  await once(configWindow, 'closed');
+  await showWhenReady(configWindow, async () => ipc.callRenderer(configWindow, 'edit-service', {pluginName, serviceTitle}));
 };
 
 ipc.answerRenderer('open-edit-config', async ({pluginName, serviceTitle}, window) => openEditorConfigWindow(pluginName, serviceTitle, window));

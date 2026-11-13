@@ -76,17 +76,21 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
     }
   });
 
-  const cleanup = (value?: number) => {
-    wasActionTaken = true;
-    unsubscribe();
-    dialogWindow.close();
-    resolve(value);
-  };
-
-  dialogWindow.webContents.on('did-finish-load', async () => {
+  // The page asks for its first data once it listens for it. Sending the data
+  // on did-finish-load is too early: React mounts the page after the load
+  // event, the message gets lost, and the dialog never shows.
+  const stopAnsweringReady = ipc.answerRenderer(dialogWindow, 'dialog-ready', async () => {
     await updateUi(options);
     dialogWindow.show();
   });
+
+  const cleanup = (value?: number) => {
+    wasActionTaken = true;
+    unsubscribe();
+    stopAnsweringReady();
+    dialogWindow.close();
+    resolve(value);
+  };
 });
 
 windowManager.setDialog({

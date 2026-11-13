@@ -1,6 +1,7 @@
 import React from 'react';
 import {Provider, ConfigContainer} from '../containers';
 import answerMain from '../utils/answer-main';
+import {ipcRenderer as ipc} from '../utils/ipc';
 import Config from '../components/config';
 import WindowHeader from '../components/window-header';
 
@@ -20,6 +21,9 @@ export default class ConfigPage extends React.Component {
       await configContainer.setEditService(pluginName, serviceTitle);
       this.setState({title: serviceTitle});
     });
+
+    // Main sends the plugin only after this, when the page can receive it.
+    ipc.callMain('config-ready').catch(console.error);
   }
 
   render() {
