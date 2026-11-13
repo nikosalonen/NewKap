@@ -48,6 +48,10 @@ jobs:
       # Run only the install scripts that download ffmpeg and gifsicle.
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm rebuild ffmpeg-static gifsicle
+        env:
+          # ffmpeg-static's default release has ffmpeg 7.0.2 for Linux but 6.0
+          # for macOS arm64, which Kap bundles. Test against the same 6.0.
+          FFMPEG_BINARY_RELEASE: b6.0
       # The tests that need macOS (the Swift helper, clang and lipo) skip themselves.
       - run: pnpm test:main
 
