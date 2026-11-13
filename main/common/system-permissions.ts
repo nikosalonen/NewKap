@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import {createHash} from 'crypto';
 import {systemPreferences, shell, dialog, app, desktopCapturer} from 'electron';
 
 let isDialogShowing = false;
@@ -76,16 +77,34 @@ export const hasMicrophoneAccess = () => getMicrophoneAccess() === 'granted';
 
 // Screen Capture
 
-// Same file name that mac-screen-capture-permissions used, so existing installs keep their state.
+// Same file name that mac-screen-capture-permissions used.
 const getScreenCaptureRequestedMarker = () => path.join(app.getPath('userData'), '.has-app-requested-screen-capture-permissions');
 
-const hasRequestedScreenCapture = () => fs.existsSync(getScreenCaptureRequestedMarker());
+// MacOS ties screen capture access to the app's code signature, and every
+// local (ad-hoc signed) build has a new one. The executable contains that
+// signature, so the marker stores a hash of it: a new build asks macOS again
+// instead of going straight to Kap's dialog.
+const getBuildFingerprint = () => {
+  try {
+    return createHash('sha256').update(fs.readFileSync(app.getPath('exe'))).digest('hex');
+  } catch {
+    return '';
+  }
+};
+
+const hasRequestedScreenCapture = () => {
+  try {
+    return fs.readFileSync(getScreenCaptureRequestedMarker(), 'utf8') === getBuildFingerprint();
+  } catch {
+    return false;
+  }
+};
 
 const markScreenCaptureRequested = () => {
   try {
     const marker = getScreenCaptureRequestedMarker();
     fs.mkdirSync(path.dirname(marker), {recursive: true});
-    fs.writeFileSync(marker, '');
+    fs.writeFileSync(marker, getBuildFingerprint());
   } catch (error) {
     console.error('Could not save that screen capture access was requested:', error);
   }

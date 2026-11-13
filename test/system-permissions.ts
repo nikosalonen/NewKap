@@ -15,9 +15,18 @@ const givenAccess = (statuses: {screen?: string; microphone?: string}) => {
   electron.systemPreferences.getMediaAccessStatus = sinon.fake((mediaType: 'screen' | 'microphone') => statuses[mediaType]);
 };
 
-const givenScreenCaptureWasRequestedBefore = () => {
-  fs.mkdirSync(path.dirname(screenCaptureRequestedMarker), {recursive: true});
-  fs.writeFileSync(screenCaptureRequestedMarker, '');
+// Each build of the app has a different executable, because the executable
+// holds the code signature.
+const givenBuild = (executableContent: string) => {
+  const executable = electron.app.getPath('exe');
+  fs.mkdirSync(path.dirname(executable), {recursive: true});
+  fs.writeFileSync(executable, executableContent);
+};
+
+const givenScreenCaptureWasRequestedBefore = async () => {
+  await ensureScreenCapturePermissions();
+  electron.desktopCapturer.getSources = sinon.fake.resolves([]);
+  electron.dialog.showMessageBox.resetHistory();
 };
 
 const givenDialogAnswer = (response: number) => {
@@ -33,6 +42,7 @@ test.beforeEach(() => {
   electron.app.focus = sinon.fake();
   electron.app.quit = sinon.fake();
   fs.rmSync(screenCaptureRequestedMarker, {force: true});
+  givenBuild('build 1');
 });
 
 test('screen capture is allowed when macOS reports access as granted', async t => {
@@ -53,16 +63,26 @@ test('first screen capture check asks macOS and does not show the Kap dialog', a
 
 test('later screen capture checks show the Kap dialog instead of asking macOS again', async t => {
   givenAccess({screen: 'denied'});
-  givenScreenCaptureWasRequestedBefore();
+  await givenScreenCaptureWasRequestedBefore();
 
   t.false(await ensureScreenCapturePermissions());
   t.is(electron.dialog.showMessageBox.callCount, 1);
   t.is(electron.desktopCapturer.getSources.callCount, 0);
 });
 
+test('a new build asks macOS again, even if an earlier build already asked', async t => {
+  givenAccess({screen: 'denied'});
+  await givenScreenCaptureWasRequestedBefore();
+  givenBuild('build 2');
+
+  t.false(await ensureScreenCapturePermissions());
+  t.is(electron.desktopCapturer.getSources.callCount, 1);
+  t.is(electron.dialog.showMessageBox.callCount, 0);
+});
+
 test('opening System Settings for screen capture quits Kap so the grant can apply', async t => {
   givenAccess({screen: 'denied'});
-  givenScreenCaptureWasRequestedBefore();
+  await givenScreenCaptureWasRequestedBefore();
   givenDialogAnswer(0);
 
   await ensureScreenCapturePermissions();
