@@ -8,7 +8,7 @@ Kap is a lightweight macOS screen recorder and screenshot tool that lives in the
 
 [![Latest release](https://img.shields.io/github/v/release/jacobpowaza/NewKap?label=release)](https://github.com/jacobpowaza/NewKap/releases/latest)
 [![CI](https://github.com/jacobpowaza/NewKap/actions/workflows/ci.yml/badge.svg)](https://github.com/jacobpowaza/NewKap/actions/workflows/ci.yml)
-[![macOS](https://img.shields.io/badge/macOS-12%2B-blue)](#compatibility)
+[![macOS](https://img.shields.io/badge/macOS-13%2B-blue)](#compatibility)
 [![Intel x64](https://img.shields.io/badge/Intel-x64-informational)](#download)
 [![Apple Silicon arm64](https://img.shields.io/badge/Apple%20Silicon-arm64-informational)](#download)
 [![License](https://img.shields.io/github/license/jacobpowaza/NewKap)](LICENSE.md)
@@ -87,7 +87,7 @@ For audio recording, grant Microphone permission and choose an input in Preferen
 
 ## Compatibility
 
-Kap v5.1 is packaged for macOS 12 Monterey or later. Electron 43 is the runtime in this release; Electron v38 and newer require macOS 12 or later because Chromium removed older macOS support.
+Kap v5.1 is packaged for macOS 12 Monterey or later and runs on Electron 43. Later releases run on Electron 45 and need macOS 13 Ventura or later, because Electron 44 removed macOS 12 support.
 
 Supported Macs:
 
@@ -105,7 +105,7 @@ Known limitations:
 
 Requirements:
 
-- macOS 12 or later for runtime parity with Electron 43.
+- macOS 13 or later, which Electron 45 requires.
 - Node from `.nvmrc` or any Node version in the supported range `>=20 <23`.
 - pnpm, at the version in `package.json` `packageManager`. Run `corepack enable` once to get it.
 - Xcode command-line tools.

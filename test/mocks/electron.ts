@@ -21,8 +21,13 @@ export const shell = {
 };
 
 export const clipboard = {
-  writeText: sinon.fake()
+  writeText: sinon.fake.resolves(undefined),
+  write: sinon.fake.resolves(undefined)
 };
+
+export class ClipboardItem {
+  constructor(readonly items: Record<string, unknown>) {}
+}
 
 export const systemPreferences = {
   getMediaAccessStatus: sinon.fake.returns('granted'),

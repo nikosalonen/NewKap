@@ -1,5 +1,5 @@
 import fs from 'fs';
-import {app, clipboard} from 'electron';
+import {app} from 'electron';
 import {EventEmitter} from 'events';
 import {ConversionOptions, Format} from './common/types';
 import {Video} from './video';
@@ -10,8 +10,7 @@ import PCancelable from 'p-cancelable';
 import prettyBytes from 'pretty-bytes';
 import TypedEventEmitter from 'typed-emitter';
 import {renderTimeline} from './converters/timeline';
-
-const plist = require('plist');
+import {copyFilesToClipboard} from './utils/clipboard';
 
 // A conversion object describes the process of converting a video or recording
 // using ffmpeg that can then be shared multiple times using Share plugins
@@ -63,8 +62,13 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
     return this.fromId(id) ?? new Conversion(video, format, options);
   }
 
-  copy = () => {
-    clipboard.writeBuffer('NSFilenamesPboardType', Buffer.from(plist.build([this.convertedFilePath])));
+  copy = async () => {
+    // Nothing to copy until the export has finished.
+    if (!this.convertedFilePath) {
+      return;
+    }
+
+    await copyFilesToClipboard([this.convertedFilePath]);
     notify({
       body: 'The file has been copied to the clipboard',
       title: app.name

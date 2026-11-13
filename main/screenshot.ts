@@ -1,7 +1,8 @@
 import {spawn, ChildProcess} from 'child_process';
 import path from 'path';
 import os from 'os';
-import {clipboard, nativeImage} from 'electron';
+import {nativeImage} from 'electron';
+import {copyImageToClipboard} from './utils/clipboard';
 import {openScreenshotPreview} from './windows/screenshot';
 
 let activeCapture: ChildProcess | undefined;
@@ -32,8 +33,9 @@ export const captureScreenshot = (bounds?: {x: number; y: number; width: number;
     activeCapture = undefined;
 
     if (code === 0) {
-      const image = nativeImage.createFromPath(filePath);
-      clipboard.writeImage(image);
+      copyImageToClipboard(nativeImage.createFromPath(filePath)).catch(error => {
+        console.error('Could not copy the screenshot to the clipboard:', error);
+      });
       openScreenshotPreview(filePath);
     }
   });
@@ -55,8 +57,9 @@ export const captureScreenshotToClipboard = (bounds?: {x: number; y: number; wid
     activeCapture = undefined;
 
     if (code === 0) {
-      const image = nativeImage.createFromPath(filePath);
-      clipboard.writeImage(image);
+      copyImageToClipboard(nativeImage.createFromPath(filePath)).catch(error => {
+        console.error('Could not copy the screenshot to the clipboard:', error);
+      });
     }
   });
 };

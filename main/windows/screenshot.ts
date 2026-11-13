@@ -1,4 +1,5 @@
-import {clipboard, dialog, nativeImage, shell} from 'electron';
+import {dialog, nativeImage, shell} from 'electron';
+import {copyImageToClipboard} from '../utils/clipboard';
 import fs from 'fs';
 import KapWindow from './kap-window';
 
@@ -29,8 +30,8 @@ const open = async (filePath: string) => {
     initialState: {filePath}
   });
 
-  kapWindow.answerRenderer('screenshot-copy-clipboard', ({dataUrl}: ScreenshotExport) => {
-    clipboard.writeImage(nativeImage.createFromDataURL(dataUrl));
+  kapWindow.answerRenderer('screenshot-copy-clipboard', async ({dataUrl}: ScreenshotExport) => {
+    await copyImageToClipboard(nativeImage.createFromDataURL(dataUrl));
   });
 
   kapWindow.answerRenderer('screenshot-save', async ({dataUrl, format}: ScreenshotExport): Promise<ScreenshotSaveResult> => {

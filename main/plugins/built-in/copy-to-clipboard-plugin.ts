@@ -1,15 +1,9 @@
-import {clipboard} from 'electron';
 import {ShareServiceContext} from '../service-context';
-
-const plist = require('plist');
-
-const copyFileReferencesToClipboard = (filePaths: string[]) => {
-  clipboard.writeBuffer('NSFilenamesPboardType', Buffer.from(plist.build(filePaths)));
-};
+import {copyFilesToClipboard} from '../../utils/clipboard';
 
 const action = async (context: ShareServiceContext) => {
   const filePath = await context.filePath();
-  copyFileReferencesToClipboard([filePath]);
+  await copyFilesToClipboard([filePath]);
   context.notify(`The ${context.prettyFormat} has been copied to the clipboard`);
 };
 
