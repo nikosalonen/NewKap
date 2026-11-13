@@ -134,12 +134,14 @@ pnpm build-renderer
 Packaging:
 
 ```bash
-# Test build for this Mac: dist/mac-arm64/Kap.app, signed ad hoc.
+# Test build for this Mac: dist/mac-arm64/Kap.app.
 pnpm run pack:local
 
 # Release DMG, signed with the Developer ID certificate in your keychain.
 pnpm dist
 ```
+
+macOS ties Screen Recording and Microphone access to the app's signature. By default `pack:local` signs ad hoc, which gives every build a new signature, so each build needs the permissions again. Run `scripts/create-local-signing-identity.sh` once: it creates a self-signed "Kap Local Signing" certificate in your login keychain (macOS asks for your password to trust it), and `pack:local` then signs with it, so the permissions carry over between builds. Keep one copy of the test build, such as `/Applications/Kap.app`: copies with different signatures share one permission entry and take it from each other, and macOS's "Quit & Reopen" may start the other copy.
 
 Packaging removes the Intel code from universal binaries and fails if any binary in the app has no arm64 code (`scripts/after-pack.js`).
 
