@@ -1,6 +1,7 @@
 import {app, BrowserWindow, Tray, Menu, dialog} from 'electron';
 import path from 'path';
 import fs from 'fs';
+import {setTimeout as delay} from 'timers/promises';
 import {mark} from './utils/perf';
 import {setupRendererApi} from './renderer-api';
 
@@ -145,9 +146,7 @@ app.on('window-all-closed', () => {
     }
   });
 
-  const tick = async () => new Promise<void>(resolve => {
-    setTimeout(resolve, 0);
-  });
+  const tick = async () => delay(0);
 
   // Auto-detect production build — if static output exists, skip the
   // Next.js dev server entirely.  This eliminates the ~16s prepareNext

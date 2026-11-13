@@ -1,4 +1,5 @@
 import {ipcMain} from 'electron';
+import {setTimeout as delay} from 'timers/promises';
 
 import {ipcMain as ipc} from 'electron-better-ipc';
 import KapWindow from './kap-window';
@@ -69,9 +70,7 @@ const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
 
   await Promise.race([
     rendererReadyPromise,
-    new Promise(resolve => {
-      setTimeout(resolve, 500);
-    })
+    delay(500)
   ]);
 
   if (options) {

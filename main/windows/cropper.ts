@@ -1,6 +1,7 @@
 import {windowManager} from './manager';
 import {BrowserWindow, systemPreferences, dialog, screen, Display, app, globalShortcut, ipcMain} from 'electron';
 import path from 'path';
+import {setTimeout as delay} from 'timers/promises';
 
 import {settings} from '../common/settings';
 import {validateCropperBounds} from '../common/cropper-bounds';
@@ -416,9 +417,7 @@ const selectApp = async (window: MacWindow, activateWindow: (window: MacWindow) 
   const display = screen.getDisplayMatching({x, y, width, height});
   const {id, bounds: {x: screenX, y: screenY}} = display;
 
-  await new Promise(resolve => {
-    setTimeout(resolve, 300);
-  });
+  await delay(300);
 
   for (const cropper of croppers.values()) {
     if (!cropper.isDestroyed()) {
