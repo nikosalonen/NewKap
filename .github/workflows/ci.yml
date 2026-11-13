@@ -3,6 +3,8 @@ name: CI
 on:
   push:
   pull_request:
+  # Starts the macOS test job. Use "Run workflow" on the Actions tab.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,9 +33,29 @@ jobs:
       - run: pnpm lint
       - run: pnpm build-renderer
 
-  test:
-    name: Tests
-    # The tests run the Swift helper, ffmpeg, lipo and clang, so they need macOS.
+  test-linux:
+    name: Tests (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # The project's own postinstall builds the Swift helper, which needs macOS.
+      # Run only the install scripts that download ffmpeg and gifsicle.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm rebuild ffmpeg-static gifsicle
+      # The tests that need macOS (the Swift helper, clang and lipo) skip themselves.
+      - run: pnpm test:main
+
+  test-macos:
+    name: Tests (macOS)
+    # GitHub often has no free macOS arm64 runner, and a job waiting for one
+    # keeps the whole run pending. So this job only runs when started by hand.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-latest
     timeout-minutes: 30
     steps:

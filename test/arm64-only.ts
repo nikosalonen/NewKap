@@ -6,6 +6,9 @@ import tempy from 'tempy';
 
 const {keepOnlyArm64} = require('../scripts/arm64-only');
 
+// The Xcode command-line tools provide clang and lipo, so these tests only run on macOS.
+const macTest = process.platform === 'darwin' ? test : test.skip;
+
 const compile = (outputPath: string, archs: string[]) => {
   const source = path.join(path.dirname(outputPath), 'main.c');
   fs.writeFileSync(source, 'int main(void) { return 0; }\n');
@@ -33,7 +36,7 @@ const givenApp = () => {
   return {appDir, universal, intelOnly, arm64Only, textFile};
 };
 
-test('strips the Intel code from universal binaries', t => {
+macTest('strips the Intel code from universal binaries', t => {
   const {appDir, universal} = givenApp();
 
   const {thinned} = keepOnlyArm64(appDir);
@@ -42,7 +45,7 @@ test('strips the Intel code from universal binaries', t => {
   t.deepEqual(thinned, [universal]);
 });
 
-test('reports binaries that have no arm64 code', t => {
+macTest('reports binaries that have no arm64 code', t => {
   const {appDir, intelOnly} = givenApp();
 
   const {missingArm64} = keepOnlyArm64(appDir);
@@ -50,7 +53,7 @@ test('reports binaries that have no arm64 code', t => {
   t.deepEqual(missingArm64, [intelOnly]);
 });
 
-test('leaves arm64 binaries and other files alone', t => {
+macTest('leaves arm64 binaries and other files alone', t => {
   const {appDir, arm64Only, textFile} = givenApp();
   const arm64Before = fs.readFileSync(arm64Only);
 

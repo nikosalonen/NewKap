@@ -39,7 +39,10 @@ test('window list keeps one window per app and prefers one with a title', t => {
   t.deepEqual(picked.map(win => win.number), [2, 3]);
 });
 
-test('the helper lists the apps that open GIF files as file URLs', t => {
+// The tests below run the Swift helper, which only exists on macOS.
+const macTest = process.platform === 'darwin' ? test : test.skip;
+
+macTest('the helper lists the apps that open GIF files as file URLs', t => {
   const {gif} = getAppsForExtensionsSync(['gif']);
 
   t.true(Array.isArray(gif));
@@ -49,7 +52,7 @@ test('the helper lists the apps that open GIF files as file URLs', t => {
   }
 });
 
-test('the helper lists audio inputs with the default input id', async t => {
+macTest('the helper lists audio inputs with the default input id', async t => {
   const {defaultId, devices} = await getAudioInputs();
 
   t.true(Array.isArray(devices));
@@ -58,7 +61,7 @@ test('the helper lists audio inputs with the default input id', async t => {
   }
 });
 
-test('the helper lists on-screen windows', async t => {
+macTest('the helper lists on-screen windows', async t => {
   const windows = await getWindows();
 
   t.true(Array.isArray(windows));
