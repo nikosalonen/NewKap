@@ -15,7 +15,7 @@ Thank you for your interest in contributing to NewKap! This project is community
 1. Fork the repository
 2. Create a feature branch: `git checkout -b fix/your-fix-name`
 3. Make your changes with clear, minimal commits
-4. Test locally: `unset ELECTRON_RUN_AS_NODE && yarn start`
+4. Test locally: `unset ELECTRON_RUN_AS_NODE && pnpm start`
 5. Push and open a Pull Request
 
 ### PR Review Process
@@ -39,9 +39,9 @@ After 3+ merged PRs, you can request maintainer access by opening a Discussion. 
 
     git clone https://github.com/MuntasirMalek/NewKap.git
     cd NewKap
-    yarn install --ignore-engines
+    pnpm install
     unset ELECTRON_RUN_AS_NODE
-    yarn start
+    pnpm start
 
 ### Project Structure
 
@@ -59,15 +59,14 @@ After 3+ merged PRs, you can request maintainer access by opening a Discussion. 
 
 | Command | Description |
 |---------|-------------|
-| `yarn start` | Run in development mode |
-| `yarn build` | Build main + renderer |
-| `yarn dist` | Build distributable DMG |
+| `pnpm start` | Run in development mode |
+| `pnpm build` | Build main + renderer |
+| `pnpm dist` | Build distributable DMG |
 | `npx tsc` | Compile TypeScript only |
 
 ### Important Notes
 
 - Always `unset ELECTRON_RUN_AS_NODE` when running from VS Code terminal
-- Use `--ignore-engines` with yarn if on Node 18+
 - Use `NODE_OPTIONS="--openssl-legacy-provider"` for production builds
 - Use `--no-verify` for git commits (xo linter has Node 18+ compatibility issues)
 - Follow [`docs/electron-security.md`](docs/electron-security.md) when adding renderer access to Electron or main-process functionality

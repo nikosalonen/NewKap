@@ -1,0 +1,24 @@
+# Kap is a single package. This file only holds pnpm settings.
+
+# electron-builder packages a flat node_modules folder, and the app loads
+# node_modules/yarn by path to install plugins.
+nodeLinker: hoisted
+
+# Yarn 1 never installed missing peer dependencies. Keep the same dependency set.
+autoInstallPeers: false
+
+# Packages whose install scripts may run.
+allowBuilds:
+  # Downloads the ffmpeg binary for this Mac.
+  ffmpeg-static: true
+  # Downloads the gifsicle binary.
+  gifsicle: true
+  # Installs the git hooks in package.json "husky".
+  husky: true
+  # Its preinstall script only cleans up global Yarn installs.
+  yarn: false
+
+# aperture: wait up to 30 seconds for recording to start on newer macOS, and
+# resolve as soon as the helper reports the start instead of one second later.
+patchedDependencies:
+  aperture@6.1.2: patches/aperture@6.1.2.patch

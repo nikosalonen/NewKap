@@ -1,0 +1,26 @@
+diff --git a/index.js b/index.js
+index 46943a2abab83c3d7a236c2344c9283e24a3ba60..c340fbc2b33b85385b8bda2d10140f1401cde179 100644
+--- a/index.js
++++ b/index.js
+@@ -115,18 +115,18 @@ class Aperture {
+ 					return;
+ 				}
+ 
+-				const error = new Error('Could not start recording within 5 seconds');
++				const error = new Error('Could not start recording within 30 seconds');
+ 				error.code = 'RECORDER_TIMEOUT';
+ 				this.recorder.kill();
+ 				delete this.recorder;
+ 				reject(error);
+-			}, 5000);
++			}, 30000);
+ 
+ 			(async () => {
+ 				try {
+ 					await this.waitForEvent('onStart');
+ 					clearTimeout(timeout);
+-					setTimeout(resolve, 1000);
++					resolve();
+ 				} catch (error) {
+ 					reject(error);
+ 				}

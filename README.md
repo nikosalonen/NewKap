@@ -105,7 +105,7 @@ Requirements:
 
 - macOS 12 or later for runtime parity with Electron 43.
 - Node from `.nvmrc` or any Node version in the supported range `>=20 <23`.
-- Yarn `1.22.x`.
+- pnpm, at the version in `package.json` `packageManager`. Run `corepack enable` once to get it.
 - Xcode command-line tools.
 - Native build tools required by Aperture and related recording dependencies.
 
@@ -115,27 +115,27 @@ Install and run:
 git clone https://github.com/jacobpowaza/NewKap.git
 cd NewKap
 nvm use
-yarn install --frozen-lockfile --ignore-engines
+pnpm install --frozen-lockfile
 unset ELECTRON_RUN_AS_NODE
-yarn start
+pnpm start
 ```
 
 Quality checks:
 
 ```bash
-yarn typecheck
-yarn lint
-yarn test:main
-yarn build-renderer
+pnpm typecheck
+pnpm lint
+pnpm test:main
+pnpm build-renderer
 ```
 
 Packaging:
 
 ```bash
-yarn build
-CSC_IDENTITY_AUTO_DISCOVERY=false yarn pack
-CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --mac dmg --x64
-CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --mac dmg --arm64
+pnpm build
+CSC_IDENTITY_AUTO_DISCOVERY=false pnpm run pack
+CSC_IDENTITY_AUTO_DISCOVERY=false pnpm exec electron-builder --mac dmg --x64
+CSC_IDENTITY_AUTO_DISCOVERY=false pnpm exec electron-builder --mac dmg --arm64
 ```
 
 When Apple signing and notarization credentials are configured, omit `CSC_IDENTITY_AUTO_DISCOVERY=false` and verify signing and notarization before publishing artifacts.
@@ -156,10 +156,10 @@ Use focused branches and keep unrelated changes out of release or bug-fix work.
 
 ```bash
 git checkout -b fix/short-description
-yarn typecheck
-yarn lint
-yarn test:main
-yarn build-renderer
+pnpm typecheck
+pnpm lint
+pnpm test:main
+pnpm build-renderer
 ```
 
 When changing cropper, tray, recording, screenshot, editor, conversion, or updater behavior, include the exact manual path you tested. For cropper changes, verify repeated open, close, reopen, Escape, mouseup outside the overlay, and multi-display behavior when hardware is available.
@@ -171,7 +171,7 @@ Bug reports should include:
 - Kap version.
 - Whether the build is signed/notarized.
 - Steps to reproduce.
-- Relevant terminal output when running from `yarn start`.
+- Relevant terminal output when running from `pnpm start`.
 
 ## Troubleshooting
 
@@ -193,7 +193,7 @@ Check the GitHub Release notes for signing and notarization status. Unsigned or 
 
 ### Cropper opens but the overlay is invisible or blocks clicks
 
-Run from the terminal with `yarn start` and look for cropper logs. A healthy open shows renderer load followed by cropper readiness. Rebuild the renderer with `yarn build-renderer` if static assets are stale.
+Run from the terminal with `pnpm start` and look for cropper logs. A healthy open shows renderer load followed by cropper readiness. Rebuild the renderer with `pnpm build-renderer` if static assets are stale.
 
 ### Development still shows an Electron icon
 

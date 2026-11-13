@@ -12,24 +12,24 @@
   },
   "private": true,
   "engines": {
-    "node": ">=20 <23",
-    "yarn": "1.22.x"
+    "node": ">=20 <23"
   },
+  "packageManager": "pnpm@12.18.0",
   "main": "dist-js/index.js",
   "scripts": {
     "lint": "xo",
     "lint:fix": "xo --fix",
     "typecheck": "tsc --noEmit",
     "test:main": "TS_NODE_PROJECT=test/tsconfig.json ava",
-    "test:ci": "yarn test:main --tap | tap-xunit > ~/reports/ava.xml",
-    "test": "yarn lint && yarn test:main",
+    "test:ci": "pnpm test:main --tap | tap-xunit > ~/reports/ava.xml",
+    "test": "pnpm lint && pnpm test:main",
     "start": "tsc && node scripts/run-electron.js .",
     "build-main": "tsc",
     "build-renderer": "node --openssl-legacy-provider node_modules/next/dist/bin/next build renderer && node --openssl-legacy-provider node_modules/next/dist/bin/next export renderer",
-    "build": "yarn build-main && yarn build-renderer",
-    "dist": "npm run build && electron-builder",
-    "pack": "npm run build && electron-builder --dir",
-    "postinstall": "electron-builder install-app-deps && node scripts/patch-aperture.js",
+    "build": "pnpm build-main && pnpm build-renderer",
+    "dist": "pnpm build && electron-builder",
+    "pack": "pnpm build && electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
     "sentry-version": "echo \"$npm_package_name@$npm_package_version\"",
     "dev": "next dev renderer"
   },
@@ -121,6 +121,7 @@
     "eslint-config-xo": "^0.35.0",
     "eslint-config-xo-react": "^0.24.0",
     "eslint-config-xo-typescript": "^0.38.0",
+    "eslint-plugin-import": "2.24.0",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^4.2.5",
@@ -243,8 +244,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn lint"
+      "pre-commit": "pnpm lint",
+      "pre-push": "pnpm lint"
     }
   },
   "build": {
