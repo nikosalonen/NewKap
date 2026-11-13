@@ -121,7 +121,6 @@
     "eslint-plugin-import": "2.24.0",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^4.2.5",
     "module-alias": "^2.2.2",
     "next": "^10.0.8",
     "run-electron": "^1.0.0",
@@ -238,12 +237,6 @@
         }
       }
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm lint",
-      "pre-push": "pnpm lint"
-    }
   },
   "build": {
     "appId": "com.wulkano.kap",

@@ -13,8 +13,6 @@ allowBuilds:
   ffmpeg-static: true
   # Downloads the gifsicle binary.
   gifsicle: true
-  # Installs the git hooks in package.json "husky".
-  husky: true
   # Its preinstall script only cleans up global Yarn installs.
   yarn: false
 
