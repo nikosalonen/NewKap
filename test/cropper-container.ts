@@ -1,5 +1,7 @@
-import {serial as test} from 'ava';
+import ava from 'ava';
 import sinon from 'sinon';
+
+const test = ava.serial;
 
 const CropperContainer = require('../renderer/containers/cropper').default;
 const CursorContainer = require('../renderer/containers/cursor').default;

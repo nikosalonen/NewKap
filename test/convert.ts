@@ -1,10 +1,10 @@
-import {serial as testAny, TestInterface} from 'ava';
+import ava, {TestFn} from 'ava';
 import fs from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import uniqueString from 'unique-string';
 
-const test = testAny as TestInterface<{outputPath: string}>;
+const test = (ava as TestFn<{outputPath: string}>).serial;
 
 import {getVideoMetadata} from './helpers/video-utils';
 import {almostEquals} from './helpers/assertions';

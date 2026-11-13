@@ -1,8 +1,10 @@
-import {serial as test} from 'ava';
+import ava from 'ava';
 import fs from 'fs';
 import path from 'path';
 import sinon from 'sinon';
 import {ensureMicrophonePermissions, ensureScreenCapturePermissions} from '../main/common/system-permissions';
+
+const test = ava.serial;
 
 // The test mock from test/mocks/electron.ts, typed loosely so tests can swap its fakes.
 const electron: any = require('electron');

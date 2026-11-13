@@ -1,5 +1,7 @@
-import {serial as test} from 'ava';
+import ava from 'ava';
 import sinon from 'sinon';
+
+const test = ava.serial;
 
 const {startAudioLevelMeter} = require('../renderer/utils/audio-level-meter');
 

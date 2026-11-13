@@ -1,15 +1,15 @@
-import {serial as testAny, TestInterface} from 'ava';
+import ava, {TestFn} from 'ava';
 import tempy from 'tempy';
 import fs from 'fs';
 import sinon, {SinonFakeTimers} from 'sinon';
 import path from 'path';
 import type {MockWindowManager} from './mocks/window-manager';
 
-const test = testAny as TestInterface<{
+const test = (ava as TestFn<{
   now: Date;
   clock: SinonFakeTimers;
   paths?: string[];
-}>;
+}>).serial;
 
 import {mockImport, mockModule} from './helpers/mocks';
 
@@ -44,7 +44,8 @@ const corrupt = path.resolve(__dirname, 'fixtures', 'corrupt.mp4');
 
 test.before(t => {
   t.context.now = new Date('2020-07-21T15:27:26.564Z');
-  t.context.clock = sinon.useFakeTimers(t.context.now.getTime());
+  // Freeze only Date. The recording checks run ffmpeg, which needs real timers.
+  t.context.clock = sinon.useFakeTimers({now: t.context.now, toFake: ['Date']});
 });
 
 test.after(t => {

@@ -4,7 +4,7 @@ let dialogState: any;
 let dialogResolve: any;
 let waitForDialogResolve: any;
 
-export const showDialog = sinon.fake(async (options: any) => new Promise(resolve => {
+export const showDialog = sinon.fake(async (options: any) => new Promise<any>(resolve => {
   dialogState = options;
   dialogResolve = resolve;
 

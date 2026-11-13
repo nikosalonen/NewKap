@@ -1,6 +1,8 @@
-import {serial as test} from 'ava';
+import ava from 'ava';
 import sinon from 'sinon';
 import {copyFilesToClipboard, copyImageToClipboard} from '../main/utils/clipboard';
+
+const test = ava.serial;
 
 // The test mock from test/mocks/electron.ts, typed loosely so tests can swap its fakes.
 const electron: any = require('electron');

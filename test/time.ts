@@ -1,8 +1,10 @@
-import {serial as test} from 'ava';
+import ava from 'ava';
 import sinon from 'sinon';
 import {formatTime} from '../main/common/time';
 import {generateTimestampedName} from '../main/utils/timestamped-name';
 import {extractProgressFromStderr} from '../main/converters/utils';
+
+const test = ava.serial;
 
 test('formats short durations as minutes and seconds', t => {
   t.is(formatTime(0, {}), '0:00');

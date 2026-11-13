@@ -1,5 +1,7 @@
-import {serial as test} from 'ava';
+import ava from 'ava';
 import {isMacosVersion, isMacosVersionAtLeast} from '../main/utils/system-version';
+
+const test = ava.serial;
 
 // Electron adds process.getSystemVersion(); plain Node does not have it.
 const givenMacosVersion = (version: string) => {
