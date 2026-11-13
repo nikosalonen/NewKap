@@ -21,12 +21,11 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/react"
         update-types: ["version-update:semver-major"]
+      # The lint stack moves together in the xo/ESLint migration. Even minor
+      # eslint-plugin-react releases add rules that fail lint.
       - dependency-name: xo
-        update-types: ["version-update:semver-major"]
       - dependency-name: "eslint-*"
-        update-types: ["version-update:semver-major"]
       - dependency-name: "@typescript-eslint/*"
-        update-types: ["version-update:semver-major"]
       - dependency-name: typescript
         update-types: ["version-update:semver-major"]
       - dependency-name: ava
