@@ -1,8 +1,27 @@
 diff --git a/index.js b/index.js
-index 46943a2abab83c3d7a236c2344c9283e24a3ba60..c340fbc2b33b85385b8bda2d10140f1401cde179 100644
+index 46943a2abab83c3d7a236c2344c9283e24a3ba60..cb43a9e64335756c0d75d1c228e80e84ab6f9d91 100644
 --- a/index.js
 +++ b/index.js
-@@ -115,18 +115,18 @@ class Aperture {
+@@ -6,14 +6,16 @@ const execa = require('execa');
+ const tempy = require('tempy');
+ const macosVersion = require('macos-version');
+ const fileUrl = require('file-url');
+-const electronUtil = require('electron-util/node');
+ const delay = require('delay');
+ 
+ const log = debuglog('aperture');
+ const getRandomId = () => Math.random().toString(36).slice(2, 15);
+ 
+ // Workaround for https://github.com/electron/electron/issues/9459
+-const BIN = path.join(electronUtil.fixPathForAsarUnpack(__dirname), 'aperture');
++// Kap: electron-util decides from process.mainModule, which Node 24 replaces when
++// an ES module loaded with require() imports a CommonJS module (electron-store 12
++// imports 'electron'). Use this file's own path instead.
++const BIN = path.join(__dirname.replace(/app\.asar(?=[\\/])/, 'app.asar.unpacked'), 'aperture');
+ 
+ const supportsHevcHardwareEncoding = (() => {
+ 	const cpuModel = os.cpus()[0].model;
+@@ -115,18 +117,18 @@ class Aperture {
  					return;
  				}
  

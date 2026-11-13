@@ -19,7 +19,9 @@ allowBuilds:
 
 patchedDependencies:
   # Wait up to 30 seconds for recording to start on newer macOS, and resolve as
-  # soon as the helper reports the start instead of one second later.
+  # soon as the helper reports the start instead of one second later. Find the
+  # recorder binary in app.asar.unpacked from aperture's own path, not through
+  # electron-util's process.mainModule check (test/aperture-path.ts).
   aperture@6.1.2: patches/aperture@6.1.2.patch
 
 overrides:

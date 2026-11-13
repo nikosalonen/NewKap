@@ -166,7 +166,7 @@ overrides:
   xo>typescript: ^5.9.3
 
 patchedDependencies:
-  aperture@6.1.2: 2512d67aaca02f4086570cdf3f090ee74dfdfde629278f16452bbb5e28eae2fe
+  aperture@6.1.2: ae53b11d125c7f82f56cb42d2b62ad20647250fb8acad54bc3aaa91522578240
 
 importers:
 
@@ -177,7 +177,7 @@ importers:
         version: 6.15.0
       aperture:
         specifier: 6.1.2
-        version: 6.1.2(patch_hash=2512d67aaca02f4086570cdf3f090ee74dfdfde629278f16452bbb5e28eae2fe)
+        version: 6.1.2(patch_hash=ae53b11d125c7f82f56cb42d2b62ad20647250fb8acad54bc3aaa91522578240)
       baseline-browser-mapping:
         specifier: ^2.11.36
         version: 2.11.36
@@ -5707,7 +5707,7 @@ snapshots:
 
   ansi-styles@7.0.0: {}
 
-  aperture@6.1.2(patch_hash=2512d67aaca02f4086570cdf3f090ee74dfdfde629278f16452bbb5e28eae2fe):
+  aperture@6.1.2(patch_hash=ae53b11d125c7f82f56cb42d2b62ad20647250fb8acad54bc3aaa91522578240):
     dependencies:
       delay: 5.0.0
       electron-util: 0.14.2
