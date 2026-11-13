@@ -1,7 +1,7 @@
 import VideoControlsContainer from '../video-controls-container';
 import VideoTimeContainer from '../video-time-container';
 import {PlayIcon, PauseIcon} from '../../../vectors';
-import formatTime from '../../../utils/format-time';
+import {formatTime} from '../../../../main/common/time';
 
 const LeftControls = () => {
   const {isPaused, play, pause} = VideoControlsContainer.useContainer();

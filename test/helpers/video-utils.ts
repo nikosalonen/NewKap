@@ -1,11 +1,11 @@
-import moment from 'moment';
 import execa from 'execa';
+import {timestampToMilliseconds} from '../../main/common/time';
 
 const ffmpegPath = require('ffmpeg-static');
 
 const getDuration = (text: string): number => {
   const durationString = /Duration: ([\d:.]*)/.exec(text)?.[1];
-  return moment.duration(durationString).asSeconds();
+  return timestampToMilliseconds(durationString) / 1000;
 };
 
 const getEncoding = (text: string) => /Stream.*Video: (.*?)[, ]/.exec(text)?.[1];

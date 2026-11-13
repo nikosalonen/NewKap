@@ -2,7 +2,7 @@ import {VolumeHighIcon, VolumeOffIcon} from '../../../vectors';
 import VideoControlsContainer from '../video-controls-container';
 import VideoMetadataContainer from '../video-metadata-container';
 
-import formatTime from '../../../utils/format-time';
+import {formatTime} from '../../../../main/common/time';
 
 const RightControls = () => {
   const {isMuted, mute, unmute} = VideoControlsContainer.useContainer();

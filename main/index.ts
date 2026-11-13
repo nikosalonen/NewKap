@@ -262,11 +262,10 @@ app.on('window-all-closed', () => {
       }
 
       const {checkForUpdates} = require('./updater');
-      const toMilliseconds = require('@sindresorhus/to-milliseconds');
 
       const doCheck = () => checkForUpdates({silent: true});
 
-      setInterval(doCheck, toMilliseconds({hours: 1}));
+      setInterval(doCheck, 60 * 60 * 1000);
       doCheck();
     }, 10_000);
   });

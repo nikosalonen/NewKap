@@ -12,6 +12,18 @@ module.exports = (nextConfig) => {
         ]
       });
 
+      // Next 10 bundles with webpack 4, which cannot load the ES module builds of
+      // linkify-react and linkifyjs (they import named exports from CommonJS React).
+      // Point webpack at their CommonJS builds instead.
+      config.resolve = {
+        ...config.resolve,
+        alias: {
+          ...config.resolve?.alias,
+          'linkify-react$': require.resolve('linkify-react'),
+          linkifyjs$: require.resolve('linkifyjs')
+        }
+      };
+
       if (!options.isServer) {
         config.target = 'web';
       }

@@ -2,7 +2,7 @@ import {Menu} from 'electron';
 import {MenuItemId, MenuOptions} from './utils';
 import {pauseRecording, resumeRecording, stopRecording} from '../aperture';
 import {settings} from '../common/settings';
-import formatTime from '../utils/format-time';
+import {formatTime} from '../common/time';
 import {getCurrentDurationStart, getOverallDuration} from '../utils/track-duration';
 
 const menuAccelerator = (shortcut: string) => shortcut ? shortcut : undefined;

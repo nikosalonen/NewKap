@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Linkify from 'react-linkify';
+import Linkify from 'linkify-react';
 
-import Item, {Link} from '../preferences/item';
+import Item, {linkOptions} from '../preferences/item';
 import Select from '../preferences/item/select';
 import Switch from '../preferences/item/switch';
 import ColorPicker from '../preferences/item/color-picker';
@@ -122,7 +122,7 @@ class Tab extends React.Component {
         {
           description && (
             <div className="description">
-              <Linkify component={Link}>{description}</Linkify>
+              <Linkify options={linkOptions}>{description}</Linkify>
             </div>
           )
         }

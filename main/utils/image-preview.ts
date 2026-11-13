@@ -3,14 +3,12 @@
 import {BrowserWindow, dialog} from 'electron';
 import execa from 'execa';
 import tempy from 'tempy';
-import {promisify} from 'util';
+import fs from 'fs';
 import type {Video} from '../video';
 import {generateTimestampedName} from './timestamped-name';
 import ffmpegPath from './ffmpeg-path';
 
-const base64Img = require('base64-img');
-
-const getBase64 = promisify(base64Img.base64);
+const getBase64 = async (imagePath: string) => `data:image/jpeg;base64,${(await fs.promises.readFile(imagePath)).toString('base64')}`;
 
 export const generatePreviewImage = async (filePath: string): Promise<{path: string; data: string} | undefined> => {
   const previewPath = tempy.file({extension: '.jpg'});

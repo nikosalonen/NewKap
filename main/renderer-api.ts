@@ -14,6 +14,7 @@ import {flags} from './common/flags';
 import {captureScreenshot} from './screenshot';
 import {windowManager} from './windows/manager';
 import {translateBoundsToDisplay} from './common/display-bounds';
+import {isMacosVersionAtLeast} from './utils/system-version';
 
 const CONVERSION_WIDTH = 370;
 const CONVERSION_HEIGHT = 392;
@@ -250,7 +251,7 @@ export const setupRendererApi = () => {
   ipcMain.handle('kap:system:get-default-input-device', () => getDefaultInputDevice());
   ipcMain.handle('kap:system:get-system-colors', (_event, names: string[]) => Object.fromEntries(names.map(name => [name, systemPreferences.getColor(name as any)])));
   ipcMain.handle('kap:system:get-user-default', (_event, {key, type}: {key: string; type: string}) => systemPreferences.getUserDefault(key, type as any));
-  ipcMain.handle('kap:system:is-macos-gte', (_event, version: string) => require('macos-version').isGreaterThanOrEqualTo(version));
+  ipcMain.handle('kap:system:is-macos-gte', (_event, version: string) => isMacosVersionAtLeast(version));
   ipcMain.on('kap:system:get-system-colors-sync', (event, names: string[]) => {
     event.returnValue = Object.fromEntries(names.map(name => [name, systemPreferences.getColor(name as any)]));
   });
@@ -258,7 +259,7 @@ export const setupRendererApi = () => {
     event.returnValue = systemPreferences.getUserDefault(key, type as any);
   });
   ipcMain.on('kap:system:is-macos-gte-sync', (event, version: string) => {
-    event.returnValue = require('macos-version').isGreaterThanOrEqualTo(version);
+    event.returnValue = isMacosVersionAtLeast(version);
   });
   ipcMain.on('kap:system:should-use-dark-colors-sync', event => {
     event.returnValue = nativeTheme.shouldUseDarkColors;

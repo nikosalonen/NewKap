@@ -1,6 +1,5 @@
 import util from 'electron-util';
 import execa from 'execa';
-import moment from 'moment';
 import PCancelable from 'p-cancelable';
 import tempy from 'tempy';
 import path from 'path';
@@ -49,7 +48,7 @@ const createProcess = (mode: Mode) => {
         runner.kill();
       });
 
-      const durationMs = moment.duration(endTime - startTime, 'seconds').asMilliseconds();
+      const durationMs = (endTime - startTime) * 1000;
 
       let stderr = '';
       runner.stderr?.setEncoding('utf8');

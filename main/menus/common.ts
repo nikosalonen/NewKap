@@ -1,4 +1,3 @@
-import delay from 'delay';
 import {app, dialog} from 'electron';
 import {openNewGitHubIssue} from 'electron-util';
 import macosRelease from '../utils/macos-release';
@@ -30,7 +29,9 @@ export const getOpenFileMenuItem = () => ({
   click: async () => {
     windowManager.cropper?.close();
 
-    await delay(200);
+    await new Promise(resolve => {
+      setTimeout(resolve, 200);
+    });
 
     app.focus();
     const {canceled, filePaths} = await dialog.showOpenDialog({

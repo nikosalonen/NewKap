@@ -1,6 +1,6 @@
 import electron, {app, BrowserWindow, Menu} from 'electron';
 import {ipcMain as ipc} from 'electron-better-ipc';
-import pEvent from 'p-event';
+import {once} from 'events';
 import path from 'path';
 import {customApplicationMenu, defaultApplicationMenu, MenuModifier} from '../menus/application';
 import {loadRoute} from '../utils/routes';
@@ -175,7 +175,7 @@ export default class KapWindow<State = any> {
       });
     }
 
-    await pEvent(this.webContents, 'did-finish-load');
+    await once(this.webContents, 'did-finish-load');
     this.reveal();
   }
 

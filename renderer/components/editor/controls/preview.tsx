@@ -1,4 +1,4 @@
-import formatTime from '../../../utils/format-time';
+import {formatTime} from '../../../../main/common/time';
 import {useRef, useEffect} from 'react';
 import useEditorWindowState from 'hooks/editor/use-editor-window-state';
 
@@ -68,7 +68,7 @@ export default Preview;
 // Import PropTypes from 'prop-types';
 // import React from 'react';
 
-// import formatTime from '../../../utils/format-time';
+// import {formatTime} from '../../../../main/common/time';
 
 // class Preview extends React.Component {
 //   constructor(props) {

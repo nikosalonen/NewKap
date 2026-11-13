@@ -3,13 +3,12 @@
 import {BrowserWindow, dialog} from 'electron';
 import {ShareServiceContext} from '../service-context';
 import {settings} from '../../common/settings';
-import makeDir from 'make-dir';
 import {Format} from '../../common/types';
+import fs from 'fs';
 import path from 'path';
 import {notify} from '../../utils/notifications';
 
 const {shell} = require('electron');
-const cpFile = require('cp-file');
 
 const action = async (context: ShareServiceContext & {targetFilePath: string}) => {
   const temporaryFilePath = await context.filePath();
@@ -21,7 +20,8 @@ const action = async (context: ShareServiceContext & {targetFilePath: string}) =
 
   // Copy the file, so we can still use the temporary source for future exports
   // The temporary file will be cleaned up on app exit, or automatic system cleanup
-  await cpFile(temporaryFilePath, context.targetFilePath);
+  await fs.promises.mkdir(path.dirname(context.targetFilePath), {recursive: true});
+  await fs.promises.copyFile(temporaryFilePath, context.targetFilePath);
 
   notify({
     title: 'File saved successfully!',
@@ -64,7 +64,7 @@ export const askForTargetFilePath = async (
   fileName: string
 ) => {
   const kapturesDir = settings.get('kapturesDir');
-  await makeDir(kapturesDir);
+  await fs.promises.mkdir(kapturesDir, {recursive: true});
 
   const defaultPath = path.join(lastSavedDirectory ?? kapturesDir, fileName);
 

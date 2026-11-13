@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import kap from '../../../utils/kap';
 import classNames from 'classnames';
-import Linkify from 'react-linkify';
+import Linkify from 'linkify-react';
 import {HelpIcon} from '../../../vectors';
 
 export const Link = ({href, children}) => (
@@ -19,6 +19,11 @@ export const Link = ({href, children}) => (
     `}</style>
   </span>
 );
+
+// Renders the links that linkify-react finds in plain text with Kap's Link.
+export const linkOptions = {
+  render: ({attributes, content}) => <Link href={attributes.href}>{content}</Link>
+};
 
 Link.propTypes = {
   href: PropTypes.string,
@@ -75,7 +80,7 @@ class Item extends React.Component {
               }
             </div>
             <div className={subtitleClassName} title={tooltip} onClick={onSubtitleClick}>
-              { subtitleArray.map(s => <div key={s}><Linkify component={Link}>{s}</Linkify></div>) }
+              { subtitleArray.map(s => <div key={s}><Linkify options={linkOptions}>{s}</Linkify></div>) }
             </div>
           </div>
           <div className="input">

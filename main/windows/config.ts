@@ -2,7 +2,7 @@
 
 import {BrowserWindow} from 'electron';
 import {ipcMain as ipc} from 'electron-better-ipc';
-import pEvent from 'p-event';
+import {once} from 'events';
 import path from 'path';
 import {loadRoute} from '../utils/routes';
 import {windowManager} from './manager';
@@ -35,7 +35,7 @@ const openConfigWindow = async (pluginName: string) => {
     configWindow.show();
   });
 
-  await pEvent(configWindow, 'closed');
+  await once(configWindow, 'closed');
 };
 
 const openEditorConfigWindow = async (pluginName: string, serviceTitle: string, editorWindow: BrowserWindow) => {
@@ -65,7 +65,7 @@ const openEditorConfigWindow = async (pluginName: string, serviceTitle: string, 
     configWindow.show();
   });
 
-  await pEvent(configWindow, 'closed');
+  await once(configWindow, 'closed');
 };
 
 ipc.answerRenderer('open-edit-config', async ({pluginName, serviceTitle}, window) => {

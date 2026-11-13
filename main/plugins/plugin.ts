@@ -1,6 +1,6 @@
 import {app, shell} from 'electron';
-import macosVersion from 'macos-version';
 import semver from 'semver';
+import {isMacosVersion} from '../utils/system-version';
 import path from 'path';
 import fs from 'fs';
 import readPkg from 'read-pkg';
@@ -31,7 +31,7 @@ class BasePlugin {
   }
 
   get isCompatible() {
-    return semver.satisfies(app.getVersion(), this.kapVersion ?? '*') && macosVersion.is(this.macosVersion ?? '*');
+    return semver.satisfies(app.getVersion(), this.kapVersion ?? '*') && isMacosVersion(this.macosVersion ?? '*');
   }
 
   get repoUrl() {
