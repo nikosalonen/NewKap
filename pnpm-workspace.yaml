@@ -15,6 +15,9 @@ allowBuilds:
   gifsicle: true
   # Its preinstall script only cleans up global Yarn installs.
   yarn: false
+  # tsx's compiler. Its postinstall only checks the binary, which pnpm already
+  # installs as the optional dependency @esbuild/darwin-arm64.
+  esbuild: false
 
 patchedDependencies:
   # Wait up to 30 seconds for recording to start on newer macOS, and resolve as

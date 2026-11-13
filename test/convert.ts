@@ -22,8 +22,12 @@ mockImport('../plugins/service-context', 'service-context');
 mockImport('../plugins', 'plugins');
 const {settings} = mockImport('../common/settings', 'settings');
 
-import {convertTo} from '../main/converters';
-import {ConvertOptions} from '../main/converters/utils';
+import type * as ConvertersModule from '../main/converters';
+import type {ConvertOptions} from '../main/converters/utils';
+
+// Use require so the converters load after the mocks above. Import statements
+// are hoisted and would load them first.
+const {convertTo} = require('../main/converters') as typeof ConvertersModule;
 
 test.afterEach.always(t => {
   if (t.context.outputPath && fs.existsSync(t.context.outputPath)) {

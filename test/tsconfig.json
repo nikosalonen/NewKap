@@ -2,6 +2,8 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "noUnusedLocals": false,
+    "incremental": false,
+    "tsBuildInfoFile": null,
     "baseUrl": ".",
     "lib": [
       "esnext",

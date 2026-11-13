@@ -21,7 +21,14 @@ import * as dialog from './mocks/dialog';
 import {plugins} from './mocks/plugins';
 import {windowManager} from './mocks/window-manager';
 
-import {
+import type * as RecordingHistoryModule from '../main/recording-history';
+import type {Video} from '../main/video';
+
+type PastRecording = RecordingHistoryModule.PastRecording;
+
+// Use require so the module loads after the mocks above. Import statements
+// are hoisted and would load it first.
+const {
   recordingHistory,
   getPastRecordings,
   hasActiveRecording,
@@ -29,10 +36,8 @@ import {
   setCurrentRecording,
   updatePluginState,
   stopCurrentRecording,
-  cleanPastRecordings,
-  PastRecording
-} from '../main/recording-history';
-import type {Video} from '../main/video';
+  cleanPastRecordings
+} = require('../main/recording-history') as typeof RecordingHistoryModule;
 
 const incomplete = path.resolve(__dirname, 'fixtures', 'incomplete.mp4');
 const corrupt = path.resolve(__dirname, 'fixtures', 'corrupt.mp4');
