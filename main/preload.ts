@@ -2,9 +2,12 @@
 import {contextBridge, ipcRenderer} from 'electron';
 
 const windowId = ipcRenderer.sendSync('kap:get-window-id') as number;
-const getUniqueId = () => `${Date.now()}-${Math.random()}`;
-const getSendChannel = (channel: string) => `%better-ipc-send-channel-${channel}`;
-const getRendererSendChannel = (id: number, channel: string) => `%better-ipc-send-channel-${id}-${channel}`;
+
+// The callMain and answerMain below speak the message format of
+// electron-better-ipc 3, which main/utils/ipc.ts uses. The preload can't load that package: a
+// sandboxed preload can only require 'electron'. test/ipc-protocol.ts checks
+// that this channel name still matches the package.
+const callFromMainChannel = '%better-ipc-call';
 
 const serializeError = (value: any, seen = new WeakSet()): any => {
   if (!value || typeof value !== 'object') {
@@ -50,23 +53,47 @@ const deserializeError = (value: any) => {
   return error;
 };
 
-const answerMain = <Data, Result>(channel: string, callback: (data: Data) => Result | Promise<Result>) => {
-  const sendChannel = getRendererSendChannel(windowId, channel);
+const mainHandlers = new Map<string, Set<(data: any) => unknown>>();
 
-  const listener = async (_event: Electron.IpcRendererEvent, data: any) => {
-    const {dataChannel, errorChannel, userData} = data;
+// Main sends each call with a MessagePort, and the answer goes back on that port.
+ipcRenderer.on(callFromMainChannel, async (event, {channel, data, senderId}: {channel: string; data: unknown; senderId?: number}) => {
+  const [port] = event.ports;
+  if (!port) {
+    return;
+  }
 
-    try {
-      ipcRenderer.send(dataChannel, await callback(userData));
-    } catch (error) {
-      ipcRenderer.send(errorChannel, serializeError(error));
+  try {
+    // Only calls that other pages make through main have a senderId. Kap pages don't make them.
+    if (senderId !== undefined) {
+      throw new Error(`'${channel}' can only be called from the main process`);
     }
-  };
 
-  ipcRenderer.on(sendChannel, listener);
+    const handlers = [...mainHandlers.get(channel) ?? []];
+    if (handlers.length === 0) {
+      throw new Error(`No handler registered for '${channel}'`);
+    }
+
+    // Several components can listen on one channel, so all of them get the
+    // call. The first one's result is the answer.
+    const [value] = await Promise.all(handlers.map(async handler => handler(data)));
+    port.postMessage({value});
+  } catch (error) {
+    port.postMessage({error: serializeError(error)});
+  }
+});
+
+const answerMain = <Data, Result>(channel: string, callback: (data: Data) => Result | Promise<Result>) => {
+  // A new function per registration, so removing one doesn't remove another registration of the same callback.
+  const handler = async (data: Data) => callback(data);
+  const handlers = mainHandlers.get(channel) ?? new Set();
+  handlers.add(handler);
+  mainHandlers.set(channel, handlers);
 
   return () => {
-    ipcRenderer.off(sendChannel, listener);
+    handlers.delete(handler);
+    if (handlers.size === 0 && mainHandlers.get(channel) === handlers) {
+      mainHandlers.delete(channel);
+    }
   };
 };
 
@@ -84,31 +111,15 @@ const on = (channel: string, callback: (...args: any[]) => void) => {
 
 const invoke = (channel: string, data?: any) => ipcRenderer.invoke(channel, data);
 
-const callMain = <Data, Result>(channel: string, userData?: Data) => new Promise<Result>((resolve, reject) => {
-  const id = getUniqueId();
-  const sendChannel = getSendChannel(channel);
-  const dataChannel = `%better-ipc-response-data-channel-${channel}-${id}`;
-  const errorChannel = `%better-ipc-response-error-channel-${channel}-${id}`;
+// The handlers in main/utils/ipc.ts answer with {value} or {error}.
+const callMain = async <Data, Result>(channel: string, userData?: Data): Promise<Result> => {
+  const {value, error} = await ipcRenderer.invoke(channel, userData) as {value?: Result; error?: unknown};
+  if (error !== undefined) {
+    throw deserializeError(error);
+  }
 
-  const cleanup = () => {
-    ipcRenderer.off(dataChannel, handleData);
-    ipcRenderer.off(errorChannel, handleError);
-  };
-
-  const handleData = (_event: Electron.IpcRendererEvent, result: Result) => {
-    cleanup();
-    resolve(result);
-  };
-
-  const handleError = (_event: Electron.IpcRendererEvent, error: any) => {
-    cleanup();
-    reject(deserializeError(error));
-  };
-
-  ipcRenderer.once(dataChannel, handleData);
-  ipcRenderer.once(errorChannel, handleError);
-  ipcRenderer.send(sendChannel, {dataChannel, errorChannel, userData});
-});
+  return value as Result;
+};
 
 contextBridge.exposeInMainWorld('kap', {
   app: {

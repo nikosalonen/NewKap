@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {ipcRenderer as ipc} from '../../../utils/ipc';
 import {connect, PreferencesContainer} from '../../../containers';
 import General from './general';
 import Keybinds from './keybinds';
@@ -20,13 +19,6 @@ const CATEGORIES = [
 ];
 
 class Categories extends React.Component {
-  componentDidUpdate(previousProps) {
-    if (!previousProps.isMounted && this.props.isMounted) {
-      // Wait for the transitions to end
-      setTimeout(async () => ipc.callMain('preferences-ready'), 300);
-    }
-  }
-
   render() {
     const {category} = this.props;
 
@@ -62,10 +54,9 @@ class Categories extends React.Component {
 
 Categories.propTypes = {
   category: PropTypes.string,
-  isMounted: PropTypes.bool,
 };
 
 export default connect(
   [PreferencesContainer],
-  ({category, isMounted}) => ({category, isMounted}),
+  ({category}) => ({category}),
 )(Categories);

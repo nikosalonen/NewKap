@@ -2,7 +2,7 @@
 
 import {BrowserWindow, type Rectangle} from 'electron';
 import path from 'node:path';
-import {ipcMain as ipc} from 'electron-better-ipc';
+import * as ipc from '../utils/ipc';
 import {loadRoute} from '../utils/routes';
 import {windowManager} from './manager';
 

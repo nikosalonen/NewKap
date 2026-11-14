@@ -111,14 +111,6 @@ const open = async (video: Video) => {
     editors.delete(video.filePath);
   });
 
-  editorWindow.on('blur', () => {
-    editorKapWindow.callRenderer('blur');
-  });
-
-  editorWindow.on('focus', () => {
-    editorKapWindow.callRenderer('focus');
-  });
-
   editorKapWindow.answerRenderer('save-snapshot', (time: number) => {
     saveSnapshot(video, time);
   });

@@ -1,6 +1,6 @@
 import {ipcMain} from 'electron';
 import {setTimeout as delay} from 'node:timers/promises';
-import {ipcMain as ipc} from 'electron-better-ipc';
+import * as ipc from '../utils/ipc';
 import KapWindow from './kap-window';
 import {windowManager} from './manager';
 
@@ -14,7 +14,7 @@ const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
   const prefsWindow = prefsKapWindow?.browserWindow;
   if (prefsWindow) {
     if (options) {
-      ipc.callRenderer(prefsWindow, 'options', options);
+      ipc.notifyRenderer(prefsWindow, 'options', options);
     }
 
     prefsWindow.show();
@@ -75,7 +75,7 @@ const openPrefsWindow = async (options?: PreferencesWindowOptions) => {
   ]);
 
   if (options) {
-    ipc.callRenderer(newPrefsWindow, 'options', options);
+    ipc.notifyRenderer(newPrefsWindow, 'options', options);
   }
 
   await newPrefsKapWindow.whenReady();
@@ -86,7 +86,10 @@ const closePrefsWindow = () => {
   prefsKapWindow?.browserWindow.close();
 };
 
-ipc.answerRenderer('open-preferences', openPrefsWindow);
+// Answer with nothing: a BrowserWindow can't be sent to the renderer.
+ipc.answerRenderer('open-preferences', async (options?: PreferencesWindowOptions) => {
+  await openPrefsWindow(options);
+});
 
 windowManager.setPreferences({
   open: openPrefsWindow,

@@ -194,8 +194,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       electron-better-ipc:
-        specifier: ^1.1.1
-        version: 1.1.1
+        specifier: ^3.0.0
+        version: 3.0.0
       electron-next:
         specifier: ^3.1.5
         version: 3.1.5
@@ -2045,8 +2045,9 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-better-ipc@1.1.1:
-    resolution: {integrity: sha512-Y8Ty54HJtzT6aWNTyE092W/7q8y3+yJz0XvRpOKGIsLDL2H7oWIFkUegmB+6h5SszjtBiQFpmNmHOKfkDZ8HbQ==}
+  electron-better-ipc@3.0.0:
+    resolution: {integrity: sha512-29hMdj2JfIXKAIaNz8VmmLHIjkbp2n0fHa4FM/NEilG0O16AQAjq2o0SLQ7d2MtcgFQ2dwn5wyeLJ3FbcfIAmA==}
+    engines: {node: '>=22'}
 
   electron-builder@26.18.0:
     resolution: {integrity: sha512-ASgIuQnOq4RuD8jMhS9hI0LS3EMRT1I/M5R6utqifB/BHN80IcCjBdt+DED+NmNPvmBgEtrlExXZitNdA7kXOg==}
@@ -3421,6 +3422,10 @@ packages:
     resolution: {integrity: sha512-6li2QanLsAXpIH2R6j77MzRyvOyrvdTqlKtO4CgBdHGNvN99ZZfyxszHc5o5+IZBWD5u6Hzwg83JoGXmqZNG9Q==}
     engines: {node: '>=18'}
 
+  non-error@0.1.0:
+    resolution: {integrity: sha512-TMB1uHiGsHRGv1uYclfhivcnf0/PdFp2pNqRxXjncaAsjYMoisaQJI+SSZCqRq+VliwRTC8tsMQfmrWjDMhkPQ==}
+    engines: {node: '>=20'}
+
   nopt@8.1.0:
     resolution: {integrity: sha512-ieGu42u/Qsa4TFktmaKEwM6MQH0pOWnaB3htzh0JRtx84+Mebc0cbZYN5bC+6WTZ4+77xrL9Pn5m7CV6VIkV7A==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -3840,9 +3845,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serialize-error@5.0.0:
-    resolution: {integrity: sha512-/VtpuyzYf82mHYTtI4QKtwHa79vAdU5OQpNPAmE/0UDdlGT0ZxHwC+J6gXkw29wwoVI8fMPsfcVHOwXtUQYYQA==}
-    engines: {node: '>=8'}
+  serialize-error@13.1.0:
+    resolution: {integrity: sha512-FT1EL2Pz7lAWA48I6Qb1qHEvGT9ZGz2pb1sYZ9Dhu2t+RmHN6O12WMu7HzFcqFRQaUWEl3Q+++EYBTrZpCoykQ==}
+    engines: {node: '>=20'}
 
   serialize-error@7.0.1:
     resolution: {integrity: sha512-8I8TjW5KMOKsZQTvoxjuSIa7foAwPWGOts+6o7sgjz41/qMD9VQHEDxi6PBvK2l0MXUmqZyNpUK+T2tQaaElvw==}
@@ -4129,10 +4134,6 @@ packages:
   type-fest@0.16.0:
     resolution: {integrity: sha512-eaBzG6MxNzEn9kiwvtre90cXaNLkmadMWa1zQMs3XORCXNbsH/OewwbxC5ia9dCxIxnTAsSxXJaa/p5y8DlvJg==}
     engines: {node: '>=10'}
-
-  type-fest@0.8.1:
-    resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
-    engines: {node: '>=8'}
 
   type-fest@1.4.0:
     resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
@@ -6135,9 +6136,9 @@ snapshots:
     dependencies:
       jake: 10.8.5
 
-  electron-better-ipc@1.1.1:
+  electron-better-ipc@3.0.0:
     dependencies:
-      serialize-error: 5.0.0
+      serialize-error: 13.1.0
 
   electron-builder@26.18.0(supports-color@10.2.2):
     dependencies:
@@ -7857,6 +7858,8 @@ snapshots:
 
   node-releases@2.0.63: {}
 
+  non-error@0.1.0: {}
+
   nopt@8.1.0:
     dependencies:
       abbrev: 3.0.1
@@ -8254,9 +8257,10 @@ snapshots:
 
   semver@7.8.6: {}
 
-  serialize-error@5.0.0:
+  serialize-error@13.1.0:
     dependencies:
-      type-fest: 0.8.1
+      non-error: 0.1.0
+      type-fest: 5.10.0
 
   serialize-error@7.0.1:
     dependencies:
@@ -8551,8 +8555,6 @@ snapshots:
   type-fest@0.13.1: {}
 
   type-fest@0.16.0: {}
-
-  type-fest@0.8.1: {}
 
   type-fest@1.4.0: {}
 

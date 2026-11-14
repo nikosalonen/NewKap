@@ -2,7 +2,7 @@ import type electron from 'electron';
 import {app, BrowserWindow, Menu} from 'electron';
 import {once} from 'node:events';
 import path from 'node:path';
-import {ipcMain as ipc} from 'electron-better-ipc';
+import * as ipc from '../utils/ipc';
 import {customApplicationMenu, defaultApplicationMenu, type MenuModifier} from '../menus/application';
 import {loadRoute} from '../utils/routes';
 import {setDockVisible} from '../utils/dock';
@@ -21,6 +21,10 @@ app.on('browser-window-focus', (_, window) => {
     Menu.setApplicationMenu(Menu.buildFromTemplate(defaultApplicationMenu()));
   }
 });
+
+// Every page asks for its window state when it mounts (pages/_app.tsx). Windows
+// that are not KapWindows have none.
+ipc.answerRenderer('kap-window-state', () => undefined);
 
 // Has to be named BrowserWindow because of
 // https://github.com/electron/electron/blob/master/lib/browser/api/browser-window.ts#L82
@@ -119,7 +123,7 @@ export default class KapWindow<State = any> {
       ...partialState,
     };
 
-    this.callRenderer('kap-window-state', this.state);
+    ipc.notifyRenderer(this.browserWindow, 'kap-window-state', this.state);
   };
 
   whenReady = async () => this.readyPromise;
@@ -153,12 +157,8 @@ export default class KapWindow<State = any> {
       Menu.setApplicationMenu(this.menu);
     });
 
-    this.webContents.on('did-finish-load', async () => {
-      if (this.state) {
-        this.callRenderer('kap-window-state', this.state);
-      }
-    });
-
+    // The page asks for its state when it mounts. Pushing it on did-finish-load
+    // is too early: React mounts after the load event, so nobody answers yet.
     this.answerRenderer('kap-window-state', () => this.state);
 
     loadRoute(this.browserWindow, this.props.route);

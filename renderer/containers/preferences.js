@@ -179,7 +179,6 @@ export default class PreferencesContainer extends Container {
     this.setState({category: 'plugins'});
     this.setOverlay(true);
     await this.plugins.openPluginConfig(name);
-    ipc.callMain('refresh-usage');
     this.setOverlay(false);
   };
   openPluginsFolder = async () => kap.shell.openPath(await this.plugins.getPluginsDir());
