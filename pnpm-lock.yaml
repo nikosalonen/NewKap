@@ -236,11 +236,11 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       pretty-bytes:
-        specifier: ^5.6.0
-        version: 5.6.0
+        specifier: ^7.2.0
+        version: 7.2.0
       pretty-ms:
-        specifier: ^7.0.1
-        version: 7.0.1
+        specifier: ^10.0.0
+        version: 10.0.0
       prop-types:
         specifier: ^15.7.2
         version: 15.8.1
@@ -3547,10 +3547,6 @@ packages:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
 
-  parse-ms@2.1.0:
-    resolution: {integrity: sha512-kHt7kzLoS9VBZfUsiKjv43mr91ea+U05EyKkEtqp7vNbHxmaVuEqN7XxeEVnGrMtYOAxGrDElSi96K7EgO1zCA==}
-    engines: {node: '>=6'}
-
   parse-ms@4.0.0:
     resolution: {integrity: sha512-TXfryirbmq34y8QBwgqCVLi+8oA3oWx2eAnSn62ITyEhEYaWRlVZ2DvMM9eZbMs/RfxPu/PK/aBLyGj4IrqMHw==}
     engines: {node: '>=18'}
@@ -3649,17 +3645,13 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
-  pretty-bytes@5.6.0:
-    resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==}
-    engines: {node: '>=6'}
+  pretty-bytes@7.2.0:
+    resolution: {integrity: sha512-T2kroepGB5DRVbkN/nOpW03+VRWqdtJhZNuCW3wYk3chdPjgi4GcTBOaxWfHq1MIM0ypidxsSWbQaAiRpxnXmg==}
+    engines: {node: '>=20'}
 
   pretty-ms@10.0.0:
     resolution: {integrity: sha512-6BWuxY2dCNgT45VnGzZcfNy7WeLqXiZqhhy4aHThTE6KI56R2ZBw9HQ7spPFKYchDizvJbPxTEknIpmW4FSmQA==}
     engines: {node: '>=22'}
-
-  pretty-ms@7.0.1:
-    resolution: {integrity: sha512-973driJZvxiGOQ5ONsFhOF/DtzPMOMtgC11kCpUrPGMTgqp2q/1gwzCquocrN33is0VZ5GFHXZYMM9l6h67v2Q==}
-    engines: {node: '>=10'}
 
   pretty-ms@9.3.1:
     resolution: {integrity: sha512-HzMy3Geq23nVALD/M2LliU+F+M+gVNsvkQWWqeBZ8HDiCgzo6YPJ/Omrmtq24EFrIsk0a3EkQGEd7bDOo+IhGA==}
@@ -8025,8 +8017,6 @@ snapshots:
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.1.6
 
-  parse-ms@2.1.0: {}
-
   parse-ms@4.0.0: {}
 
   parse-statements@1.0.11: {}
@@ -8103,13 +8093,9 @@ snapshots:
 
   prettier@3.10.1: {}
 
-  pretty-bytes@5.6.0: {}
+  pretty-bytes@7.2.0: {}
 
   pretty-ms@10.0.0: {}
-
-  pretty-ms@7.0.1:
-    dependencies:
-      parse-ms: 2.1.0
 
   pretty-ms@9.3.1:
     dependencies:
