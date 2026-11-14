@@ -30,3 +30,18 @@ overrides:
   # changed in TypeScript 6), so xo uses the project's copy. xo itself only reads
   # the version. Drop this when the project moves to TypeScript 6.
   xo>typescript: $typescript
+  # GHSA-238p-pmpm-9mq7 (fixed in KaTeX 0.18.2). xo's markdown parser loads
+  # KaTeX but never renders math, so the newer version only has to load.
+  # Drop this when micromark-extension-math allows KaTeX 0.18 or later.
+  micromark-extension-math>katex: ^0.19.1
+  # GHSA-g3hv-75wg-m249 (fixed only in minimatch 11). typescript-estree,
+  # app-builder-lib, @electron/universal, eslint-plugin-jsx-a11y-x, and for now
+  # eslint 10.14 and @eslint/config-array 0.23.5, still ask for minimatch 9 or
+  # 10. They only use minimatch(), new Minimatch(), match(), negate, pattern and
+  # set, which minimatch 11 keeps. Drop this when `pnpm why minimatch` shows no
+  # parent that asks for 9 or 10.
+  'minimatch@>=7 <11.0.1': ^11.0.8
+  # glob 13 reads Minimatch.set items as RegExps, which breaks on minimatch 11.
+  # @vercel/nft 1.11.2 (ava) moves to glob 14 with no other change; drop this
+  # once pnpm's one-day minimum release age lets `pnpm update @vercel/nft` in.
+  '@vercel/nft>glob': ^14.0.6
