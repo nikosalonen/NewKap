@@ -1,19 +1,19 @@
 import {app, clipboard} from 'electron';
 import type Store from 'electron-store';
-import got, {type GotFn, type GotPromise} from 'got';
 import type PCancelable from 'p-cancelable';
 import type {ApertureOptions, Format} from '../common/types';
 import {addPluginPromise} from '../utils/deep-linking';
 import {notify} from '../utils/notifications';
 import {getFormatExtension} from '../common/constants';
 import type {InstalledPlugin} from './plugin';
+import {pluginRequest} from './plugin-request';
 
 type ServiceContextOptions = {
   plugin: InstalledPlugin;
 };
 
 class ServiceContext {
-  requests: Array<GotPromise<any>> = [];
+  requests: Array<ReturnType<typeof pluginRequest>> = [];
   config: Store;
 
   private readonly plugin: InstalledPlugin;
@@ -24,11 +24,19 @@ class ServiceContext {
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async -- plugins get got's promise, which has cancel() and progress events
-  request = (...args: Parameters<GotFn>) => {
-    const request = got(...args);
+  request = (...args: Parameters<typeof pluginRequest>) => {
+    const request = pluginRequest(...args);
     this.requests.push(request);
     return request;
   };
+
+  protected cancelRequests() {
+    for (const request of this.requests) {
+      // When got rejects a request's options up front, it returns a plain
+      // rejected promise with no cancel(). Skip it and cancel the rest.
+      request.cancel?.();
+    }
+  }
 
   copyToClipboard = (text: string) => {
     clipboard.writeText(text);
@@ -93,10 +101,7 @@ export class ShareServiceContext extends ServiceContext {
   cancel = () => {
     this.isCanceled = true;
     this.options.onCancel();
-
-    for (const request of this.requests) {
-      request.cancel();
-    }
+    this.cancelRequests();
   };
 }
 
@@ -150,10 +155,7 @@ export class EditServiceContext extends ServiceContext {
   cancel = () => {
     this.isCanceled = true;
     this.options.onCancel();
-
-    for (const request of this.requests) {
-      request.cancel();
-    }
+    this.cancelRequests();
   };
 }
 

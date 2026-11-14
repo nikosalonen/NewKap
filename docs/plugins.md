@@ -100,7 +100,10 @@ The `action` function is where you implement the behavior of your service. The f
 - `.filePath()`: Convert the screen recording to the user chosen format and return a Promise for the file path.
   - If you want to overwrite the format that the user selected, you can pass a `fileType` option: `.filePath({fileType: 'mp4'})`. It can be one of `mp4`, `gif`, `apng`, `webm`. This can be useful if you, for example, need to handle the GIF conversion yourself.
 - `.config`: Get and set config for your plugin. It’s an instance of [`electron-store`](https://github.com/sindresorhus/electron-store#instance).
-- `.request()`: Do a network request, like uploading. It’s a wrapper around [`got`](https://github.com/sindresorhus/got).
+- `.request()`: Do a network request, like uploading. It’s a wrapper around [`got` 11](https://github.com/sindresorhus/got/tree/v11.8.6).
+  - Plugins written for got 9 still work. Kap translates `json: true`, `form: true`, `query`, `encoding: null` and `retry: {retries}`. It sends a request that has a body and no method as `POST`, drops `null` bodies and headers, and accepts streams that aren’t a core `stream.Readable`, such as `through2`.
+  - Kap doesn’t translate `auth`, `stream: true`, `useElectronNet` or a `retries` function. Use the got 11 options for those.
+  - HTTP errors still have `statusCode` and `body`. New code should read them from `error.response`.
 - `.copyToClipboard(text)`: Copy text to the clipboard. If you for example copy a link to the uploaded recording to the clipboard, don’t forget to `.notify()` the user about it.
 - `.notify(text, action)`: Show a notification. Optionally pass in a function that is called with the event when the notification is clicked.
 - `.setProgress(text, percentage)`: Update progress information in the Kap export window. Use this whenever you have long-running jobs, like uploading. The `percentage` should be a number between `0` and `1`.
@@ -190,7 +193,10 @@ const reverseAction = async context => {
 };
 ```
 - `.config`: Get and set config for your plugin. It’s an instance of [`electron-store`](https://github.com/sindresorhus/electron-store#instance).
-- `.request()`: Do a network request, like uploading. It’s a wrapper around [`got`](https://github.com/sindresorhus/got).
+- `.request()`: Do a network request, like uploading. It’s a wrapper around [`got` 11](https://github.com/sindresorhus/got/tree/v11.8.6).
+  - Plugins written for got 9 still work. Kap translates `json: true`, `form: true`, `query`, `encoding: null` and `retry: {retries}`. It sends a request that has a body and no method as `POST`, drops `null` bodies and headers, and accepts streams that aren’t a core `stream.Readable`, such as `through2`.
+  - Kap doesn’t translate `auth`, `stream: true`, `useElectronNet` or a `retries` function. Use the got 11 options for those.
+  - HTTP errors still have `statusCode` and `body`. New code should read them from `error.response`.
 - `.copyToClipboard(text)`: Copy text to the clipboard. If you for example copy a link to the uploaded recording to the clipboard, don’t forget to `.notify()` the user about it.
 - `.notify(text, action)`: Show a notification. Optionally pass in a function that is called with the event when the notification is clicked.
 - `.openConfigFile()`: Open the plugin config file in the user’s editor.
@@ -291,7 +297,10 @@ The hook functions receive a `context` argument with some metadata and utility m
     - `state.persistedState`: An object under `state` which should only contain serializable fields. It will be passed to the `cleanUp` hook if Kap didn't shut down correctly last time it was run. Use this to store fields necessary to clean up remaining effects.
 - `.apertureOptions`: An object with the options passed to [Aperture](https://github.com/wulkano/aperture-node). The API is described [here](https://github.com/wulkano/aperture-node#options).
 - `.config`: Get and set config for your plugin. It’s an instance of [`electron-store`](https://github.com/sindresorhus/electron-store#instance).
-- `.request()`: Do a network request, like uploading. It’s a wrapper around [`got`](https://github.com/sindresorhus/got).
+- `.request()`: Do a network request, like uploading. It’s a wrapper around [`got` 11](https://github.com/sindresorhus/got/tree/v11.8.6).
+  - Plugins written for got 9 still work. Kap translates `json: true`, `form: true`, `query`, `encoding: null` and `retry: {retries}`. It sends a request that has a body and no method as `POST`, drops `null` bodies and headers, and accepts streams that aren’t a core `stream.Readable`, such as `through2`.
+  - Kap doesn’t translate `auth`, `stream: true`, `useElectronNet` or a `retries` function. Use the got 11 options for those.
+  - HTTP errors still have `statusCode` and `body`. New code should read them from `error.response`.
 - `.copyToClipboard(text)`: Copy text to the clipboard. If you for example copy a link to the uploaded recording to the clipboard, don’t forget to `.notify()` the user about it.
 - `.notify(text, action)`: Show a notification. Optionally pass in a function that is called with the event when the notification is clicked.
 - `.openConfigFile()`: Open the plugin config file in the user’s editor.

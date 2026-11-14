@@ -12,7 +12,8 @@ const {checkForUpdates} = require('../main/updater') as typeof Updater;
 // The test mock from test/mocks/electron.ts, typed loosely so tests can swap its fakes.
 const electron: any = require('electron');
 
-const httpError = (statusCode: number) => Object.assign(new Error(`Response code ${statusCode}`), {statusCode});
+// Got 11 keeps the status code on error.response.
+const httpError = (statusCode: number) => Object.assign(new Error(`Response code ${statusCode}`), {response: {statusCode}});
 
 test.beforeEach(() => {
   fakeGot.reset();
@@ -34,6 +35,16 @@ test('other errors still report a failed check', async t => {
   await checkForUpdates({silent: false});
 
   t.is(electron.dialog.showMessageBox.lastArg.message, 'Update Check Failed');
+});
+
+// Given got 9's `json: true`, got 11 sends `true` as a JSON body and throws,
+// so every update check would fail.
+test('asks got to parse the reply as JSON', async t => {
+  fakeGot.rejects(httpError(404));
+
+  await checkForUpdates();
+
+  t.is(fakeGot.firstCall.args[1].responseType, 'json');
 });
 
 test('a newer release offers the update', async t => {
