@@ -1,75 +1,51 @@
-# Contributing to NewKap
+# Contributing to Kap
 
-Thank you for your interest in contributing to NewKap! This project is community- every contribution matters.driven 
+Thanks for helping with this Kap fork. Bug reports and focused pull requests are welcome.
 
-## How to Contribute
+## Reporting bugs
 
-### Reporting Bugs
+1. Search the [existing issues](https://github.com/nikosalonen/NewKap/issues) first.
+2. Include your macOS version (`sw_vers`), the Kap version (**About Kap** in the menu bar icon's menu), whether you use a release or your own build, the steps to reproduce, and what you expected to happen.
+3. Logs help. Run `/Applications/Kap.app/Contents/MacOS/Kap` from Terminal and copy the output around the problem, or open Console.app and filter by "Kap".
 
-1. Check [existing issues](https://github.com/MuntasirMalek/NewKap/issues) first
-2. Include your macOS version, Mac type (Intel/Apple Silicon), and steps to reproduce
-3. Attach console logs if possible (open Console.app, filter by "NewKap")
+## Submitting changes
 
-### Submitting Changes
+1. Fork the repository and create a branch: `git checkout -b fix/short-description`.
+2. Set up the project as described in the README's [Development](README.md#development) section.
+3. Keep each pull request to one change, and describe what you tested by hand.
+4. Run the checks: `pnpm typecheck`, `pnpm lint`, `pnpm test:main` and `pnpm build-renderer`.
+5. Open a pull request against `main`.
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b fix/your-fix-name`
-3. Make your changes with clear, minimal commits
-4. Test locally: `unset ELECTRON_RUN_AS_NODE && pnpm start`
-5. Push and open a Pull Request
-
-### PR Review Process
-
-NewKap uses **community voting** for PR approval:
-
-- Any community member can review and vote with thumbs-up or thumbs-down reactions on the PR
-- **3+ approvals** from different users = eligible for merge
-- Any maintainer can merge an approved PR
-- If a PR has been open for 7+ days with 3+ approvals and no objections, it will be merged
-
-### Becoming a Maintainer
-
-After 3+ merged PRs, you can request maintainer access by opening a Discussion. Maintainers can:
-- Merge community-approved PRs
-- Create releases
-- Triage and label issues
-- The goal is to have multiple maintainers so the project never depends on one person
-
-## Development Setup
-
-    git clone https://github.com/MuntasirMalek/NewKap.git
-    cd NewKap
-    pnpm install
-    unset ELECTRON_RUN_AS_NODE
-    pnpm start
-
-### Project Structure
+### Project structure
 
     main/               Electron main process (TypeScript)
-      aperture.ts         Screen recording logic
+      aperture.ts         Screen recording
       index.ts            App entry point and lifecycle
-      common/             Shared utilities (permissions, settings)
-      utils/              Helper modules (devices, errors)
+      common/             Code shared with the renderer (permissions, settings)
+      utils/              Helper modules (devices, errors, native helper)
     renderer/           Next.js renderer (React)
-      pages/              App windows (cropper, editor, preferences)
-    scripts/            Build and patch scripts
+      pages/              App windows (cropper, editor, preferences, ...)
+    native/             Swift helper (kap-helper.swift)
+    scripts/            Build, packaging and signing scripts
     static/             Icons and static assets
+    test/               AVA tests and fixtures
 
-### Key Commands
+### Key commands
 
 | Command | Description |
 |---------|-------------|
-| `pnpm start` | Run in development mode |
-| `pnpm build` | Build main + renderer |
+| `pnpm start` | Compile the main process and launch Kap (see `maintaining.md`) |
+| `pnpm build` | Build the native helper, main process and renderer |
+| `pnpm test` | Lint and run the tests |
+| `pnpm typecheck` | Type-check the main process and tests |
 | `pnpm run pack:local` | Build a test app in `dist/mac-arm64` |
 | `pnpm dist` | Build the release DMG, signed with "Kap Local Signing" (see `maintaining.md`) |
-| `npx tsc` | Compile TypeScript only |
 
-### Important Notes
+### Important notes
 
-- Always `unset ELECTRON_RUN_AS_NODE` when running from VS Code terminal
-- Follow [`docs/electron-security.md`](docs/electron-security.md) when adding renderer access to Electron or main-process functionality
+- Always `unset ELECTRON_RUN_AS_NODE` when running from a VS Code terminal.
+- Follow [`docs/electron-security.md`](docs/electron-security.md) when adding renderer access to Electron or main-process functionality.
 
-## Code of Conduct
+## Code of conduct
 
-Be kind, be respectful, be constructive. We are all here because we love this app.
+Be kind, be respectful, be constructive. See [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).

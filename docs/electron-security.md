@@ -40,6 +40,6 @@ Settings and plugin configuration are main-process-owned. Renderers may call the
 
 ## Content Security Policy
 
-The global CSP is defined in `renderer/pages/_app.tsx`. If a feature needs a new source, prefer a narrow directive such as `img-src` or `connect-src` over widening `default-src`.
+The global CSP is a meta tag in `renderer/pages/_document.tsx`, so it is part of each page's static HTML and applies before any script runs. If a feature needs a new source, prefer a narrow directive such as `img-src` or `connect-src` over widening `default-src`.
 
 Avoid adding new inline script requirements. Exported Next.js pages start their bundles with inline scripts, so the CSP keeps `'unsafe-inline'`; do not use that as a reason to add arbitrary inline scripts.

@@ -2,9 +2,12 @@
 
 ## Developing Kap
 
-Run `pnpm dev` in one terminal tab to start watch mode, and in another tab, run `pnpm start` to launch Kap.
+`pnpm start` compiles the main process and launches Kap. Restart it after changing code in `main/`.
 
-We strongly recommend installing an [XO editor plugin](https://github.com/sindresorhus/xo#editor-plugins) for JavaScript linting and a [Stylelint editor plugin](https://github.com/stylelint/stylelint/blob/master/docs/user-guide/integrations/editor.md) for CSS linting. Both of these support auto-fix on save.
+- If `renderer/out` exists, Kap loads those static pages. `pnpm build`, `pnpm build-renderer` and `pnpm run pack:local` create it.
+- If it doesn't, Kap starts the Next.js dev server on `http://localhost:8000` itself, with hot reload for the renderer. Delete `renderer/out` to work this way.
+
+Install an [XO editor plugin](https://github.com/sindresorhus/xo#editor-plugins) to see lint errors and fix them on save.
 
 ## Releasing a new version
 

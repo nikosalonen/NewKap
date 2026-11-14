@@ -4,7 +4,7 @@
 
 <h1 align="center">Kap</h1>
 
-Kap is a lightweight macOS screen recorder and screenshot tool that lives in the menu bar. This repository is a community-maintained Kap fork that keeps the original workflow alive on modern macOS and Electron while adding the v5.1 editor, screenshot, packaging, and branding fixes.
+Kap is a lightweight macOS screen recorder and screenshot tool that lives in the menu bar. This repository is a Kap fork that keeps the original workflow alive on current macOS and Electron, for Apple Silicon Macs.
 
 [![Latest release](https://img.shields.io/github/v/release/nikosalonen/NewKap?label=release)](https://github.com/nikosalonen/NewKap/releases)
 [![CI](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml/badge.svg)](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml)
@@ -31,11 +31,9 @@ Kap checks this fork's latest GitHub Release and can open its DMG for you. Use *
 
 Every release is signed with the same certificate, so Screen Recording and Microphone permissions carry over to the new version.
 
-## Kap v5.1
+## Features
 
-Kap v5.1 builds on the repaired v5 runtime and focuses on making capture, editing, exporting, and packaging reliable enough for daily use.
-
-Main features and improvements:
+Kap 5.2 keeps the v5.1 capture and editing workflow and runs natively on Apple Silicon. [`docs/releases/`](docs/releases) lists the changes in each release.
 
 - Menu-bar screen recording workflow with crop area selection, window/app selection, multi-display cropper windows, countdown, cursor options, click highlighting, and recording shortcuts.
 - Screenshot mode from the capture overlay, including native macOS selection behavior and Command+C direct-to-clipboard capture.
@@ -44,8 +42,8 @@ Main features and improvements:
 - Clip controls for speed, brightness, contrast, and saturation with edited video/GIF export.
 - MP4, HEVC, AV1, GIF, APNG, and WebM export options.
 - Persistent preferences for recording, audio, quality, frame rate, export format, save location, notifications, launch at login, countdown, cursor behavior, and keybinds.
-- Cropper fixes for stale drag/resize state, invisible overlay readiness, snapping behavior, repeated open/close cycles, and crop persistence.
-- Kap branding fixes so packaged builds use the Kap name, bundle metadata, helper names, Dock icon, and application icon instead of generic Electron branding where macOS allows.
+- Plugins for sharing and editing, installed from npm in Preferences.
+- No analytics or crash reporting.
 
 ## Previews
 
@@ -75,19 +73,15 @@ For audio recording, grant Microphone permission and choose an input in Preferen
 
 ## Compatibility
 
-Kap v5.1 is packaged for macOS 12 Monterey or later and runs on Electron 43. Later releases run on Electron 45 and need macOS 13 Ventura or later, because Electron 44 removed macOS 12 support.
-
-Supported Macs:
-
-- Apple Silicon: `arm64`.
-- Intel Macs: Kap 5.1.0 is the last release with an `x64` build.
+Kap 5.2 runs on Electron 45 and needs an Apple Silicon Mac (`arm64`) with macOS 13 Ventura or later. Electron 44 dropped macOS 12. Upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0) is the last release for Intel Macs and macOS 12.
 
 Known limitations:
 
 - Kap is normally a menu-bar accessory app and intentionally stays out of the Dock while idle.
 - macOS may omit accessory apps from the standard Force Quit Applications window. Use Activity Monitor or Kap's tray menu.
 - System audio capture requires a loopback audio device.
-- Signing and notarization depend on Apple Developer credentials available for the release build.
+- Recording uses aperture's AVFoundation recorder, not ScreenCaptureKit. macOS 15 and later may ask from time to time whether Kap may keep recording the screen.
+- Releases are self-signed and not notarized, so each downloaded version needs **Open Anyway** once.
 
 ## Development
 
@@ -167,8 +161,7 @@ Bug reports should include:
 
 - macOS version from `sw_vers`.
 - Mac architecture from About This Mac.
-- Kap version.
-- Whether the build is signed/notarized.
+- Kap version, and whether it is a release or your own build.
 - Steps to reproduce.
 - Relevant terminal output when running from `pnpm start`.
 
@@ -176,15 +169,17 @@ Bug reports should include:
 
 ### Screen recording does not start
 
-Open **System Settings -> Privacy & Security -> Screen Recording** and grant access to Kap. Relaunch Kap after changing the permission.
+Open **System Settings -> Privacy & Security -> Screen Recording** and turn on Kap. Choose **Quit & Reopen** when macOS offers it.
+
+If Kap is already on but recording still fails, the entry may belong to a differently signed copy of Kap, such as another build or an older release. Select Kap in the list, remove it with the minus button, then open Kap and grant access again. Keep only one copy of Kap.app on the Mac.
 
 ### Microphone or audio input is missing
 
 Open **System Settings -> Privacy & Security -> Microphone** and grant access to Kap. For system audio, install a loopback audio device and select it in Preferences.
 
-### I downloaded the wrong DMG
+### Kap does not open on an Intel Mac
 
-Open **Apple menu -> About This Mac**. If it says **Chip**, use `arm64`. If it says **Processor** and names Intel, use `x64`.
+Releases from this fork are for Apple Silicon only. Open **Apple menu -> About This Mac**: if it shows an Intel **Processor** instead of a **Chip**, use upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0), the last release with an Intel build.
 
 ### macOS warns about Gatekeeper
 
@@ -204,4 +199,4 @@ Kap is released under the [MIT License](LICENSE.md).
 
 ## Credits
 
-Kap v5.1 builds on the original [Kap](https://github.com/wulkano/Kap) project and the work of Wulkano contributors, Kap maintainers, plugin authors, and the [NewKap](https://github.com/MuntasirMalek/NewKap) community. This fork focuses on keeping Kap usable on modern macOS while preserving the lightweight workflow that made Kap useful.
+Kap builds on the original [Kap](https://github.com/wulkano/Kap) project and the work of Wulkano contributors, Kap maintainers, and plugin authors. This fork continues [MuntasirMalek/NewKap](https://github.com/MuntasirMalek/NewKap) and [jacobpowaza/NewKap](https://github.com/jacobpowaza/NewKap), and focuses on keeping Kap usable on modern macOS while preserving the lightweight workflow that made Kap useful.
