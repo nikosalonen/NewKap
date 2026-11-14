@@ -32,6 +32,8 @@ export const fromGot9Options = (pluginOptions: PluginRequestOptions = {}): Plugi
 
   // Got 9: `json: true` stringifies `body` and parses the reply.
   // Got 11: `json` is the body itself, and `responseType` asks for parsing.
+  // With `form: true` as well, got 9 sent the body as a form and only parsed
+  // the reply, so the form branch below keeps the body.
   if (options.json === true) {
     options.responseType ??= 'json';
 
@@ -39,7 +41,7 @@ export const fromGot9Options = (pluginOptions: PluginRequestOptions = {}): Plugi
       options.headers = {...options.headers, accept: 'application/json'};
     }
 
-    if (options.body === undefined) {
+    if (options.body === undefined || options.form === true) {
       delete options.json;
     } else {
       options.json = options.body;

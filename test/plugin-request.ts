@@ -113,6 +113,17 @@ test('form: true sends an object body as a form', async t => {
   t.is(request.body, 'title=Kap');
 });
 
+test('form: true with json: true sends a form and parses the reply', async t => {
+  const response = await pluginRequest(baseUrl, {form: true, json: true, body: {title: 'Kap'}});
+
+  t.is(typeof response.body, 'object');
+  const request = echoed(response.body);
+  t.is(request.method, 'POST');
+  t.is(request.headers['content-type'], 'application/x-www-form-urlencoded');
+  t.is(request.headers.accept, 'application/json');
+  t.is(request.body, 'title=Kap');
+});
+
 test('a stream that isn’t a core stream.Readable is still sent', async t => {
   const response = await pluginRequest(baseUrl, {method: 'PUT', body: oldStyleStream('video bytes')});
   const request = echoed(response.body);
