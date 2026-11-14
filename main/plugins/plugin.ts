@@ -2,7 +2,7 @@ import {app, shell} from 'electron';
 import path from 'node:path';
 import fs from 'node:fs';
 import semver from 'semver';
-import readPkg from 'read-pkg';
+import {readPackageSync, type NormalizedPackageJson} from 'read-pkg';
 import Store from 'electron-store';
 import {isMacosVersion} from '../utils/system-version';
 import {isSafeExternalUrl} from '../common/external-url';
@@ -21,7 +21,7 @@ class BasePlugin {
   kapVersion?: string;
   macosVersion?: string;
   link?: string;
-  json?: readPkg.NormalizedPackageJson;
+  json?: NormalizedPackageJson;
 
   constructor(pluginName: string) {
     this.name = pluginName;
@@ -75,7 +75,7 @@ export class InstalledPlugin extends BasePlugin {
   pluginsPath = path.join(app.getPath('userData'), 'plugins');
 
   pluginPath: string;
-  json?: readPkg.NormalizedPackageJson;
+  json?: NormalizedPackageJson;
   content: KapPlugin;
   config: PluginConfig;
   hasConfig: boolean;
@@ -88,7 +88,7 @@ export class InstalledPlugin extends BasePlugin {
     this.isBuiltIn = Boolean(customPath);
 
     if (!this.isBuiltIn) {
-      this.json = readPkg.sync({cwd: this.pluginPath});
+      this.json = readPackageSync({cwd: this.pluginPath});
       this.link = this.json.homepage ?? this.json.links?.homepage;
 
       // Keeping for backwards compatibility
@@ -195,7 +195,7 @@ export class InstalledPlugin extends BasePlugin {
 export class NpmPlugin extends BasePlugin {
   isInstalled = false;
 
-  constructor(json: readPkg.NormalizedPackageJson, kap: {version?: string; macosVersion?: string} = {}) {
+  constructor(json: NormalizedPackageJson, kap: {version?: string; macosVersion?: string} = {}) {
     super(json.name);
 
     this.json = json;
