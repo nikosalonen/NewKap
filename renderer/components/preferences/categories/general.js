@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import tildify from 'tildify';
 import kap from '../../../utils/kap';
+import tildify from '../../../utils/tildify';
 import {connect, PreferencesContainer} from '../../../containers';
 import Item from '../item';
 import Switch from '../item/switch';
@@ -60,14 +60,14 @@ class General extends React.Component {
     } = this.props;
 
     const {showCursorSupported, checkingForUpdate} = this.state;
-    const {version} = kap.app.getInfo();
+    const {version, homeDirectory} = kap.app.getInfo();
 
     const devices = audioDevices.map(device => ({
       label: device.name,
       value: device.id,
     }));
 
-    const kapturesDirPath = tildify(kapturesDir);
+    const kapturesDirPath = tildify(kapturesDir, homeDirectory);
     const tabIndex = category === 'general' ? 0 : -1;
     const fpsOptions = [{label: '30 FPS', value: false}, {label: '60 FPS', value: true}];
     const qualityOptions = [

@@ -129,17 +129,17 @@ export const setupRendererApi = () => {
     event.returnValue = getSenderWindow(event).id;
   });
 
-  ipcMain.handle('kap:app:get-info', () => ({
+  const getAppInfo = () => ({
     isPackaged: app.isPackaged,
     name: app.name,
     version: app.getVersion(),
-  }));
+    // The renderer can't read it itself: its bundle swaps node:os for a browser stand-in.
+    homeDirectory: app.getPath('home'),
+  });
+
+  ipcMain.handle('kap:app:get-info', () => getAppInfo());
   ipcMain.on('kap:app:get-info-sync', event => {
-    event.returnValue = {
-      isPackaged: app.isPackaged,
-      name: app.name,
-      version: app.getVersion(),
-    };
+    event.returnValue = getAppInfo();
   });
   ipcMain.handle('kap:app:get-login-item-settings', () => app.getLoginItemSettings());
   ipcMain.handle('kap:app:set-login-item-settings', (_event, options: {openAtLogin: boolean}) => app.setLoginItemSettings(options));
