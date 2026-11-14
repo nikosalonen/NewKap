@@ -33,7 +33,7 @@ const openConfigWindow = async (pluginName: string) => {
     fullscreenable: false,
     titleBarStyle: 'hiddenInset',
     show: false,
-    parent: prefsWindow,
+    ...(prefsWindow && {parent: prefsWindow}),
     modal: true,
     webPreferences: {
       contextIsolation: true,

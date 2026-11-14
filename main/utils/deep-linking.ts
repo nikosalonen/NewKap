@@ -4,7 +4,7 @@ import {windowManager} from '../windows/manager';
 const pluginPromises = new Map<string, (path: string) => void>();
 
 const handlePluginsDeepLink = (path: string) => {
-  const [plugin, ...rest] = path.split('/');
+  const [plugin = '', ...rest] = path.split('/');
 
   if (pluginPromises.has(plugin)) {
     pluginPromises.get(plugin)?.(rest.join('/'));

@@ -49,8 +49,9 @@ const serializeEditPluginState = () => {
   const result: Record<string, Record<string, Record<string, unknown> | undefined>> = {};
 
   for (const {plugin, service} of recordingPlugins) {
-    result[plugin.name] ??= {};
-    result[plugin.name][service.title] = serviceState.get(service.title)?.persistedState;
+    const pluginState = result[plugin.name] ?? {};
+    pluginState[service.title] = serviceState.get(service.title)?.persistedState;
+    result[plugin.name] = pluginState;
   }
 
   return result;
@@ -173,7 +174,7 @@ export const startRecording = async (options: StartRecordingOptions) => {
   }
 
   if (lastError) {
-    showError(lastError, {title: 'Recording error', plugin: undefined});
+    showError(lastError, {title: 'Recording error'});
     past = undefined;
     cleanup();
     return;
@@ -192,7 +193,7 @@ export const startRecording = async (options: StartRecordingOptions) => {
       return;
     }
 
-    showError(error, {title: 'Recording error', plugin: undefined});
+    showError(error, {title: 'Recording error'});
     past = undefined;
     cleanup();
   });
@@ -216,7 +217,7 @@ export const stopRecording = async () => {
     setOverallDuration(0);
     setCurrentDurationStart(0);
   } catch (error) {
-    showError(error as any, {title: 'Recording error', plugin: undefined});
+    showError(error as any, {title: 'Recording error'});
     cleanup();
     return;
   }
@@ -284,7 +285,7 @@ export const pauseRecording = async () => {
     setPausedTray();
     console.log(`Paused recording after ${(Date.now() - past) / 1000}s`);
   } catch (error) {
-    showError(error as any, {title: 'Recording error', plugin: undefined});
+    showError(error as any, {title: 'Recording error'});
     cleanup();
   }
 };
@@ -305,7 +306,7 @@ export const resumeRecording = async () => {
     setRecordingTray();
     console.log(`Resume recording after ${(Date.now() - past) / 1000}s`);
   } catch (error) {
-    showError(error as any, {title: 'Recording error', plugin: undefined});
+    showError(error as any, {title: 'Recording error'});
     cleanup();
   }
 };
@@ -318,7 +319,7 @@ export const togglePauseRecording = async () => {
   try {
     await (await aperture.isPaused() ? resumeRecording() : pauseRecording());
   } catch (error) {
-    showError(error as any, {title: 'Recording error', plugin: undefined});
+    showError(error as any, {title: 'Recording error'});
     cleanup();
   }
 };

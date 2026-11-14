@@ -18,8 +18,8 @@ export const recordPluginServiceState = new Store<Record<string, boolean>>({
 
 class BasePlugin {
   name: string;
-  kapVersion?: string;
-  macosVersion?: string;
+  kapVersion?: string | undefined;
+  macosVersion?: string | undefined;
   link?: string;
   json?: NormalizedPackageJson;
 
@@ -75,7 +75,7 @@ export class InstalledPlugin extends BasePlugin {
   pluginsPath = path.join(app.getPath('userData'), 'plugins');
 
   pluginPath: string;
-  json?: NormalizedPackageJson;
+  override json?: NormalizedPackageJson;
   content: KapPlugin;
   config: PluginConfig;
   hasConfig: boolean;
@@ -89,11 +89,11 @@ export class InstalledPlugin extends BasePlugin {
 
     if (!this.isBuiltIn) {
       this.json = readPackageSync({cwd: this.pluginPath});
-      this.link = this.json.homepage ?? this.json.links?.homepage;
+      this.link = this.json.homepage ?? this.json['links']?.homepage;
 
       // Keeping for backwards compatibility
-      this.kapVersion = this.json.kap?.version ?? this.json.kapVersion;
-      this.macosVersion = this.json.kap?.macosVersion;
+      this.kapVersion = this.json['kap']?.version ?? this.json['kapVersion'];
+      this.macosVersion = this.json['kap']?.macosVersion;
     }
 
     try {
@@ -201,6 +201,6 @@ export class NpmPlugin extends BasePlugin {
     this.json = json;
     this.kapVersion = kap.version;
     this.macosVersion = kap.macosVersion;
-    this.link = this.json.homepage ?? this.json.links?.homepage;
+    this.link = this.json.homepage ?? this.json['links']?.homepage;
   }
 }

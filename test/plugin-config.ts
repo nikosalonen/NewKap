@@ -78,7 +78,7 @@ test('schema keywords and custom types are checked', t => {
 
 test('the error for a missing value points at that field', t => {
   const config = createConfig([uploadService]);
-  const [{validate}] = config.validators;
+  const {validate} = config.validators[0]!;
 
   validate(config.store);
 

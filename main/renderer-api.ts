@@ -180,7 +180,7 @@ export const setupRendererApi = () => {
     for (const win of windows) {
       const item = new MenuItem({
         label: win.ownerName,
-        icon: win.icon ? nativeImage.createFromDataURL(win.icon) : undefined,
+        ...(win.icon && {icon: nativeImage.createFromDataURL(win.icon)}),
         type: 'checkbox',
         checked: win.ownerName === selectedApp,
         click: () => activateApp(win),

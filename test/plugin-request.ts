@@ -141,9 +141,9 @@ test('encoding: null returns a Buffer', async t => {
 test('HTTP errors keep the fields got 9 put on them', async t => {
   const error = await t.throwsAsync<GotError>(pluginRequest(`${baseUrl}/missing`, {retry: 0}));
 
-  t.is(error?.statusCode, 404);
-  t.is(error?.statusMessage, 'Not Found');
-  t.is(error?.body, 'gone');
+  t.is(error?.['statusCode'], 404);
+  t.is(error?.['statusMessage'], 'Not Found');
+  t.is(error?.['body'], 'gone');
 });
 
 test('errors without a response pass through the error hook', async t => {
@@ -153,8 +153,8 @@ test('errors without a response pass through the error hook', async t => {
 
   const error = await t.throwsAsync<GotError>(pluginRequest(`http://127.0.0.1:${port}`, {retry: 0}));
 
-  t.is(error?.code, 'ECONNREFUSED');
-  t.is(error?.statusCode, undefined);
+  t.is(error?.['code'], 'ECONNREFUSED');
+  t.is(error?.['statusCode'], undefined);
 });
 
 test('cancel() stops a request in flight', async t => {
@@ -166,7 +166,7 @@ test('cancel() stops a request in flight', async t => {
   }, 50);
   const error = await t.throwsAsync<GotError>(request);
 
-  t.true(error?.isCanceled);
+  t.true(error?.['isCanceled']);
 });
 
 test('cancel() on the context still cancels requests after one got rejected up front', async t => {
@@ -180,6 +180,7 @@ test('cancel() on the context still cancels requests after one got rejected up f
     onCancel() {},
   });
   // Got rejects an invalid method before it starts, and returns a promise without cancel().
+  // @ts-expect-error -- a method that is not a string, on purpose
   const rejected = context.request(baseUrl, {method: 123});
   const slow = context.request(`${baseUrl}/slow`);
 
@@ -188,7 +189,7 @@ test('cancel() on the context still cancels requests after one got rejected up f
   });
   await t.throwsAsync(rejected);
   const error = await t.throwsAsync<GotError>(slow);
-  t.true(error?.isCanceled);
+  t.true(error?.['isCanceled']);
 });
 
 test('got 11 options pass through unchanged', t => {

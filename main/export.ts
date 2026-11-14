@@ -50,7 +50,7 @@ export default class Export extends (EventEmitter as new () => TypedEventEmitter
   private readonly context: ShareServiceContext;
   private process?: PCancelable<void>;
   private areOutputActionsDisabled = false;
-  private error?: Error;
+  private error?: Error | undefined;
   private readonly description: string;
 
   private readonly _start = PCancelable.fn(async (onCancel: OnCancelFunction) => {
@@ -133,7 +133,7 @@ export default class Export extends (EventEmitter as new () => TypedEventEmitter
     const filePath = this.conversion?.convertedFilePath;
 
     // If Save To Disk plugin is used, open the file in the final destination, not the temp one
-    return filePath && ((this.options.extras.targetFilePath as string) ?? filePath);
+    return filePath && ((this.options.extras['targetFilePath'] as string) ?? filePath);
   }
 
   get data(): ExportState {
@@ -282,7 +282,7 @@ export const setUpExportsListeners = () => {
       );
 
       if (targetFilePath) {
-        extras.targetFilePath = targetFilePath;
+        extras['targetFilePath'] = targetFilePath;
       } else {
         return;
       }
@@ -304,7 +304,7 @@ export const setUpExportsListeners = () => {
         plugin: exportPlugin,
         service: exportService,
         extras,
-        title: extras.targetFilePath && path.parse(extras.targetFilePath).name,
+        title: extras['targetFilePath'] && path.parse(extras['targetFilePath']).name,
       },
     );
 

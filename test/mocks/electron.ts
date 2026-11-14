@@ -5,7 +5,7 @@ import tempy from 'tempy';
 
 const temporaryDir = tempy.directory();
 
-process.env.TZ = 'America/New_York';
+process.env['TZ'] = 'America/New_York';
 (process.versions as any).chrome = '';
 
 export const app = {

@@ -1,4 +1,3 @@
-import process from 'node:process';
 import {
   BrowserWindow,
   systemPreferences,
@@ -27,7 +26,7 @@ import {windowManager} from './manager';
 const croppers = new Map<number, BrowserWindow>();
 const readyCroppers = new Set<number>();
 const cropperDisplayState = new Map<number, {
-  activeDisplayId?: number;
+  activeDisplayId?: number | undefined;
   display: Display;
   sessionId: number;
 }>();
@@ -86,7 +85,7 @@ const createCropper = (display: Display, activeDisplayId?: number, sessionId = o
     movable: false,
     frame: false,
     transparent: true,
-    type: process.platform === 'darwin' ? 'panel' : undefined,
+    type: 'panel',
     skipTaskbar: true,
     show: false,
     webPreferences: {

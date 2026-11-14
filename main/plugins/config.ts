@@ -8,7 +8,7 @@ export default class PluginConfig extends Store {
   servicesWithNoConfig: Service[];
   validators: Array<{
     title: string;
-    description?: string;
+    description?: string | undefined;
     config: Record<string, Schema>;
     validate: ValidateFunction;
   }>;

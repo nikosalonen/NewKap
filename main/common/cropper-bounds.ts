@@ -3,7 +3,7 @@ export type CropperBounds = {
   y?: number;
   width?: number;
   height?: number;
-  ratio?: number[];
+  ratio?: number[] | undefined;
   displayId?: number;
 };
 

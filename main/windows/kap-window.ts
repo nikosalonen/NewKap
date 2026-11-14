@@ -38,7 +38,7 @@ export default class KapWindow<State = any> {
   private static readonly windows = new Map<number, KapWindow>();
 
   browserWindow: BrowserWindow;
-  state?: State;
+  state?: State | undefined;
   menu: Menu = Menu.buildFromTemplate(defaultApplicationMenu());
   readonly id: number;
 

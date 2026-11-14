@@ -152,7 +152,7 @@ app.on('window-all-closed', () => {
   const staticDir = path.join(__dirname, '..', 'renderer', 'out');
   const hasStaticBuild = fs.existsSync(path.join(staticDir, 'cropper.html'));
   if (hasStaticBuild) {
-    process.env.ELECTRON_IS_DEV = '0';
+    process.env['ELECTRON_IS_DEV'] = '0';
   }
 
   setImmediate(async () => {

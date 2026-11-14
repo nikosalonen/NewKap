@@ -16,9 +16,7 @@ import {
   getPreferencesMenuItem,
   getSendFeedbackMenuItem,
 } from './common';
-import {MenuItemId, type MenuOptions} from './utils';
-
-const menuAccelerator = (shortcut: string) => shortcut || undefined;
+import {acceleratorOption, MenuItemId, type MenuOptions} from './utils';
 
 const startOrOpenRecording = () => {
   if (windowManager.cropper?.isOpen()) {
@@ -32,7 +30,7 @@ const startOrOpenRecording = () => {
 const getStartRecordingItem = (): MenuOptions[number] => ({
   id: MenuItemId.startRecording,
   label: 'Start Recording',
-  accelerator: menuAccelerator(settings.get('shortcuts.triggerCropper')),
+  ...acceleratorOption(settings.get('shortcuts.triggerCropper')),
   click: startOrOpenRecording,
 });
 
@@ -42,7 +40,7 @@ const getScreenshotItem = (): MenuOptions[number] => {
   return {
     id: MenuItemId.captureScreenshot,
     label: 'Take Screenshot',
-    accelerator: menuAccelerator(shortcut),
+    ...acceleratorOption(shortcut),
     toolTip: shortcut ? `Take a screenshot (${shortcut})` : 'Take a screenshot. Configure its keybind in Preferences → Keybinds.',
     click: async () => windowManager.cropper?.open(),
   };

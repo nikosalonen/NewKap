@@ -3,9 +3,7 @@ import {pauseRecording, resumeRecording, stopRecording} from '../aperture';
 import {settings} from '../common/settings';
 import {formatTime} from '../common/time';
 import {getCurrentDurationStart, getOverallDuration} from '../utils/track-duration';
-import {MenuItemId, type MenuOptions} from './utils';
-
-const menuAccelerator = (shortcut: string) => shortcut || undefined;
+import {acceleratorOption, MenuItemId, type MenuOptions} from './utils';
 
 const getDurationLabel = () => {
   const durationStart = getCurrentDurationStart();
@@ -22,21 +20,21 @@ const getDurationMenuItem = () => ({
 const getStopRecordingMenuItem = () => ({
   id: MenuItemId.stopRecording,
   label: 'Stop',
-  accelerator: menuAccelerator(settings.get('shortcuts.stopRecording')),
+  ...acceleratorOption(settings.get('shortcuts.stopRecording')),
   click: stopRecording,
 });
 
 const getPauseRecordingMenuItem = () => ({
   id: MenuItemId.pauseRecording,
   label: 'Pause',
-  accelerator: menuAccelerator(settings.get('shortcuts.pauseRecording')),
+  ...acceleratorOption(settings.get('shortcuts.pauseRecording')),
   click: pauseRecording,
 });
 
 const getResumeRecordingMenuItem = () => ({
   id: MenuItemId.resumeRecording,
   label: 'Resume',
-  accelerator: menuAccelerator(settings.get('shortcuts.pauseRecording')),
+  ...acceleratorOption(settings.get('shortcuts.pauseRecording')),
   click: resumeRecording,
 });
 

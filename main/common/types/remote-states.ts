@@ -26,7 +26,7 @@ export type ExportOptionsPlugin = {
   title: string;
   pluginName: string;
   pluginPath: string;
-  apps?: App[];
+  apps?: App[] | undefined;
   lastUsed: number;
 };
 
@@ -67,10 +67,10 @@ export type ExportState = {
   description: string;
   message: string;
   progress?: number;
-  image?: string;
-  filePath?: string;
-  error?: Error;
-  fileSize?: string;
+  image?: string | undefined;
+  filePath?: string | undefined;
+  error?: Error | undefined;
+  fileSize?: string | undefined;
   status: ExportStatus;
   canCopy: boolean;
   disableOutputActions: boolean;

@@ -17,7 +17,7 @@ type Action = {
 
 type NotificationOptions = {
   actions?: Action[];
-  click?: () => void | Promise<void>;
+  click?: (() => void | Promise<void>) | undefined;
   show?: boolean;
 } & NotificationConstructorOptions;
 

@@ -10,12 +10,12 @@ import {windowManager} from './windows/manager';
 
 type VideoOptions = {
   filePath: string;
-  title?: string;
-  fps?: number;
-  encoding?: Encoding;
-  previewPath?: string;
-  pixelDensity?: number;
-  isNewRecording?: boolean;
+  title?: string | undefined;
+  fps?: number | undefined;
+  encoding?: Encoding | undefined;
+  previewPath?: string | undefined;
+  pixelDensity?: number | undefined;
+  isNewRecording?: boolean | undefined;
 };
 
 export class Video {
@@ -23,14 +23,14 @@ export class Video {
 
   filePath: string;
   title: string;
-  fps?: number;
-  encoding?: Encoding;
+  fps?: number | undefined;
+  encoding?: Encoding | undefined;
   pixelDensity: number;
-  previewPath?: string;
+  previewPath?: string | undefined;
   dragIcon?: NativeImage;
   isNewRecording = false;
   isReady = false;
-  previewImage?: {path: string; data: string};
+  previewImage?: {path: string; data: string} | undefined;
 
   private readonly readyPromise: Promise<void>;
   private readonly previewReadyPromise: Promise<string | undefined>;

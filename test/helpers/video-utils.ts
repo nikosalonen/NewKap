@@ -17,10 +17,10 @@ const getFps = (text: string) => {
 
 const getSize = (text: string) => {
   const sizeText = /Video:.*?, (\d*x\d*)/.exec(text)?.[1] ?? '';
-  const parts = sizeText.split('x');
+  const [width = '', height = ''] = sizeText.split('x', 2);
   return {
-    width: Number.parseFloat(parts[0]),
-    height: Number.parseFloat(parts[1]),
+    width: Number.parseFloat(width),
+    height: Number.parseFloat(height),
   };
 };
 

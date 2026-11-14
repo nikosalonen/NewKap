@@ -77,7 +77,7 @@ test('reports the average microphone level', async t => {
 
   startAudioLevelMeter({deviceId: 'usb-mic', onLevel, onError: sinon.fake()});
   await microphone.open();
-  FakeAudioContext.instances[0].processor.onaudioprocess();
+  FakeAudioContext.instances[0]!.processor.onaudioprocess();
 
   t.deepEqual(microphone.getUserMedia.lastCall.lastArg, {audio: {deviceId: 'usb-mic'}});
   t.is(onLevel.lastCall.lastArg, 40);
@@ -91,7 +91,7 @@ test('stopping the meter releases the microphone', async t => {
   meter.stop();
 
   t.is(microphone.track.stop.callCount, 1);
-  t.is(FakeAudioContext.instances[0].close.callCount, 1);
+  t.is(FakeAudioContext.instances[0]!.close.callCount, 1);
 });
 
 test('stopping the meter before the microphone opens still releases it', async t => {

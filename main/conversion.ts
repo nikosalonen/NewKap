@@ -22,14 +22,14 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
   }
 
   readonly id: string;
-  finalSize?: string;
-  convertedFilePath?: string;
+  finalSize?: string | undefined;
+  convertedFilePath?: string | undefined;
 
   get canCopy() {
     return Boolean(this.convertedFilePath && [Format.gif, Format.apng, Format.mp4].includes(this.format));
   }
 
-  private conversionProcess?: PCancelable<string>;
+  private conversionProcess?: PCancelable<string> | undefined;
 
   constructor(
     public readonly video: Video,

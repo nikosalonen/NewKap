@@ -73,7 +73,7 @@ export const askForTargetFilePath = async (
   const {filePath} = await dialog.showSaveDialog(window, {
     title: fileName,
     defaultPath,
-    filters,
+    ...(filters && {filters}),
   });
 
   if (filePath) {

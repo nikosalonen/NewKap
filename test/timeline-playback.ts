@@ -48,11 +48,11 @@ test('timeline boundary lookup treats adjacent clips as first-class items', t =>
 
 test('freeze frame timeline positions advance while source frame stays fixed', t => {
   const freezeClips: TimelineClip[] = [
-    clips[0],
+    clips[0]!,
     {
       id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1.25, speed: 1, brightness: 0, contrast: 1, saturation: 1,
     },
-    clips[2],
+    clips[2]!,
   ];
 
   const midway = getPlaybackPositionAtTimelineTime(freezeClips, 2.75);
@@ -123,11 +123,11 @@ test('clip trim handles update in and out points from timeline drag time', t => 
 
 test('freeze frame trim keeps the clip editable as a freeze clip', t => {
   const freezeClips: TimelineClip[] = [
-    clips[0],
+    clips[0]!,
     {
       id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1, speed: 1, brightness: 0, contrast: 1, saturation: 1,
     },
-    clips[2],
+    clips[2]!,
   ];
 
   t.deepEqual(trimClipAtTimelineTime({

@@ -6,7 +6,20 @@ import got, {type OptionsOfUnknownResponseBody, type RequestError} from 'got';
 // encoding: null, retry.retries), gave json and form a new meaning, and is
 // stricter about bodies and headers. fromGot9Options translates these.
 // docs/plugins.md lists the got 9 options it leaves alone.
-export type PluginRequestOptions = Record<string, any>;
+export type PluginRequestOptions = {
+  // The got 9 options that fromGot9Options reads or changes. Plugins can pass any other got option too.
+  body?: any;
+  encoding?: any;
+  form?: any;
+  headers?: Record<string, any>;
+  json?: any;
+  method?: string;
+  query?: any;
+  responseType?: string;
+  retry?: any;
+  searchParams?: any;
+  [option: string]: any;
+};
 
 const hasHeader = (headers: Record<string, unknown> | undefined, name: string) =>
   Object.keys(headers ?? {}).some(key => key.toLowerCase() === name);

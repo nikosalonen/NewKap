@@ -4,9 +4,9 @@ import {ipcMain} from 'electron-better-ipc';
 type Handler = (data: any, window: BrowserWindow) => unknown;
 
 type Route = {
-  forAllWindows?: Handler;
+  forAllWindows?: Handler | undefined;
   byWindowId: Map<number, Handler>;
-  stop?: () => void;
+  stop?: (() => void) | undefined;
 };
 
 // The electron-better-ipc package allows one handler per channel, but every

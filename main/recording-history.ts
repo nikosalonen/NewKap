@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import Store from 'electron-store';
 import {execa} from 'execa';
 import tempy from 'tempy';
-import type {SetOptional} from 'type-fest';
+import type {Except} from 'type-fest';
 import {windowManager} from './windows/manager';
 import {plugins} from './plugins';
 import {generateTimestampedName} from './utils/timestamped-name';
@@ -78,7 +78,7 @@ export const setCurrentRecording = ({
   date = new Date().toISOString(),
   apertureOptions,
   plugins: pluginState,
-}: SetOptional<ActiveRecording, 'name' | 'date'>) => {
+}: Except<ActiveRecording, 'name' | 'date'> & {name?: string | undefined; date?: string | undefined}) => {
   recordingHistory.set('activeRecording', {
     filePath,
     name,

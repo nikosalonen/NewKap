@@ -47,7 +47,7 @@ macTest('the helper lists the apps that open GIF files as file URLs', t => {
   const {gif} = getAppsForExtensionsSync(['gif']);
 
   t.true(Array.isArray(gif));
-  for (const app of gif) {
+  for (const app of gif ?? []) {
     t.true(app.url.startsWith('file://'));
     t.is(typeof app.isDefault, 'boolean');
   }

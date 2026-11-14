@@ -270,8 +270,8 @@ importers:
         version: 1.22.22
     devDependencies:
       '@sindresorhus/tsconfig':
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^9.0.0
+        version: 9.0.0
       '@types/ffmpeg-static':
         specifier: ^5.1.0
         version: 5.1.0(supports-color@10.2.2)
@@ -1164,13 +1164,13 @@ packages:
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
 
-  '@sindresorhus/tsconfig@0.7.0':
-    resolution: {integrity: sha512-on7+0FFpUH7+g5iLFkmk0oruqzE6uUnpKK0D6HM637aIvQ/mlXz33VlamsS4TSU6pifWSNIrUxrNKjAReU2Juw==}
-    engines: {node: '>=8'}
-
   '@sindresorhus/tsconfig@8.1.0':
     resolution: {integrity: sha512-MggpguA4jNdtyoUy2Hs54nb4lP4rbhH34CsOiFId1q6fmFPnipqeo70ZRkjp5p4Z7wdyspALtSAcKaxL2/3waQ==}
     engines: {node: '>=20'}
+
+  '@sindresorhus/tsconfig@9.0.0':
+    resolution: {integrity: sha512-mtMvHnPCDoKuZvXKAsNsi7JrgfHOWKAy+a/k6VEAh7mcrNitburEdz/dOPpp4rL7KXfc0buRnEdkKEeZGXWtkg==}
+    engines: {node: '>=22'}
 
   '@sinonjs/commons@3.0.1':
     resolution: {integrity: sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ==}
@@ -5210,9 +5210,9 @@ snapshots:
 
   '@sindresorhus/merge-streams@4.0.0': {}
 
-  '@sindresorhus/tsconfig@0.7.0': {}
-
   '@sindresorhus/tsconfig@8.1.0': {}
+
+  '@sindresorhus/tsconfig@9.0.0': {}
 
   '@sinonjs/commons@3.0.1':
     dependencies:

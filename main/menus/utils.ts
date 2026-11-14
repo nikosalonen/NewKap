@@ -2,6 +2,10 @@ import {Menu} from 'electron';
 
 export type MenuOptions = Parameters<typeof Menu.buildFromTemplate>[0];
 
+// Leaves the accelerator out when there is no shortcut. Electron rejects an empty
+// accelerator, and the option's type doesn't accept undefined.
+export const acceleratorOption = (shortcut: string | undefined) => shortcut ? {accelerator: shortcut} : {};
+
 export enum MenuItemId {
   exportHistory = 'exportHistory',
   sendFeedback = 'sendFeedback',

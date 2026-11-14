@@ -116,8 +116,8 @@ export class Plugins extends EventEmitter {
     const json = plugin.json!;
 
     return new NpmPlugin(json, {
-      version: json.kapVersion,
-      ...json.kap,
+      version: json['kapVersion'],
+      ...json['kap'],
     });
   }
 

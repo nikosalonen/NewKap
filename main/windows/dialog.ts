@@ -52,7 +52,7 @@ const showDialog = async (options: DialogOptions) => new Promise<number | void>(
     });
 
     const bounds = dialogWindow.getBounds();
-    const titleBarHeight = dialogWindow.getSize()[1] - dialogWindow.getContentSize()[1];
+    const titleBarHeight = dialogWindow.getBounds().height - dialogWindow.getContentBounds().height;
 
     dialogWindow.setBounds({
       width: Math.max(width, bounds.width, DIALOG_MIN_WIDTH),

@@ -1,6 +1,12 @@
 {
   "extends": "@sindresorhus/tsconfig",
   "compilerOptions": {
+    // TypeScript 6 turns strict on by default, and the base config assumes it.
+    // TypeScript 5.9 still needs it set.
+    "strict": true,
+    // Kap compiles with tsc and tests run through tsx, which both handle enums
+    // and parameter properties. Only Node's own type stripping needs this.
+    "erasableSyntaxOnly": false,
     "outDir": "dist-js",
     "target": "es2019",
     "module": "node20",
