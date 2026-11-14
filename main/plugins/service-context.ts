@@ -1,19 +1,19 @@
 import {app, clipboard} from 'electron';
 import type Store from 'electron-store';
-import got, {type GotFn, type GotPromise} from 'got';
 import type PCancelable from 'p-cancelable';
 import type {ApertureOptions, Format} from '../common/types';
 import {addPluginPromise} from '../utils/deep-linking';
 import {notify} from '../utils/notifications';
 import {getFormatExtension} from '../common/constants';
 import type {InstalledPlugin} from './plugin';
+import {pluginRequest} from './plugin-request';
 
 type ServiceContextOptions = {
   plugin: InstalledPlugin;
 };
 
 class ServiceContext {
-  requests: Array<GotPromise<any>> = [];
+  requests: Array<ReturnType<typeof pluginRequest>> = [];
   config: Store;
 
   private readonly plugin: InstalledPlugin;
@@ -24,8 +24,8 @@ class ServiceContext {
   }
 
   // eslint-disable-next-line @typescript-eslint/promise-function-async -- plugins get got's promise, which has cancel() and progress events
-  request = (...args: Parameters<GotFn>) => {
-    const request = got(...args);
+  request = (...args: Parameters<typeof pluginRequest>) => {
+    const request = pluginRequest(...args);
     this.requests.push(request);
     return request;
   };

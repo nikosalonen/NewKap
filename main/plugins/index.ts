@@ -4,14 +4,13 @@ import {EventEmitter} from 'node:events';
 import path from 'node:path';
 import fs from 'node:fs';
 import {execa} from 'execa';
+import got from 'got';
 import packageJson from 'package-json';
 import type {NormalizedPackageJson} from 'read-pkg';
 import {notify} from '../utils/notifications';
 import {showError} from '../utils/errors';
 import {windowManager} from '../windows/manager';
 import {InstalledPlugin, NpmPlugin} from './plugin';
-
-const got = require('got');
 
 type PackageJson = {
   dependencies: Record<string, string>;
@@ -130,9 +129,7 @@ export class Plugins extends EventEmitter {
   async getFromNpm() {
     this.ensureLoaded();
     const url = 'https://api.npms.io/v2/search?q=keywords:kap-plugin+not:deprecated';
-    const response = (await got(url, {json: true})) as {
-      body: {results: Array<{package: NormalizedPackageJson}>};
-    };
+    const response = await got<{results: Array<{package: NormalizedPackageJson}>}>(url, {responseType: 'json'});
     const installed = this.pluginNames;
 
     return Promise.all(response.body.results

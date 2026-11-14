@@ -12,7 +12,8 @@ const {checkForUpdates} = require('../main/updater') as typeof Updater;
 // The test mock from test/mocks/electron.ts, typed loosely so tests can swap its fakes.
 const electron: any = require('electron');
 
-const httpError = (statusCode: number) => Object.assign(new Error(`Response code ${statusCode}`), {statusCode});
+// Got 11 keeps the status code on error.response.
+const httpError = (statusCode: number) => Object.assign(new Error(`Response code ${statusCode}`), {response: {statusCode}});
 
 test.beforeEach(() => {
   fakeGot.reset();

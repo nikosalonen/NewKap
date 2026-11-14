@@ -1,8 +1,7 @@
 import process from 'node:process';
 import {app, dialog, shell} from 'electron';
+import got from 'got';
 import semver from 'semver';
-
-const got = require('got');
 
 const REPO_OWNER = 'nikosalonen';
 const REPO_NAME = 'NewKap';
@@ -46,18 +45,18 @@ export const getReleaseDownloadUrl = (release: GithubRelease, arch = process.arc
 // 404 for releases/latest.
 const fetchLatestRelease = async (): Promise<GithubRelease | undefined> => {
   try {
-    const response = await got(LATEST_RELEASE_API_URL, {
+    const response = await got<GithubRelease>(LATEST_RELEASE_API_URL, {
       headers: {
         accept: 'application/vnd.github+json',
         'user-agent': `Kap/${app.getVersion()}`,
       },
-      json: true,
+      responseType: 'json',
       timeout: 10_000,
-    }) as {body: GithubRelease};
+    });
 
     return response.body;
   } catch (error) {
-    if ((error as {statusCode?: number}).statusCode === 404) {
+    if ((error as {response?: {statusCode?: number}}).response?.statusCode === 404) {
       return undefined;
     }
 
