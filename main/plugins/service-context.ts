@@ -30,6 +30,14 @@ class ServiceContext {
     return request;
   };
 
+  protected cancelRequests() {
+    for (const request of this.requests) {
+      // When got rejects a request's options up front, it returns a plain
+      // rejected promise with no cancel(). Skip it and cancel the rest.
+      request.cancel?.();
+    }
+  }
+
   copyToClipboard = (text: string) => {
     clipboard.writeText(text);
   };
@@ -93,10 +101,7 @@ export class ShareServiceContext extends ServiceContext {
   cancel = () => {
     this.isCanceled = true;
     this.options.onCancel();
-
-    for (const request of this.requests) {
-      request.cancel();
-    }
+    this.cancelRequests();
   };
 }
 
@@ -150,10 +155,7 @@ export class EditServiceContext extends ServiceContext {
   cancel = () => {
     this.isCanceled = true;
     this.options.onCancel();
-
-    for (const request of this.requests) {
-      request.cancel();
-    }
+    this.cancelRequests();
   };
 }
 

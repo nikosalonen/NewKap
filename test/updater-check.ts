@@ -37,6 +37,16 @@ test('other errors still report a failed check', async t => {
   t.is(electron.dialog.showMessageBox.lastArg.message, 'Update Check Failed');
 });
 
+// Given got 9's `json: true`, got 11 sends `true` as a JSON body and throws,
+// so every update check would fail.
+test('asks got to parse the reply as JSON', async t => {
+  fakeGot.rejects(httpError(404));
+
+  await checkForUpdates();
+
+  t.is(fakeGot.firstCall.args[1].responseType, 'json');
+});
+
 test('a newer release offers the update', async t => {
   /* eslint-disable @typescript-eslint/naming-convention -- GitHub API field names */
   fakeGot.resolves({body: {tag_name: 'v99.0.0', assets: []}});
