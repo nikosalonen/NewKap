@@ -191,8 +191,8 @@ importers:
         specifier: ^2.2.6
         version: 2.3.1
       clean-stack:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^7.0.0
+        version: 7.0.0
       electron-better-ipc:
         specifier: ^1.1.1
         version: 1.1.1
@@ -203,8 +203,8 @@ importers:
         specifier: ^12.0.0
         version: 12.0.0
       ensure-error:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^5.0.0
+        version: 5.0.0
       execa:
         specifier: ^10.2.1
         version: 10.2.1
@@ -1793,9 +1793,9 @@ packages:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
     engines: {node: '>=6'}
 
-  clean-stack@3.0.1:
-    resolution: {integrity: sha512-lR9wNiMRcVQjSB3a7xXGLuz4cr4wJuuXlaAEbRutGowQTmlp7R72/DOgN21e8jdwblMWl9UOJMJXarX94pzKdg==}
-    engines: {node: '>=10'}
+  clean-stack@7.0.0:
+    resolution: {integrity: sha512-4ZExsm1I3Sn1ME73yN0mvTzxkt5QJrdYeA19Guy5jc4sIAVqSQnZMQ7f7fOY2vS5ZFpvuhPutKzeTmrIu0LwJA==}
+    engines: {node: '>=22.3'}
 
   cli-truncate@6.2.0:
     resolution: {integrity: sha512-5uyZew3nYoDgyltqSI8OER6DuyecorYOSVDAXl9wQ9Y8Re/HaQ/5qP0HmTUOUQqmvtpB+mlsf1gG/FUS3U1gLQ==}
@@ -2110,9 +2110,9 @@ packages:
     resolution: {integrity: sha512-Do6BB2xzlcc/odFg+XEYyneAx4T/WfywO71yw9ePS2tVfRsf7JVR4mUeELadIeHzixkzbG5DpluiEFPi2WGfYQ==}
     engines: {node: '>=10.13.0'}
 
-  ensure-error@3.0.1:
-    resolution: {integrity: sha512-J2e5Z3sgnA8en6+alf2VkO5cRwe75hHgSw0rJiMn5CEE4Yyw6GSgH31IBgwN9lugeCuPKHzuOF3X/RozAFsuhQ==}
-    engines: {node: '>=10'}
+  ensure-error@5.0.0:
+    resolution: {integrity: sha512-3q+rE6t5VUdbjmgJCr0EOX4tiX1cIyymG/NrAuXQW88qM8ewoi1sA9/MU3+Yz5ygwVsPuoSKrlkuy+aZNCYncg==}
+    engines: {node: '>=20'}
 
   entities@8.1.0:
     resolution: {integrity: sha512-kxL7msIffSuh9aaFAMD7rxAIuTRMAHMeBtgHW2yUdWw732ZNh4MehkF2gdjvtdmikkaIP9bFDDJOPlsvm7avrA==}
@@ -4264,6 +4264,10 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
+  url-extras@0.1.0:
+    resolution: {integrity: sha512-8tzwTeXFPuX/5PHuCDQE5Dd9Ts4rwoq2t9aIT+HS4iAVpmj5l4Ao7Q+BuuFjvWRqrLswBhQDk8O96ZicgCqQqw==}
+    engines: {node: '>=20'}
+
   utf8-byte-length@1.0.4:
     resolution: {integrity: sha512-4+wkEYLBbWxqTahEsWrhxepcoVOJ+1z5PGIjPZxRkytcdSUaNjIjBM7Xn8E+pdSuV7SzvWovBFA54FO0JSoqhA==}
 
@@ -5902,9 +5906,10 @@ snapshots:
 
   clean-stack@2.2.0: {}
 
-  clean-stack@3.0.1:
+  clean-stack@7.0.0:
     dependencies:
-      escape-string-regexp: 4.0.0
+      escape-string-regexp: 5.0.0
+      url-extras: 0.1.0
 
   cli-truncate@6.2.0:
     dependencies:
@@ -6248,7 +6253,7 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.3.3
 
-  ensure-error@3.0.1: {}
+  ensure-error@5.0.0: {}
 
   entities@8.1.0: {}
 
@@ -8720,6 +8725,8 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.1.1
+
+  url-extras@0.1.0: {}
 
   utf8-byte-length@1.0.4: {}
 
