@@ -2,6 +2,7 @@ import process from 'node:process';
 import {app, dialog, shell} from 'electron';
 import got from 'got';
 import semver from 'semver';
+import {getDisplayedMacosVersion, isMacosVersionAtLeast} from './utils/system-version';
 
 const REPO_OWNER = 'nikosalonen';
 const REPO_NAME = 'NewKap';
@@ -17,8 +18,15 @@ type GithubRelease = {
   tag_name: string;
   name?: string;
   html_url?: string;
+  // eslint-disable-next-line @typescript-eslint/no-restricted-types -- GitHub sends null when a release has no notes.
+  body?: string | null;
   assets?: GithubReleaseAsset[];
 };
+
+// A release that needs a newer macOS than the one before it says so in its notes
+// with a line that GitHub doesn't show, for example <!-- kap-minimum-macos: 26.0 -->.
+// See maintaining.md.
+const minimumMacosMarker = /<!--\s*kap-minimum-macos:\s*(\d+(?:\.\d+)*)\s*-->/i;
 
 let isChecking = false;
 
@@ -40,6 +48,8 @@ export const getReleaseDownloadUrl = (release: GithubRelease, arch = process.arc
 
   return matchingAsset?.browser_download_url;
 };
+
+export const getReleaseMinimumMacosVersion = (release: GithubRelease) => minimumMacosMarker.exec(release.body ?? '')?.[1];
 
 // Returns undefined while the repository has no release: GitHub then answers
 // 404 for releases/latest.
@@ -85,6 +95,16 @@ const showUpdateAvailableDialog = async (release: GithubRelease) => {
   }
 };
 
+const showNeedsNewerMacosDialog = async (release: GithubRelease, minimumMacosVersion: string) => {
+  const releaseVersion = normalizeReleaseVersion(release.tag_name) ?? release.tag_name;
+
+  await dialog.showMessageBox({
+    type: 'info',
+    message: 'Update Needs a Newer macOS',
+    detail: `Kap ${releaseVersion} needs macOS ${minimumMacosVersion} or later. This Mac has macOS ${getDisplayedMacosVersion()}, so keep using Kap ${app.getVersion()}.`,
+  });
+};
+
 export const checkForUpdates = async ({silent = true}: {silent?: boolean} = {}) => {
   if (isChecking) {
     return;
@@ -95,6 +115,16 @@ export const checkForUpdates = async ({silent = true}: {silent?: boolean} = {}) 
   try {
     const release = await fetchLatestRelease();
     if (release && isReleaseNewer(release.tag_name, app.getVersion())) {
+      const minimumMacosVersion = getReleaseMinimumMacosVersion(release);
+      if (minimumMacosVersion && !isMacosVersionAtLeast(minimumMacosVersion)) {
+        // The hourly check stays quiet: the answer only changes when macOS does.
+        if (!silent) {
+          await showNeedsNewerMacosDialog(release, minimumMacosVersion);
+        }
+
+        return;
+      }
+
       await showUpdateAvailableDialog(release);
       return;
     }

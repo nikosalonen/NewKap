@@ -6,6 +6,9 @@ const electronProcess = process as NodeJS.Process & {getSystemVersion: () => str
 
 const getMacosVersion = () => semver.coerce(electronProcess.getSystemVersion())?.version ?? '0.0.0';
 
+// The version the way macOS reports it, for messages.
+export const getDisplayedMacosVersion = () => electronProcess.getSystemVersion();
+
 export const isMacosVersion = (range: string) => semver.satisfies(getMacosVersion(), range);
 
 export const isMacosVersionAtLeast = (version: string) => semver.gte(getMacosVersion(), semver.coerce(version)?.version ?? '0.0.0');

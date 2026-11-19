@@ -37,6 +37,16 @@ Sign every release with the same certificate. macOS ties Screen Recording and Mi
 
 Kap's update check reads `releases/latest`, which skips drafts and pre-releases, and offers the asset whose name ends in `.dmg` and contains `mac-arm64`. Keep the file name that `pnpm dist` produces.
 
+### Raising the minimum macOS version
+
+When a release raises `mac.minimumSystemVersion` in `package.json`, put this line in its release notes, with the new minimum:
+
+```markdown
+<!-- kap-minimum-macos: 26.0 -->
+```
+
+GitHub doesn't show the line. Kap's update check reads it: on an older macOS it doesn't offer the release, and **Check for Updates…** says which macOS the release needs. Only Kap 5.2.3 and later read the line, so older versions still offer the release.
+
 ### Pre-releases
 
 Add `--prerelease` to `gh release create`. The update check ignores pre-releases, so only people who download one get it.
