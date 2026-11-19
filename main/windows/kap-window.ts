@@ -144,7 +144,11 @@ export default class KapWindow<State = any> {
         setDockVisible(true);
       }
     });
-    this.browserWindow.on('hide', KapWindow.hideDockIfUnused);
+    // Not `on('hide', KapWindow.hideDockIfUnused)`: Electron calls listeners with
+    // the BrowserWindow as `this`, so the method would not find KapWindow.windows.
+    this.browserWindow.on('hide', () => {
+      KapWindow.hideDockIfUnused();
+    });
 
     this.browserWindow.on('close', this.cleanup);
     this.browserWindow.on('closed', () => {

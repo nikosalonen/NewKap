@@ -1,3 +1,4 @@
+import {EventEmitter} from 'node:events';
 import process from 'node:process';
 import path from 'node:path';
 import sinon from 'sinon';
@@ -14,6 +15,48 @@ export const app = {
   getVersion: () => '0.0.0',
   focus: sinon.fake(),
   quit: sinon.fake(),
+  on: sinon.fake(),
+};
+
+let nextWindowId = 1;
+
+// Like Electron, emits 'show' and 'hide' with the window as `this` for listeners.
+export class BrowserWindow extends EventEmitter {
+  readonly id = nextWindowId++;
+  readonly webContents = new EventEmitter();
+  loadFile = sinon.fake.resolves(undefined);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  loadURL = sinon.fake.resolves(undefined);
+  focus = sinon.fake();
+  private visible = false;
+
+  constructor(readonly options: Record<string, unknown> = {}) {
+    super();
+  }
+
+  isDestroyed() {
+    return false;
+  }
+
+  isVisible() {
+    return this.visible;
+  }
+
+  show() {
+    this.visible = true;
+    this.emit('show');
+  }
+
+  hide() {
+    this.visible = false;
+    this.emit('hide');
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const Menu = {
+  buildFromTemplate: sinon.fake((template: unknown[]) => ({template})),
+  setApplicationMenu: sinon.fake(),
 };
 
 // The electron-store package registers an IPC handler for renderer stores.
