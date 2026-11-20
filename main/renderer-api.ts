@@ -25,6 +25,7 @@ import {startRecording} from './aperture';
 import {flags} from './common/flags';
 import {captureScreenshot} from './screenshot';
 import {windowManager} from './windows/manager';
+import {EDITOR_MIN_HEIGHT, EDITOR_MIN_WIDTH} from './windows/editor-size';
 import {translateBoundsToDisplay} from './common/display-bounds';
 import {isMacosVersionAtLeast} from './utils/system-version';
 import {isSafeExternalUrl} from './common/external-url';
@@ -323,13 +324,20 @@ export const setupRendererApi = () => {
 
     if (enabled) {
       previousEditorWindowSizes.set(window.id, {width: bounds.width, height: bounds.height});
+      // The export view is smaller than the editor's minimum size, which would block the resize.
+      window.setMinimumSize(CONVERSION_WIDTH, CONVERSION_HEIGHT);
       window.setBounds(resizeKeepingCenter(bounds, {width: CONVERSION_WIDTH, height: CONVERSION_HEIGHT}), true);
       window.resizable = false;
       window.fullScreenable = false;
     } else {
       window.resizable = true;
       window.fullScreenable = true;
-      window.setBounds(resizeKeepingCenter(bounds, previousEditorWindowSizes.get(window.id) ?? {width: 768, height: 480}), true);
+      const previousSize = previousEditorWindowSizes.get(window.id) ?? {width: 900, height: 480};
+      window.setBounds(resizeKeepingCenter(bounds, {
+        width: Math.max(previousSize.width, EDITOR_MIN_WIDTH),
+        height: Math.max(previousSize.height, EDITOR_MIN_HEIGHT),
+      }), true);
+      window.setMinimumSize(EDITOR_MIN_WIDTH, EDITOR_MIN_HEIGHT);
     }
   });
   ipcMain.handle('kap:window:set-ignore-mouse-events', (event, ignore: boolean) => getSenderWindow(event).setIgnoreMouseEvents(ignore));

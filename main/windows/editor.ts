@@ -6,12 +6,11 @@ import {MenuItemId} from '../menus/utils';
 import {saveSnapshot} from '../utils/image-preview';
 import KapWindow from './kap-window';
 import {windowManager} from './manager';
+import {EDITOR_MIN_HEIGHT, EDITOR_MIN_WIDTH} from './editor-size';
 
-const OPTIONS_BAR_HEIGHT = 48;
-const VIDEO_ASPECT = 9 / 16;
-const MIN_VIDEO_WIDTH = 900;
-const MIN_VIDEO_HEIGHT = MIN_VIDEO_WIDTH * VIDEO_ASPECT;
-const MIN_WINDOW_HEIGHT = MIN_VIDEO_HEIGHT + OPTIONS_BAR_HEIGHT;
+// The size a new editor opens at: a 900px wide 16:9 video plus the 48px options bar.
+const DEFAULT_WIDTH = 900;
+const DEFAULT_HEIGHT = (DEFAULT_WIDTH * 9 / 16) + 48;
 
 const editors = new Map();
 const editorsWithNotSavedDialogs = new Map();
@@ -27,14 +26,10 @@ const open = async (video: Video) => {
 
   const editorKapWindow = new KapWindow<EditorWindowState>({
     title: video.title,
-    // Keep these relaxed until Electron allows resizing below the window minimum again.
-    // Upstream issue: https://github.com/electron/electron/issues/27025
-    // minWidth: MIN_VIDEO_WIDTH,
-    // minHeight: MIN_WINDOW_HEIGHT,
-    minWidth: 360,
-    minHeight: 392,
-    width: MIN_VIDEO_WIDTH,
-    height: MIN_WINDOW_HEIGHT,
+    minWidth: EDITOR_MIN_WIDTH,
+    minHeight: EDITOR_MIN_HEIGHT,
+    width: DEFAULT_WIDTH,
+    height: DEFAULT_HEIGHT,
     backgroundColor: '#222222',
     dock: true,
     webPreferences: {
