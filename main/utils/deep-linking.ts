@@ -27,10 +27,10 @@ const showPermissionError = async () => {
     buttons: ['Open System Settings', 'OK'],
     defaultId: 0,
     message: 'Screen Recording permission required',
-    detail: 'Kap needs Screen Recording permission.\n\n'
+    detail: 'Ture needs Screen Recording permission.\n\n'
       + '1. Open System Settings > Privacy & Security > Screen Recording\n'
-      + '2. Toggle Kap ON\n'
-      + '3. Quit and relaunch Kap',
+      + '2. Toggle Ture ON\n'
+      + '3. Quit and relaunch Ture',
   });
 
   if (response === 0) {

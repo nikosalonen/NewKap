@@ -38,19 +38,19 @@ const brandDevelopmentHost = () => {
   };
 
   const appPlist = path.join(contentsDir, 'Info.plist');
-  setPlistValue(appPlist, 'CFBundleDisplayName', 'Kap');
-  setPlistValue(appPlist, 'CFBundleName', 'Kap');
+  setPlistValue(appPlist, 'CFBundleDisplayName', 'Ture');
+  setPlistValue(appPlist, 'CFBundleName', 'Ture');
   setPlistValue(appPlist, 'CFBundleIdentifier', 'com.wulkano.kap.dev');
-  setPlistValue(appPlist, 'CFBundleIconFile', 'Kap.icns');
-  fs.copyFileSync(iconPath, path.join(contentsDir, 'Resources', 'Kap.icns'));
+  setPlistValue(appPlist, 'CFBundleIconFile', 'Ture.icns');
+  fs.copyFileSync(iconPath, path.join(contentsDir, 'Resources', 'Ture.icns'));
 
   const frameworksDir = path.join(contentsDir, 'Frameworks');
   for (const helperName of ['Electron Helper', 'Electron Helper (GPU)', 'Electron Helper (Plugin)', 'Electron Helper (Renderer)']) {
     const helperPlist = path.join(frameworksDir, `${helperName}.app`, 'Contents', 'Info.plist');
-    setPlistValue(helperPlist, 'CFBundleName', helperName.replace('Electron', 'Kap'));
+    setPlistValue(helperPlist, 'CFBundleName', helperName.replace('Electron', 'Ture'));
   }
 
-  fs.writeFileSync(stampPath, 'Kap development host branding\n');
+  fs.writeFileSync(stampPath, 'Ture development host branding\n');
 };
 
 try {
@@ -61,7 +61,7 @@ try {
 
 const child = spawn(electron, process.argv.slice(2), {
   env,
-  argv0: 'Kap',
+  argv0: 'Ture',
   stdio: 'inherit',
 });
 

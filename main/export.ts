@@ -329,7 +329,7 @@ export const setUpExportsListeners = () => {
       defaultId: 0,
       cancelId: 1,
       message: 'Do you want to continue exporting?',
-      detail: 'Kap is currently exporting files. If you quit, the export task will be canceled.',
+      detail: 'Ture is currently exporting files. If you quit, the export task will be canceled.',
     });
 
     if (buttonIndex === 0) {

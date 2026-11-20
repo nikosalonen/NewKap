@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="renderer/public/static/kap-icon.png" width="96" height="96" alt="Kap icon">
+  <img src="renderer/public/static/kap-icon.png" width="96" height="96" alt="Ture icon">
 </p>
 
-<h1 align="center">Kap</h1>
+<h1 align="center">Ture</h1>
 
-Kap is a lightweight macOS screen recorder and screenshot tool that lives in the menu bar. This repository is a Kap fork that keeps the original workflow alive on current macOS and Electron, for Apple Silicon Macs.
+Ture is a lightweight macOS screen recorder and screenshot tool that lives in the menu bar, for Apple Silicon Macs. It started as a fork of [Kap](https://github.com/wulkano/Kap) and took its own name in version 6, when it moved to ScreenCaptureKit: Kap + Ture = Kapture, the name Kap gives every recording.
 
 [![Latest release](https://img.shields.io/github/v/release/nikosalonen/NewKap?label=release)](https://github.com/nikosalonen/NewKap/releases)
 [![CI](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml/badge.svg)](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml)
@@ -14,26 +14,26 @@ Kap is a lightweight macOS screen recorder and screenshot tool that lives in the
 
 ## Download
 
-Download Kap from this fork's [GitHub Releases](https://github.com/nikosalonen/NewKap/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 26 or later, as `Kap-<version>-mac-arm64.dmg`. On macOS 13 to 15, use [Kap 5.2.3](https://github.com/nikosalonen/NewKap/releases/tag/v5.2.3).
+Download Ture from this fork's [GitHub Releases](https://github.com/nikosalonen/NewKap/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 26 or later, as `Ture-<version>-mac-arm64.dmg`. On macOS 13 to 15, use [Kap 5.2.3](https://github.com/nikosalonen/NewKap/releases/tag/v5.2.3).
 
 For an Intel Mac, use Kap 5.1.0 from the [upstream NewKap releases](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0), the last release with an Intel build. To check which Mac you have, open **Apple menu -> About This Mac**: Macs that show **Chip** are Apple Silicon.
 
 Install:
 
-1. Download the DMG, open it, and drag `Kap.app` into Applications.
-2. Open Kap from Applications. macOS refuses to open it the first time, because releases are signed with this fork's own certificate instead of an Apple Developer ID and are not notarized. Close the message, open **System Settings -> Privacy & Security**, and click **Open Anyway** next to the message about Kap. macOS asks this once for each downloaded version.
+1. Download the DMG, open it, and drag `Ture.app` into Applications.
+2. Open Ture from Applications. macOS refuses to open it the first time, because releases are signed with this fork's own certificate instead of an Apple Developer ID and are not notarized. Close the message, open **System Settings -> Privacy & Security**, and click **Open Anyway** next to the message about Ture. macOS asks this once for each downloaded version.
 3. Grant Screen Recording permission when macOS asks.
 4. Grant Microphone permission only if you want audio capture.
 
 ## Updating
 
-Kap checks this fork's latest GitHub Release and can open its DMG for you. Use **Check for Updates...** from the application menu or Preferences. The updater does not silently install updates; replace the app in Applications with the downloaded `Kap.app`, and confirm **Open Anyway** once more for the new version.
+Ture checks this fork's latest GitHub Release and can open its DMG for you. Use **Check for Updates...** from the application menu or Preferences. The updater does not silently install updates; replace the app in Applications with the downloaded `Ture.app`, and confirm **Open Anyway** once more for the new version.
 
 Every release is signed with the same certificate, so Screen Recording and Microphone permissions carry over to the new version.
 
 ## Features
 
-Kap 5.2 keeps the v5.1 capture and editing workflow and runs natively on Apple Silicon. [`docs/releases/`](docs/releases) lists the changes in each release.
+Ture keeps Kap's capture and editing workflow and runs natively on Apple Silicon. [`docs/releases/`](docs/releases) lists the changes in each release.
 
 - Menu-bar screen recording workflow with crop area selection, window/app selection, multi-display cropper windows, countdown, cursor options, click highlighting, and recording shortcuts.
 - Screenshot mode from the capture overlay, including native macOS selection behavior and Command+C direct-to-clipboard capture.
@@ -53,12 +53,12 @@ Kap 5.2 keeps the v5.1 capture and editing workflow and runs natively on Apple S
       <img src="docs/previews/editor-preview.gif" alt="Kap v5.1 editor timeline preview">
     </td>
     <td width="50%">
-      <img src="docs/previews/screenshot-edit-preview.gif" alt="Kap screenshot editing preview">
+      <img src="docs/previews/screenshot-edit-preview.gif" alt="Ture screenshot editing preview">
     </td>
   </tr>
   <tr>
     <td colspan="2">
-      <img src="docs/previews/upgraded-settings.gif" alt="Kap upgraded settings preview">
+      <img src="docs/previews/upgraded-settings.gif" alt="Ture upgraded settings preview">
       <br>
       <em>Yes, this GIF was recorded on Kap v5.1.</em>
     </td>
@@ -67,18 +67,18 @@ Kap 5.2 keeps the v5.1 capture and editing workflow and runs natively on Apple S
 
 ## Usage Overview
 
-Open Kap from the menu bar, choose a crop or target window, then use the Record/Camera control to capture video or a screenshot. Finished recordings open in the editor, where you can trim, split, add freeze frames, adjust clips, preview playback, and export. Screenshots can be saved, copied, or edited from the screenshot preview workflow.
+Open Ture from the menu bar, choose a crop or target window, then use the Record/Camera control to capture video or a screenshot. Finished recordings open in the editor, where you can trim, split, add freeze frames, adjust clips, preview playback, and export. Screenshots can be saved, copied, or edited from the screenshot preview workflow.
 
 For audio recording, grant Microphone permission and choose an input in Preferences. For system audio, install a loopback device and select it as the audio input.
 
 ## Compatibility
 
-Kap 6 records with ScreenCaptureKit and needs an Apple Silicon Mac (`arm64`) with macOS 26 or later. Kap 5.2.3 is the last release for macOS 13 to 15. Upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0) is the last release for Intel Macs and macOS 12.
+Ture 6 records with ScreenCaptureKit and needs an Apple Silicon Mac (`arm64`) with macOS 26 or later. Kap 5.2.3 is the last release for macOS 13 to 15. Upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0) is the last release for Intel Macs and macOS 12.
 
 Known limitations:
 
-- Kap is normally a menu-bar accessory app and intentionally stays out of the Dock while idle.
-- macOS may omit accessory apps from the standard Force Quit Applications window. Use Activity Monitor or Kap's tray menu.
+- Ture is normally a menu-bar accessory app and intentionally stays out of the Dock while idle.
+- macOS may omit accessory apps from the standard Force Quit Applications window. Use Activity Monitor or Ture's tray menu.
 - System audio capture requires a loopback audio device.
 - Releases are self-signed and not notarized, so each downloaded version needs **Open Anyway** once.
 
@@ -115,7 +115,7 @@ pnpm build-renderer
 Packaging:
 
 ```bash
-# Test build for this Mac: dist/mac-arm64/Kap.app.
+# Test build for this Mac: dist/mac-arm64/Ture.app.
 pnpm run pack:local
 
 # Release DMG in dist/, signed with the "Kap Local Signing" certificate.
@@ -126,7 +126,7 @@ pnpm dist
 pnpm dist:developer-id
 ```
 
-macOS ties Screen Recording and Microphone access to the app's signature. By default `pack:local` signs ad hoc, which gives every build a new signature, so each build needs the permissions again. Run `scripts/create-local-signing-identity.sh` once: it creates a self-signed "Kap Local Signing" certificate in your login keychain (macOS asks for your password to trust it), and `pack:local` then signs with it, so the permissions carry over between builds. Keep one copy of the test build, such as `/Applications/Kap.app`: copies with different signatures share one permission entry and take it from each other, and macOS's "Quit & Reopen" may start the other copy.
+macOS ties Screen Recording and Microphone access to the app's signature. By default `pack:local` signs ad hoc, which gives every build a new signature, so each build needs the permissions again. Run `scripts/create-local-signing-identity.sh` once: it creates a self-signed "Kap Local Signing" certificate in your login keychain (macOS asks for your password to trust it), and `pack:local` then signs with it, so the permissions carry over between builds. Keep one copy of the test build, such as `/Applications/Ture.app`: copies with different signatures share one permission entry and take it from each other, and macOS's "Quit & Reopen" may start the other copy.
 
 Packaging removes the Intel code from universal binaries and fails if any binary in the app has no arm64 code (`scripts/after-pack.js`).
 
@@ -160,7 +160,7 @@ Bug reports should include:
 
 - macOS version from `sw_vers`.
 - Mac architecture from About This Mac.
-- Kap version, and whether it is a release or your own build.
+- Ture version, and whether it is a release or your own build.
 - Steps to reproduce.
 - Relevant terminal output when running from `pnpm start`.
 
@@ -168,21 +168,21 @@ Bug reports should include:
 
 ### Screen recording does not start
 
-Open **System Settings -> Privacy & Security -> Screen Recording** and turn on Kap. Choose **Quit & Reopen** when macOS offers it.
+Open **System Settings -> Privacy & Security -> Screen Recording** and turn on Ture. Choose **Quit & Reopen** when macOS offers it.
 
-If Kap is already on but recording still fails, the entry may belong to a differently signed copy of Kap, such as another build or an older release. Select Kap in the list, remove it with the minus button, then open Kap and grant access again. Keep only one copy of Kap.app on the Mac.
+If Ture is already on but recording still fails, the entry may belong to a differently signed copy of Ture, such as another build or an older release. Select Ture in the list, remove it with the minus button, then open Ture and grant access again. Keep only one copy of Ture.app on the Mac.
 
 ### Microphone or audio input is missing
 
-Open **System Settings -> Privacy & Security -> Microphone** and grant access to Kap. For system audio, install a loopback audio device and select it in Preferences.
+Open **System Settings -> Privacy & Security -> Microphone** and grant access to Ture. For system audio, install a loopback audio device and select it in Preferences.
 
-### Kap does not open on an Intel Mac
+### Ture does not open on an Intel Mac
 
 Releases from this fork are for Apple Silicon only. Open **Apple menu -> About This Mac**: if it shows an Intel **Processor** instead of a **Chip**, use upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0), the last release with an Intel build.
 
 ### macOS warns about Gatekeeper
 
-Releases from this fork are self-signed and not notarized, so macOS blocks the first launch of each downloaded version. Open **System Settings -> Privacy & Security** and click **Open Anyway** next to the message about Kap.
+Releases from this fork are self-signed and not notarized, so macOS blocks the first launch of each downloaded version. Open **System Settings -> Privacy & Security** and click **Open Anyway** next to the message about Ture.
 
 ### Cropper opens but the overlay is invisible or blocks clicks
 
@@ -190,12 +190,12 @@ Run from the terminal with `pnpm start` and look for cropper logs. A healthy ope
 
 ### Development still shows an Electron icon
 
-`scripts/run-electron.js` brands the local Electron development host with Kap metadata. If macOS caches an old icon, quit Kap, rebuild, and relaunch.
+`scripts/run-electron.js` brands the local Electron development host with Ture metadata. If macOS caches an old icon, quit Ture, rebuild, and relaunch.
 
 ## License
 
-Kap is released under the [MIT License](LICENSE.md).
+Ture is released under the [MIT License](LICENSE.md).
 
 ## Credits
 
-Kap builds on the original [Kap](https://github.com/wulkano/Kap) project and the work of Wulkano contributors, Kap maintainers, and plugin authors. This fork continues [MuntasirMalek/NewKap](https://github.com/MuntasirMalek/NewKap) and [jacobpowaza/NewKap](https://github.com/jacobpowaza/NewKap), and focuses on keeping Kap usable on modern macOS while preserving the lightweight workflow that made Kap useful.
+Ture builds on the original [Kap](https://github.com/wulkano/Kap) project and the work of Wulkano contributors, Kap maintainers, and plugin authors. This fork continues [MuntasirMalek/NewKap](https://github.com/MuntasirMalek/NewKap) and [jacobpowaza/NewKap](https://github.com/jacobpowaza/NewKap), and focuses on keeping Ture usable on modern macOS while preserving the lightweight workflow that made Ture useful.

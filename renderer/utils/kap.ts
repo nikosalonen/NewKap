@@ -4,7 +4,7 @@ const asyncNoop = async () => undefined;
 const unavailable = {
   app: {
     getInfo: () => ({
-      isPackaged: false, name: 'Kap', version: '0.0.0', homeDirectory: '',
+      isPackaged: false, name: 'Ture', version: '0.0.0', homeDirectory: '',
     }),
     getLoginItemSettings: async () => ({openAtLogin: false}),
     setLoginItemSettings: asyncNoop,

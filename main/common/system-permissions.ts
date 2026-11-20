@@ -46,8 +46,8 @@ const promptSystemPreferences = (options: {message: string; detail: string; syst
 const getMicrophoneAccess = () => systemPreferences.getMediaAccessStatus('microphone');
 
 const microphoneFallback = promptSystemPreferences({
-  message: 'Kap cannot access the microphone.',
-  detail: 'Kap requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. '
+  message: 'Ture cannot access the microphone.',
+  detail: 'Ture requires microphone access to record audio. You can grant this in System Settings → Privacy & Security → Microphone. '
     + 'If the setting is locked, Screen Time or your organization manages it.',
   systemPreferencesPath: 'Privacy_Microphone',
 });
@@ -121,9 +121,9 @@ const requestScreenCaptureAccess = async () => {
 // running: when the user turns access on, System Settings offers to quit and
 // reopen Kap itself.
 const screenCaptureFallback = promptSystemPreferences({
-  message: 'Kap cannot record the screen.',
-  detail: 'Kap requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. '
-    + 'When you turn it on, macOS offers to quit and reopen Kap.',
+  message: 'Ture cannot record the screen.',
+  detail: 'Ture requires screen capture access to record the screen. You can grant this in System Settings → Privacy & Security → Screen Recording. '
+    + 'When you turn it on, macOS offers to quit and reopen Ture.',
   systemPreferencesPath: 'Privacy_ScreenCapture',
 });
 

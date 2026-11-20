@@ -18,7 +18,7 @@ export const setDockVisible = (visible: boolean) => {
   (app as any).__kapDockVisible = visible;
 
   if (visible) {
-    app.setName('Kap');
+    app.setName('Ture');
     app.setActivationPolicy('regular');
     app.dock?.show();
     const icon = getDockIcon();

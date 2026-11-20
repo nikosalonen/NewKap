@@ -2,7 +2,7 @@
   "name": "kap",
   "version": "6.0.0",
   "private": true,
-  "description": "Community-driven Kap fork focused on reliability and community maintenance",
+  "description": "Ture records your screen on macOS. It started as a fork of Kap.",
   "license": "MIT",
   "repository": "nikosalonen/NewKap",
   "homepage": "https://github.com/nikosalonen/NewKap",
@@ -89,9 +89,9 @@
     "unique-string": "^3.0.0",
     "xo": "^5.0.1"
   },
-  "productName": "Kap",
+  "productName": "Ture",
   "bundle": {
-    "name": "Kap"
+    "name": "Ture"
   },
   "_moduleAliases": {
     "electron": "test/mocks/electron.ts"
@@ -160,10 +160,10 @@
       "entitlements": "./build/entitlements.mac.inherit.plist",
       "extendInfo": {
         "LSUIElement": true,
-        "CFBundleDisplayName": "Kap",
-        "CFBundleName": "Kap",
-        "NSMicrophoneUsageDescription": "Kap needs access to the microphone to record audio with screen recordings.",
-        "NSCameraUsageDescription": "A Kap plugin wants to use the camera.",
+        "CFBundleDisplayName": "Ture",
+        "CFBundleName": "Ture",
+        "NSMicrophoneUsageDescription": "Ture needs access to the microphone to record audio with screen recordings.",
+        "NSCameraUsageDescription": "A Ture plugin wants to use the camera.",
         "NSUserNotificationAlertStyle": "alert",
         "CFBundleDocumentTypes": [
           {

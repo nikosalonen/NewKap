@@ -7,6 +7,7 @@ import {getWindows, type HelperWindow} from './native-helper';
 export type MacWindow = HelperWindow;
 
 const APP_BLACKLIST = [
+  'Ture',
   'Kap',
   'Kap Beta',
 ];

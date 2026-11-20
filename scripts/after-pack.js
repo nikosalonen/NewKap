@@ -12,12 +12,12 @@ const afterPack = async context => {
   }
 
   if (context.arch !== Arch.arm64) {
-    throw new Error(`Kap builds for Apple Silicon (arm64) only, not ${Arch[context.arch]}.`);
+    throw new Error(`Ture builds for Apple Silicon (arm64) only, not ${Arch[context.arch]}.`);
   }
 
   await patchPackagedMetadata(context);
 
-  const appName = context.packager.appInfo.productFilename || 'Kap';
+  const appName = context.packager.appInfo.productFilename || 'Ture';
   const {thinned, missingArm64} = keepOnlyArm64(path.join(context.appOutDir, `${appName}.app`));
   console.log(`[packaging] removed Intel code from ${thinned.length} universal binaries`);
 

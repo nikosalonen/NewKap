@@ -75,7 +75,7 @@ test('a manual check explains when the newer release needs a newer macOS', async
 
   const {message, detail} = electron.dialog.showMessageBox.lastArg;
   t.is(message, 'Update Needs a Newer macOS');
-  t.is(detail, 'Kap 99.0.0 needs macOS 26.0 or later. This Mac has macOS 15.4.1, so keep using Kap 0.0.0.');
+  t.is(detail, 'Ture 99.0.0 needs macOS 26.0 or later. This Mac has macOS 15.4.1, so keep using Ture 0.0.0.');
 });
 
 test('the automatic check stays quiet when the newer release needs a newer macOS', async t => {

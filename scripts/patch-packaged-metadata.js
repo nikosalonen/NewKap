@@ -14,7 +14,7 @@ const patchPackagedMetadata = async context => {
     return;
   }
 
-  const appName = context.packager.appInfo.productFilename || 'Kap';
+  const appName = context.packager.appInfo.productFilename || 'Ture';
   const appPath = path.join(context.appOutDir, `${appName}.app`);
   const appResourcesDir = path.join(appPath, 'Contents', 'Resources');
   const appIconPath = path.join(appResourcesDir, 'icon.icns');
@@ -51,7 +51,7 @@ const patchPackagedMetadata = async context => {
     setPlistString(helperPlist, 'CFBundleIconFile', 'icon.icns');
   }
 
-  console.log(`[packaging] patched Kap metadata for ${helperBundles.length} helper apps`);
+  console.log(`[packaging] patched Ture metadata for ${helperBundles.length} helper apps`);
 };
 
 module.exports = patchPackagedMetadata;

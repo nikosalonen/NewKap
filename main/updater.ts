@@ -58,7 +58,7 @@ const fetchLatestRelease = async (): Promise<GithubRelease | undefined> => {
     const response = await got<GithubRelease>(LATEST_RELEASE_API_URL, {
       headers: {
         accept: 'application/vnd.github+json',
-        'user-agent': `Kap/${app.getVersion()}`,
+        'user-agent': `Ture/${app.getVersion()}`,
       },
       responseType: 'json',
       timeout: 10_000,
@@ -85,7 +85,7 @@ const showUpdateAvailableDialog = async (release: GithubRelease) => {
     defaultId: 1,
     cancelId: 0,
     message: 'Update Available',
-    detail: `Kap ${releaseVersion} is available. You have ${app.getVersion()}.`,
+    detail: `Ture ${releaseVersion} is available. You have ${app.getVersion()}.`,
   });
 
   if (response === 1) {
@@ -101,7 +101,7 @@ const showNeedsNewerMacosDialog = async (release: GithubRelease, minimumMacosVer
   await dialog.showMessageBox({
     type: 'info',
     message: 'Update Needs a Newer macOS',
-    detail: `Kap ${releaseVersion} needs macOS ${minimumMacosVersion} or later. This Mac has macOS ${getDisplayedMacosVersion()}, so keep using Kap ${app.getVersion()}.`,
+    detail: `Ture ${releaseVersion} needs macOS ${minimumMacosVersion} or later. This Mac has macOS ${getDisplayedMacosVersion()}, so keep using Ture ${app.getVersion()}.`,
   });
 };
 
@@ -133,7 +133,7 @@ export const checkForUpdates = async ({silent = true}: {silent?: boolean} = {}) 
       await dialog.showMessageBox({
         type: 'info',
         message: 'You’re up to date',
-        detail: `Kap ${app.getVersion()} is the latest version.`,
+        detail: `Ture ${app.getVersion()} is the latest version.`,
       });
     }
   } catch (error) {

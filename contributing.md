@@ -1,12 +1,12 @@
-# Contributing to Kap
+# Contributing to Ture
 
 Thanks for helping with this Kap fork. Bug reports and focused pull requests are welcome.
 
 ## Reporting bugs
 
 1. Search the [existing issues](https://github.com/nikosalonen/NewKap/issues) first.
-2. Include your macOS version (`sw_vers`), the Kap version (**About Kap** in the menu bar icon's menu), whether you use a release or your own build, the steps to reproduce, and what you expected to happen.
-3. Logs help. Run `/Applications/Kap.app/Contents/MacOS/Kap` from Terminal and copy the output around the problem, or open Console.app and filter by "Kap".
+2. Include your macOS version (`sw_vers`), the Ture version (**About Ture** in the menu bar icon's menu), whether you use a release or your own build, the steps to reproduce, and what you expected to happen.
+3. Logs help. Run `/Applications/Ture.app/Contents/MacOS/Ture` from Terminal and copy the output around the problem, or open Console.app and filter by "Ture".
 
 ## Submitting changes
 
@@ -34,7 +34,7 @@ Thanks for helping with this Kap fork. Bug reports and focused pull requests are
 
 | Command | Description |
 |---------|-------------|
-| `pnpm start` | Compile the main process and launch Kap (see `maintaining.md`) |
+| `pnpm start` | Compile the main process and launch Ture (see `maintaining.md`) |
 | `pnpm build` | Build the native helper, main process and renderer |
 | `pnpm test` | Lint and run the tests |
 | `pnpm typecheck` | Type-check the main process and tests |

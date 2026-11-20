@@ -1,3 +1,5 @@
+// eslint-disable-next-line import-x/order -- Must run first: it keeps the data folder at ~/Library/Application Support/Kap.
+import './utils/user-data-path';
 import process from 'node:process';
 import {
   app,
@@ -15,8 +17,8 @@ import {setupRendererApi} from './renderer-api';
 
 mark('main module entered');
 
-app.setName('Kap');
-process.title = 'Kap';
+app.setName('Ture');
+process.title = 'Ture';
 
 if (process.platform === 'darwin') {
   app.setActivationPolicy('accessory');
@@ -115,7 +117,7 @@ app.on('window-all-closed', () => {
 
   app.dock?.hide();
   app.setAboutPanelOptions({
-    applicationName: 'Kap',
+    applicationName: 'Ture',
     applicationVersion: app.getVersion(),
     copyright: 'Copyright © Kap Contributors',
   });
@@ -139,7 +141,7 @@ app.on('window-all-closed', () => {
   tray.on('right-click', () => {
     if (!trayReady) {
       tray.popUpContextMenu(Menu.buildFromTemplate([
-        {label: 'Kap is loading…', enabled: false},
+        {label: 'Ture is loading…', enabled: false},
       ]));
     }
   });

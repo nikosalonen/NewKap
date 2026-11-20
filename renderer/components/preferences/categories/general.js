@@ -204,7 +204,7 @@ class General extends React.Component {
         <Item
           key='openOnStartup'
           title='Start automatically'
-          subtitle='Launch Kap on system startup'
+          subtitle='Launch Ture on system startup'
         >
           <Switch tabIndex={tabIndex} checked={openOnStartup} onClick={setOpenOnStartup}/>
         </Item>
@@ -237,7 +237,7 @@ class General extends React.Component {
         <Item
           key='checkForUpdates'
           title='Software update'
-          subtitle={`Kap ${version}`}
+          subtitle={`Ture ${version}`}
         >
           <Button
             tabIndex={tabIndex}

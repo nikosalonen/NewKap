@@ -19,7 +19,7 @@ const Keybinds = ({category, enableShortcuts, shortcuts = noShortcuts, shortcutM
       <Item
         parentItem
         title='Global shortcuts'
-        subtitle='Make Kap shortcuts available from every app'
+        subtitle='Make Ture shortcuts available from every app'
       >
         <Switch tabIndex={tabIndex} checked={enableShortcuts} onClick={toggleShortcuts}/>
       </Item>

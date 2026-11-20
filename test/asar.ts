@@ -1,7 +1,7 @@
 import test from 'ava';
 import {fixPathForAsarUnpack} from '../main/utils/asar';
 
-const resources = '/Applications/Kap.app/Contents/Resources';
+const resources = '/Applications/Ture.app/Contents/Resources';
 
 test('binaries inside app.asar point to app.asar.unpacked', t => {
   t.is(

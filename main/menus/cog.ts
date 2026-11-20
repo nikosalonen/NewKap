@@ -145,7 +145,7 @@ export const buildBasicCogMenu = (): MenuOptions => [
   getCheckForUpdatesMenuItem(),
   getSendFeedbackMenuItem(),
   {type: 'separator'},
-  {label: 'Quit Kap', accelerator: 'Command+Q', click: () => app.quit()},
+  {label: 'Quit Ture', accelerator: 'Command+Q', click: () => app.quit()},
 ];
 
 const getMicrophoneItem = async (): Promise<MenuOptions[number]> => {
@@ -235,7 +235,7 @@ const getCogMenuTemplate = async (): Promise<MenuOptions> => [
   getCheckForUpdatesMenuItem(),
   getSendFeedbackMenuItem(),
   {type: 'separator'},
-  {label: 'Quit Kap', accelerator: 'Command+Q', click: () => app.quit()},
+  {label: 'Quit Ture', accelerator: 'Command+Q', click: () => app.quit()},
 ];
 
 export const getCogMenuAsync = async () => Menu.buildFromTemplate(await getCogMenuTemplate());

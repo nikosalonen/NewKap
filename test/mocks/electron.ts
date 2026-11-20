@@ -11,6 +11,7 @@ process.env['TZ'] = 'America/New_York';
 
 export const app = {
   getPath: (name: string) => path.resolve(temporaryDir, name),
+  setPath: sinon.fake(),
   isPackaged: false,
   getVersion: () => '0.0.0',
   focus: sinon.fake(),

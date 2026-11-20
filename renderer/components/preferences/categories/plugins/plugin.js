@@ -40,7 +40,7 @@ PluginTitle.propTypes = {
 
 const Plugin = ({plugin, checked, disabled, onTransitionEnd, onClick, loading, openConfig, tabIndex}) => {
   const requiredVersion = !plugin.isCompatible && (
-    (plugin.kapVersion && `Requires Kap version ${plugin.kapVersion}.`)
+    (plugin.kapVersion && `Requires Ture version ${plugin.kapVersion}.`)
     || (plugin.macosVersion && `Requires macOS version ${plugin.macosVersion}`)
   );
 

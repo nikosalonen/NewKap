@@ -1,11 +1,11 @@
 # Maintaining
 
-## Developing Kap
+## Developing Ture
 
-`pnpm start` compiles the main process and launches Kap. Restart it after changing code in `main/`.
+`pnpm start` compiles the main process and launches Ture. Restart it after changing code in `main/`.
 
-- If `renderer/out` exists, Kap loads those static pages. `pnpm build`, `pnpm build-renderer` and `pnpm run pack:local` create it.
-- If it doesn't, Kap starts the Next.js dev server on `http://localhost:8000` itself, with hot reload for the renderer. Delete `renderer/out` to work this way.
+- If `renderer/out` exists, Ture loads those static pages. `pnpm build`, `pnpm build-renderer` and `pnpm run pack:local` create it.
+- If it doesn't, Ture starts the Next.js dev server on `http://localhost:8000` itself, with hot reload for the renderer. Delete `renderer/out` to work this way.
 
 Install an [XO editor plugin](https://github.com/sindresorhus/xo#editor-plugins) to see lint errors and fix them on save.
 
@@ -24,18 +24,18 @@ Sign every release with the same certificate. macOS ties Screen Recording and Mi
 ### Steps
 
 1. Set `version` in `package.json` to the new version, commit with the version as the message (for example `5.2.0`), and push.
-2. Build the DMG with `pnpm dist`. It writes `dist/Kap-<version>-mac-arm64.dmg` and stops if the certificate is missing.
-3. Test the DMG: install Kap from it, record a clip, and export a GIF. `codesign -dv --verbose=2 /Applications/Kap.app` should show `Authority=Kap Local Signing`.
+2. Build the DMG with `pnpm dist`. It writes `dist/Ture-<version>-mac-arm64.dmg` and stops if the certificate is missing.
+3. Test the DMG: install Ture from it, record a clip, and export a GIF. `codesign -dv --verbose=2 /Applications/Ture.app` should show `Authority=Kap Local Signing`.
 4. Create a draft release with the DMG:
 
    ```bash
-   gh release create v5.2.0 dist/Kap-5.2.0-mac-arm64.dmg --repo nikosalonen/NewKap --draft --title "Kap 5.2.0" --notes-file release-notes.md
+   gh release create v6.0.0 dist/Ture-6.0.0-mac-arm64.dmg --repo nikosalonen/NewKap --draft --title "Ture 6.0.0" --notes-file release-notes.md
    ```
 
-   The release notes must say that the release needs an Apple Silicon Mac and the macOS version in `mac.minimumSystemVersion` (macOS 26 or later since Kap 6), and that the first launch needs **Open Anyway** in **System Settings -> Privacy & Security**.
+   The release notes must say that the release needs an Apple Silicon Mac and the macOS version in `mac.minimumSystemVersion` (macOS 26 or later since Ture 6), and that the first launch needs **Open Anyway** in **System Settings -> Privacy & Security**.
 5. Review the draft on GitHub and publish it.
 
-Kap's update check reads `releases/latest`, which skips drafts and pre-releases, and offers the asset whose name ends in `.dmg` and contains `mac-arm64`. Keep the file name that `pnpm dist` produces.
+Ture's update check reads `releases/latest`, which skips drafts and pre-releases, and offers the asset whose name ends in `.dmg` and contains `mac-arm64`. Keep the file name that `pnpm dist` produces.
 
 ### Raising the minimum macOS version
 
@@ -45,7 +45,7 @@ When a release raises `mac.minimumSystemVersion` in `package.json`, put this lin
 <!-- kap-minimum-macos: 26.0 -->
 ```
 
-GitHub doesn't show the line. Kap's update check reads it: on an older macOS it doesn't offer the release, and **Check for Updates…** says which macOS the release needs. Only Kap 5.2.3 and later read the line, so older versions still offer the release.
+GitHub doesn't show the line. Ture's update check reads it: on an older macOS it doesn't offer the release, and **Check for Updates…** says which macOS the release needs. Only Kap 5.2.3 and later read the line, so older versions still offer the release.
 
 ### Pre-releases
 

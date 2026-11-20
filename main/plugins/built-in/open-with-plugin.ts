@@ -35,7 +35,7 @@ const appsByExtension = loadAppsByExtension();
 
 const getAppsForFormat = (format: Format): App[] => (appsByExtension[getFormatExtension(format)] ?? [])
   .map(app => ({...app, name: decodeURI(path.parse(app.url).name)}))
-  .filter(app => !['Kap', 'Kap Beta'].includes(app.name))
+  .filter(app => !['Ture', 'Kap', 'Kap Beta'].includes(app.name))
   .toSorted((a, b) => a.isDefault === b.isDefault ? Number(b.name === 'Gifski') - Number(a.name === 'Gifski') : Number(b.isDefault) - Number(a.isDefault));
 
 const appsForFormat = openWithFormats

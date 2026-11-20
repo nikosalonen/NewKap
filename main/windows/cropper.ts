@@ -335,8 +335,8 @@ const openCropperWindow = async () => {
             type: 'warning',
             buttons: ['Open System Settings', 'Continue Without Audio', 'Cancel'],
             defaultId: 1,
-            message: 'Kap cannot access the microphone.',
-            detail: 'Audio recording is enabled but Kap does not have access to the microphone. Continue without audio, or grant Kap access to the microphone in System Settings.',
+            message: 'Ture cannot access the microphone.',
+            detail: 'Audio recording is enabled but Ture does not have access to the microphone. Continue without audio, or grant Ture access to the microphone in System Settings.',
             cancelId: 2,
           });
 
