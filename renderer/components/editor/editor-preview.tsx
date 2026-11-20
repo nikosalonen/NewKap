@@ -12,6 +12,9 @@ const EditorPreview = () => {
   return (
     <div className='preview-container'>
       <div className='preview-hover-container'>
+        <VideoPlayer/>
+        {/* After the video on purpose. Chromium applies drag regions in page order, and the
+        video's drag region (from .cover-window) covered the traffic lights when it came later. */}
         <div className='title-bar-hover-zone'>
           <div className='title-bar'>
             <div className='title-bar-container'>
@@ -20,7 +23,6 @@ const EditorPreview = () => {
             </div>
           </div>
         </div>
-        <VideoPlayer/>
       </div>
       {isEditorVisible && <Timeline/>}
       <Options isEditorVisible={isEditorVisible} onToggleEditor={() => setIsEditorVisible(visible => !visible)}/>
@@ -75,15 +77,18 @@ const EditorPreview = () => {
           -webkit-app-region: drag;
         }
 
+        /* The traffic lights take the first 72px. The right padding keeps the title centered in
+           the window. A -72px margin did that before, but then the title, a drag region, covered
+           the traffic lights, and clicking them dragged the window instead. */
         .title {
-          width: 100%;
+          flex: 1;
           height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 1.4rem;
           color: #fff;
-          margin-left: -72px;
+          padding-right: 72px;
         }
       `}</style>
     </div>
