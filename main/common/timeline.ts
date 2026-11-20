@@ -24,25 +24,10 @@ export type TrimClipOptions = {
 };
 
 const minClipDuration = 0.05;
-const minFreezeDuration = 0.1;
-const maxFreezeDuration = 10;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-export const clipDuration = (clip: TimelineClip): number => (
-  clip.freezeDuration ?? ((clip.endTime - clip.startTime) / clip.speed)
-);
-
-export const formatTimelineDuration = (duration: number): string => {
-  if (!Number.isFinite(duration)) {
-    return '0s';
-  }
-
-  const rounded = Math.round(duration * 100) / 100;
-  const decimals = Math.abs(rounded - Math.round(rounded)) < 0.005 ? 0 : (Math.abs((rounded * 10) - Math.round(rounded * 10)) < 0.005 ? 1 : 2);
-
-  return `${rounded.toFixed(decimals)}s`;
-};
+export const clipDuration = (clip: TimelineClip): number => (clip.endTime - clip.startTime) / clip.speed;
 
 export const getTimelineDuration = (clips: TimelineClip[]): number => {
   let duration = 0;
@@ -93,7 +78,7 @@ export const getPlaybackPositionAtTimelineTime = (
     const isLast = clipIndex === clips.length - 1;
     if (boundedTime < elapsed + duration || isLast) {
       const localTime = Math.max(0, Math.min(duration, boundedTime - elapsed));
-      const sourceTime = clip.freezeDuration === undefined ? clip.startTime + (localTime * clip.speed) : clip.startTime;
+      const sourceTime = clip.startTime + (localTime * clip.speed);
 
       return {
         clip,
@@ -120,7 +105,7 @@ export const getTimelineTimeForClipSourceTime = (
     const duration = Math.max(0, clipDuration(clip));
 
     if (clip.id === clipId) {
-      return clip.freezeDuration === undefined ? elapsed + ((Math.max(clip.startTime, Math.min(clip.endTime, sourceTime)) - clip.startTime) / clip.speed) : elapsed;
+      return elapsed + ((Math.max(clip.startTime, Math.min(clip.endTime, sourceTime)) - clip.startTime) / clip.speed);
     }
 
     elapsed += duration;
@@ -201,23 +186,15 @@ export const trimClipAtTimelineTime = ({
   const duration = Math.max(0, clipDuration(clip));
   const clipEndOnTimeline = elapsedBeforeClip + duration;
 
-  if (clip.freezeDuration === undefined) {
-    if (edge === 'start') {
-      const nextDuration = Math.max(minClipDuration, clipEndOnTimeline - requestedTime);
-      return {
-        startTime: clamp(clip.endTime - (nextDuration * clip.speed), 0, clip.endTime - minClipDuration),
-      };
-    }
-
-    const nextDuration = Math.max(minClipDuration, requestedTime - elapsedBeforeClip);
+  if (edge === 'start') {
+    const nextDuration = Math.max(minClipDuration, clipEndOnTimeline - requestedTime);
     return {
-      endTime: clamp(clip.startTime + (nextDuration * clip.speed), clip.startTime + minClipDuration, mediaDuration),
+      startTime: clamp(clip.endTime - (nextDuration * clip.speed), 0, clip.endTime - minClipDuration),
     };
   }
 
-  const nextDuration = edge === 'start' ? clipEndOnTimeline - requestedTime : requestedTime - elapsedBeforeClip;
-
+  const nextDuration = Math.max(minClipDuration, requestedTime - elapsedBeforeClip);
   return {
-    freezeDuration: clamp(nextDuration, minFreezeDuration, maxFreezeDuration),
+    endTime: clamp(clip.startTime + (nextDuration * clip.speed), clip.startTime + minClipDuration, mediaDuration),
   };
 };

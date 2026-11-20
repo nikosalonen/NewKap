@@ -36,7 +36,6 @@ const Video = () => {
   const videoMetadataContainer = VideoMetadataContainer.useContainer();
   const videoControlsContainer = VideoControlsContainer.useContainer();
   const {activeClip} = TimelineContainer.useContainer();
-  const videoFilter = `brightness(${1 + (activeClip?.brightness ?? 0)}) contrast(${activeClip?.contrast ?? 1}) saturate(${activeClip?.saturation ?? 1})`;
 
   useEffect(() => {
     videoTimeContainer.setVideoRef(videoRef.current);
@@ -46,9 +45,9 @@ const Video = () => {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.playbackRate = activeClip?.freezeDuration === undefined ? (activeClip?.speed ?? 1) : 1;
+      videoRef.current.playbackRate = activeClip?.speed ?? 1;
     }
-  }, [activeClip?.freezeDuration, activeClip?.speed]);
+  }, [activeClip?.speed]);
 
   const videoProps = getVideoProps([
     videoTimeContainer.videoProps,
@@ -83,7 +82,7 @@ const Video = () => {
 
   return (
     <div className='video-frame' onContextMenu={onContextMenu}>
-      <video ref={videoRef} preload='auto' src={src} style={{filter: videoFilter}} {...videoProps}/>
+      <video ref={videoRef} preload='auto' src={src} {...videoProps}/>
       <style jsx>{`
         .video-frame {
           flex: 1;

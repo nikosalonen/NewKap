@@ -35,11 +35,7 @@ export type TimelineClip = {
   id: string;
   startTime: number;
   endTime: number;
-  freezeDuration?: number;
   speed: number;
-  brightness: number;
-  contrast: number;
-  saturation: number;
 };
 
 export enum ExportStatus {

@@ -7,9 +7,7 @@ import {
 } from 'react';
 import type {TimelineClip} from 'common/types';
 import {
-  clipDuration,
   findPlaybackClipForSourceTime,
-  getPlaybackPositionAtTimelineTime,
   getTimelineDuration,
   getTimelineTimeForClipSourceTime,
   getTimelineTimeForClipStart,
@@ -22,19 +20,15 @@ const makeClip = (startTime: number, endTime: number): TimelineClip => ({
   startTime,
   endTime,
   speed: 1,
-  brightness: 0,
-  contrast: 1,
-  saturation: 1,
 });
 
 const useTimeline = () => {
   const {startTime, endTime, currentTime, updateTime} = VideoTimeContainer.useContainer();
-  const {isPaused, pause, play, holdFrame} = VideoControlsContainer.useContainer();
+  const {isPaused, pause} = VideoControlsContainer.useContainer();
   const [clips, setClips] = useState<TimelineClip[]>([]);
   const [selectedId, setSelectedId] = useState<string>();
   const [activeClipId, setActiveClipId] = useState<string>();
   const [isEdited, setIsEdited] = useState(false);
-  const [copiedClip, setCopiedClip] = useState<TimelineClip>();
   const [timelineTime, setTimelineTime] = useState(0);
   const timelineTimeRef = useRef(0);
 
@@ -85,7 +79,7 @@ const useTimeline = () => {
   };
 
   useEffect(() => {
-    if (!activeClip || (activeClip.freezeDuration !== undefined)) {
+    if (!activeClip) {
       return;
     }
 
@@ -112,74 +106,9 @@ const useTimeline = () => {
     }
   }, [activeClip, clips, currentTime, isPaused]);
 
-  useEffect(() => {
-    if (activeClip?.freezeDuration === undefined || isPaused) {
-      return;
-    }
-
-    const currentTimelineTime = timelineTimeRef.current;
-    const clipStartTime = getTimelineTimeForClipStart(clips, activeClip.id) ?? currentTimelineTime;
-    const clipEndTime = clipStartTime + clipDuration(activeClip);
-    const initialTimelineTime = currentTimelineTime >= clipStartTime && currentTimelineTime < clipEndTime ? currentTimelineTime : clipStartTime;
-    const startedAt = performance.now();
-    let animationFrame: number;
-
-    holdFrame();
-    updateTime(activeClip.startTime);
-    updateTimelineTime(initialTimelineTime);
-
-    const tick = () => {
-      const nextTimelineTime = initialTimelineTime + ((performance.now() - startedAt) / 1000);
-
-      if (nextTimelineTime < clipEndTime) {
-        updateTimelineTime(nextTimelineTime);
-        updateTime(activeClip.startTime);
-        animationFrame = requestAnimationFrame(tick);
-        return;
-      }
-
-      const nextPosition = getPlaybackPositionAtTimelineTime(clips, clipEndTime);
-      updateTimelineTime(Math.min(clipEndTime, getTimelineDuration(clips)));
-
-      if (nextPosition && nextPosition.clip.id !== activeClip.id) {
-        setActiveClipId(nextPosition.clip.id);
-        updateTime(nextPosition.sourceTime);
-        play();
-      } else {
-        pause();
-        updateTime(activeClip.endTime);
-        updateTimelineTime(getTimelineDuration(clips));
-      }
-    };
-
-    animationFrame = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(animationFrame);
-    };
-  }, [activeClip, clips, isPaused]);
-
   const split = () => {
     const index = clips.findIndex(clip => clip.id === selectedClip?.id);
-    if (index === -1) {
-      return;
-    }
-
-    if (selectedClip.freezeDuration !== undefined) {
-      const clipStartTime = getTimelineTimeForClipStart(clips, selectedClip.id) ?? 0;
-      const splitTime = timelineTime - clipStartTime;
-
-      if (splitTime <= 0.05 || splitTime >= selectedClip.freezeDuration - 0.05) {
-        return;
-      }
-
-      const left = {...selectedClip, id: `${Date.now()}-left`, freezeDuration: splitTime};
-      const right = {...selectedClip, id: `${Date.now()}-right`, freezeDuration: selectedClip.freezeDuration - splitTime};
-      commit([...clips.slice(0, index), left, right, ...clips.slice(index + 1)], right.id);
-      return;
-    }
-
-    if (currentTime <= selectedClip.startTime + 0.05 || currentTime >= selectedClip.endTime - 0.05) {
+    if (index === -1 || currentTime <= selectedClip.startTime + 0.05 || currentTime >= selectedClip.endTime - 0.05) {
       return;
     }
 
@@ -196,63 +125,6 @@ const useTimeline = () => {
     commit(clips.filter(clip => clip.id !== selectedClip.id));
   };
 
-  const freeze = () => {
-    if (!selectedClip) {
-      return;
-    }
-
-    const index = clips.findIndex(clip => clip.id === selectedClip.id);
-    const time = Math.min(selectedClip.endTime, Math.max(selectedClip.startTime, currentTime));
-    const frozen = {...makeClip(time, time + 0.04), freezeDuration: 1};
-    const replacement: TimelineClip[] = [
-      ...(time > selectedClip.startTime + 0.01 ? [{...selectedClip, id: `${Date.now()}-before-freeze`, endTime: time}] : []),
-      frozen,
-      ...(time < selectedClip.endTime - 0.01 ? [{...selectedClip, id: `${Date.now()}-after-freeze`, startTime: time}] : []),
-    ];
-
-    const nextClips = [...clips.slice(0, index), ...replacement, ...clips.slice(index + 1)];
-    const frozenTimelineTime = getTimelineTimeForClipStart(nextClips, frozen.id) ?? timelineTimeRef.current;
-
-    pause();
-    updateTime(time);
-    commit(nextClips, frozen.id, frozenTimelineTime, frozen.id);
-  };
-
-  const copy = () => {
-    if (selectedClip) {
-      setCopiedClip({...selectedClip});
-    }
-  };
-
-  const paste = () => {
-    if (!copiedClip) {
-      return;
-    }
-
-    const index = Math.max(0, clips.findIndex(clip => clip.id === selectedClip?.id));
-    const pasted = {...copiedClip, id: `${Date.now()}-pasted`};
-    commit([...clips.slice(0, index + 1), pasted, ...clips.slice(index + 1)], pasted.id);
-  };
-
-  const cut = () => {
-    if (clips.length <= 1) {
-      return;
-    }
-
-    copy();
-    remove();
-  };
-
-  const duplicate = () => {
-    if (!selectedClip) {
-      return;
-    }
-
-    const index = clips.findIndex(clip => clip.id === selectedClip.id);
-    const duplicated = {...selectedClip, id: `${Date.now()}-duplicate`};
-    commit([...clips.slice(0, index + 1), duplicated, ...clips.slice(index + 1)], duplicated.id);
-  };
-
   const updateSelected = (updates: Partial<TimelineClip>) => {
     if (!selectedClip) {
       return;
@@ -266,7 +138,7 @@ const useTimeline = () => {
   };
 
   return {
-    clips, selectedClip, activeClip, copiedClip, isEdited, timelineTime, select, seek, split, remove, freeze, copy, paste, cut, duplicate, updateSelected, updateClip,
+    clips, selectedClip, activeClip, isEdited, timelineTime, select, seek, split, remove, updateSelected, updateClip,
   };
 };
 

@@ -42,22 +42,6 @@ const useVideoControls = () => {
     }
   };
 
-  const holdFrame = () => {
-    if (videoRef.current && !videoRef.current.paused) {
-      videoRef.current.pause();
-    }
-  };
-
-  const resumeAfterHold = async () => {
-    if (videoRef.current?.paused) {
-      try {
-        await videoRef.current.play();
-      } catch {}
-    }
-
-    setIsPaused(false);
-  };
-
   const mute = () => {
     setIsMuted(true);
     videoRef.current.muted = true;
@@ -127,8 +111,6 @@ const useVideoControls = () => {
     setVideoRef,
     pause,
     play,
-    holdFrame,
-    resumeAfterHold,
     mute,
     unmute,
     videoProps,

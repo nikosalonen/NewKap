@@ -1,6 +1,5 @@
 import test from 'ava';
 import {
-  formatTimelineDuration,
   getPlaybackPositionAtTimelineTime,
   getTimelineDuration,
   getTimelineTimeForClipSourceTime,
@@ -12,13 +11,13 @@ import type {TimelineClip} from '../main/common/types';
 
 const clips: TimelineClip[] = [
   {
-    id: 'first', startTime: 0, endTime: 2, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+    id: 'first', startTime: 0, endTime: 2, speed: 1,
   },
   {
-    id: 'selected', startTime: 2, endTime: 4, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+    id: 'selected', startTime: 2, endTime: 4, speed: 1,
   },
   {
-    id: 'last', startTime: 4, endTime: 8, speed: 1, brightness: 0, contrast: 1, saturation: 1,
+    id: 'last', startTime: 4, endTime: 8, speed: 1,
   },
 ];
 
@@ -44,32 +43,6 @@ test('timeline boundary lookup treats adjacent clips as first-class items', t =>
   t.is(boundaryPosition?.clip.id, 'selected');
   t.is(boundaryPosition?.sourceTime, 2);
   t.is(getTimelineTimeForClipStart(clips, 'last'), 4);
-});
-
-test('freeze frame timeline positions advance while source frame stays fixed', t => {
-  const freezeClips: TimelineClip[] = [
-    clips[0]!,
-    {
-      id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1.25, speed: 1, brightness: 0, contrast: 1, saturation: 1,
-    },
-    clips[2]!,
-  ];
-
-  const midway = getPlaybackPositionAtTimelineTime(freezeClips, 2.75);
-
-  t.is(midway?.clip.id, 'freeze');
-  t.is(midway?.timelineTime, 2.75);
-  t.is(midway?.sourceTime, 2);
-
-  const afterFreeze = getPlaybackPositionAtTimelineTime(freezeClips, 3.25);
-  t.is(afterFreeze?.clip.id, 'last');
-});
-
-test('timeline duration labels trim insignificant decimals', t => {
-  t.is(formatTimelineDuration(3), '3s');
-  t.is(formatTimelineDuration(3.00000001), '3s');
-  t.is(formatTimelineDuration(3.1), '3.1s');
-  t.is(formatTimelineDuration(3.1123848191), '3.11s');
 });
 
 test('timeline snapping uses clip starts, clip ends, and full timeline bounds', t => {
@@ -119,26 +92,4 @@ test('clip trim handles update in and out points from timeline drag time', t => 
   }), {
     startTime: 2.5,
   });
-});
-
-test('freeze frame trim keeps the clip editable as a freeze clip', t => {
-  const freezeClips: TimelineClip[] = [
-    clips[0]!,
-    {
-      id: 'freeze', startTime: 2, endTime: 2.04, freezeDuration: 1, speed: 1, brightness: 0, contrast: 1, saturation: 1,
-    },
-    clips[2]!,
-  ];
-
-  t.deepEqual(trimClipAtTimelineTime({
-    clips: freezeClips,
-    clipId: 'freeze',
-    edge: 'end',
-    requestedTime: 2.05,
-    mediaDuration: 8,
-  }), {
-    freezeDuration: 0.1,
-  });
-
-  t.is(getPlaybackPositionAtTimelineTime(freezeClips, 2)?.sourceTime, 2);
 });

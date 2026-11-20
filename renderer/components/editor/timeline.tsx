@@ -3,7 +3,6 @@ import type {TimelineClip} from 'common/types';
 import {PauseIcon, PlayIcon} from '../../vectors';
 import {
   clipDuration,
-  formatTimelineDuration,
   getPlaybackPositionAtTimelineTime,
   getTimelineDuration,
   snapTimelineTime,
@@ -18,7 +17,7 @@ import VideoControlsContainer from './video-controls-container';
 const Timeline = () => {
   const {duration} = VideoTimeContainer.useContainer();
   const {isPaused, pause, play} = VideoControlsContainer.useContainer();
-  const {clips, selectedClip, activeClip, copiedClip, timelineTime, select, seek, split, remove, freeze, copy, paste, cut, duplicate, updateSelected, updateClip} = TimelineContainer.useContainer();
+  const {clips, selectedClip, activeClip, timelineTime, select, seek, split, remove, updateSelected, updateClip} = TimelineContainer.useContainer();
   const trackRef = useRef<HTMLDivElement>(null);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [trimTarget, setTrimTarget] = useState<{clipId: string; edge: TrimEdge}>();
@@ -26,7 +25,6 @@ const Timeline = () => {
   const timelineDuration = Math.max(0.001, getTimelineDuration(clips));
   const playheadTime = timelineTime;
   const playheadPosition = (playheadTime / timelineDuration) * 100;
-  const isStandardClip = selectedClip?.freezeDuration === undefined;
 
   const togglePlayback = () => {
     if (isPaused) {
@@ -135,32 +133,10 @@ const Timeline = () => {
     setSnapPoint(undefined);
   };
 
-  const finishFreezeDurationInput = () => {
-    if (selectedClip?.freezeDuration === undefined) {
-      return;
-    }
-
-    const nextDuration = Math.min(10, Math.max(0.1, Number.isFinite(selectedClip.freezeDuration) ? selectedClip.freezeDuration : 1));
-    updateSelected({freezeDuration: nextDuration});
-  };
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable) {
-        return;
-      }
-
-      if (event.metaKey) {
-        const actions = {
-          c: copy, v: paste, x: cut, d: duplicate,
-        };
-        const action = actions[event.key.toLowerCase()];
-        if (action) {
-          event.preventDefault();
-          action();
-        }
-
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable || event.metaKey) {
         return;
       }
 
@@ -180,7 +156,7 @@ const Timeline = () => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [copy, paste, cut, duplicate, isPaused, pause, play, remove]);
+  }, [isPaused, pause, play, remove]);
 
   return (
     <section className='timeline-panel'>
@@ -190,15 +166,8 @@ const Timeline = () => {
           {isPaused ? <PlayIcon size='12px' fill='#fff' hoverFill='#fff'/> : <PauseIcon size='12px' fill='#fff' hoverFill='#fff'/>}
           {isPaused ? 'Play' : 'Pause'}
         </button>
-        <button type='button' title='Skip backward 5 seconds' onClick={() => seekToTimelineTime(playheadTime - 5)}>−5s</button>
-        <button type='button' title='Skip forward 5 seconds' onClick={() => seekToTimelineTime(playheadTime + 5)}>+5s</button>
         <button type='button' title='Split at playhead' onClick={split}>Split</button>
-        <button type='button' title='Copy (⌘C)' onClick={copy}>Copy</button>
-        <button type='button' disabled={!copiedClip} title='Paste (⌘V)' onClick={paste}>Paste</button>
-        <button type='button' disabled={clips.length <= 1} title='Cut (⌘X)' onClick={cut}>Cut</button>
-        <button type='button' title='Duplicate (⌘D)' onClick={duplicate}>Duplicate</button>
         <button type='button' disabled={clips.length <= 1} title='Delete (⌫)' onClick={remove}>Delete</button>
-        <button type='button' title='Insert the frame at the playhead' onClick={freeze}>Freeze Frame</button>
         <span className='hint'>Select a clip, then adjust it before export</span>
       </div>
       <div
@@ -221,7 +190,7 @@ const Timeline = () => {
       >
         {clips.map((clip, index) => {
           const width = Math.max(3, (clipDuration(clip) / timelineDuration) * 100);
-          const clipLabel = clip.freezeDuration === undefined ? `clip ${index + 1}` : 'freeze frame';
+          const clipLabel = `clip ${index + 1}`;
           return (
             <div
               key={clip.id}
@@ -250,7 +219,7 @@ const Timeline = () => {
                 className='trim-handle start'
                 onPointerDown={event => startTrimming(event, clip, 'start')}
               />
-              {clip.freezeDuration === undefined ? `Clip ${index + 1}` : `Freeze ${formatTimelineDuration(clip.freezeDuration)}`}
+              {`Clip ${index + 1}`}
               <span
                 role='button'
                 aria-label={`Trim end of ${clipLabel}`}
@@ -266,44 +235,30 @@ const Timeline = () => {
       </div>
       {selectedClip && (
         <div className='adjustments'>
-          {isStandardClip && <>
-            <label>In <input
-              type='number'
-              min='0'
-              max={selectedClip.endTime - 0.05}
-              step='0.05'
-              value={selectedClip.startTime.toFixed(2)}
-              onChange={event => updateSelected({startTime: Number(event.target.value)})}
-            /></label>
-            <label>Out <input
-              type='number'
-              min={selectedClip.startTime + 0.05}
-              max={duration}
-              step='0.05'
-              value={selectedClip.endTime.toFixed(2)}
-              onChange={event => updateSelected({endTime: Number(event.target.value)})}
-            /></label>
-            <label>Speed <input
-              type='range'
-              min='0.5'
-              max='2'
-              step='0.25'
-              value={selectedClip.speed}
-              onChange={event => updateSelected({speed: Number(event.target.value)})}
-            /><output>{selectedClip.speed}×</output></label>
-          </>}
-          {!isStandardClip && <label>Duration <input
+          <label>In <input
             type='number'
-            min='0.1'
-            max='10'
-            step='0.1'
-            value={selectedClip.freezeDuration}
-            onBlur={finishFreezeDurationInput}
-            onChange={event => updateSelected({freezeDuration: Number(event.target.value)})}
-          /></label>}
-          <label>Brightness <input type='range' min='-0.5' max='0.5' step='0.05' value={selectedClip.brightness} onChange={event => updateSelected({brightness: Number(event.target.value)})}/></label>
-          <label>Contrast <input type='range' min='0.5' max='2' step='0.1' value={selectedClip.contrast} onChange={event => updateSelected({contrast: Number(event.target.value)})}/></label>
-          <label>Saturation <input type='range' min='0' max='2' step='0.1' value={selectedClip.saturation} onChange={event => updateSelected({saturation: Number(event.target.value)})}/></label>
+            min='0'
+            max={selectedClip.endTime - 0.05}
+            step='0.05'
+            value={selectedClip.startTime.toFixed(2)}
+            onChange={event => updateSelected({startTime: Number(event.target.value)})}
+          /></label>
+          <label>Out <input
+            type='number'
+            min={selectedClip.startTime + 0.05}
+            max={duration}
+            step='0.05'
+            value={selectedClip.endTime.toFixed(2)}
+            onChange={event => updateSelected({endTime: Number(event.target.value)})}
+          /></label>
+          <label>Speed <input
+            type='range'
+            min='0.5'
+            max='2'
+            step='0.25'
+            value={selectedClip.speed}
+            onChange={event => updateSelected({speed: Number(event.target.value)})}
+          /><output>{selectedClip.speed}×</output></label>
         </div>
       )}
       <style jsx>{`
@@ -496,7 +451,7 @@ const Timeline = () => {
           border: 1px solid #444;
           border-radius: 3px;
           color: #fff;
-          width: 52px;
+          width: 64px;
         }
 
         input[type='range'] {

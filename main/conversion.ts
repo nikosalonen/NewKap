@@ -6,6 +6,7 @@ import PCancelable from 'p-cancelable';
 import prettyBytes from 'pretty-bytes';
 import type TypedEventEmitter from 'typed-emitter';
 import {Format, type ConversionOptions} from './common/types';
+import {getTimelineDuration} from './common/timeline';
 import type {Video} from './video';
 import {convertTo} from './converters';
 import {notify} from './utils/notifications';
@@ -150,10 +151,7 @@ export default class Conversion extends (EventEmitter as new () => TypedEventEmi
         onCancel(() => timelineProcess.cancel());
         inputPath = await timelineProcess;
         startTime = 0;
-        endTime = 0;
-        for (const clip of this.options.clips) {
-          endTime += clip.freezeDuration ?? ((clip.endTime - clip.startTime) / clip.speed);
-        }
+        endTime = getTimelineDuration(this.options.clips);
       }
 
       const conversionProcess = convertTo(

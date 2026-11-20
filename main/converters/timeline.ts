@@ -40,27 +40,11 @@ export const renderTimeline = PCancelable.fn(async ({
   let outputDuration = 0;
 
   for (const [index, clip] of clips.entries()) {
-    const duration = Math.max(0.001, clip.endTime - clip.startTime);
-    outputDuration += clip.freezeDuration ?? (duration / clip.speed);
-    const color = `eq=brightness=${clip.brightness}:contrast=${clip.contrast}:saturation=${clip.saturation}`;
+    outputDuration += Math.max(0.001, clip.endTime - clip.startTime) / clip.speed;
 
-    if (clip.freezeDuration === undefined) {
-      filters.push(`[0:v]trim=start=${clip.startTime}:end=${clip.endTime},fps=60,setpts=N/(60*TB*${clip.speed}),fps=60,${color}[v${index}]`);
-      if (hasAudio) {
-        filters.push(`[0:a]atrim=start=${clip.startTime}:end=${clip.endTime},asetpts=PTS-STARTPTS,${atempo(clip.speed)},aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[a${index}]`);
-      }
-    } else {
-      filters.push([
-        `[0:v]trim=start=${clip.startTime}:duration=${Math.min(duration, 0.04)}`,
-        String.raw`select=eq(n\,0)`,
-        'setpts=0',
-        color,
-        `tpad=stop_mode=clone:stop_duration=${clip.freezeDuration}`,
-        `fps=60[v${index}]`,
-      ].join(','));
-      if (hasAudio) {
-        filters.push(`anullsrc=r=48000:cl=stereo,atrim=duration=${clip.freezeDuration},asetpts=PTS-STARTPTS,aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[a${index}]`);
-      }
+    filters.push(`[0:v]trim=start=${clip.startTime}:end=${clip.endTime},fps=60,setpts=N/(60*TB*${clip.speed}),fps=60[v${index}]`);
+    if (hasAudio) {
+      filters.push(`[0:a]atrim=start=${clip.startTime}:end=${clip.endTime},asetpts=PTS-STARTPTS,${atempo(clip.speed)},aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[a${index}]`);
     }
 
     videoInputs.push(`[v${index}]`);
