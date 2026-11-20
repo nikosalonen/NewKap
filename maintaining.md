@@ -11,7 +11,7 @@ Install an [XO editor plugin](https://github.com/sindresorhus/xo#editor-plugins)
 
 ## Releasing a new version
 
-Releases are built on a Mac and published to [this fork's GitHub Releases](https://github.com/nikosalonen/NewKap/releases). They are signed with the self-signed "Kap Local Signing" certificate and are not notarized.
+Releases are built on a Mac and published to [this fork's GitHub Releases](https://github.com/nikosalonen/Ture/releases). They are signed with the self-signed "Kap Local Signing" certificate and are not notarized.
 
 Sign every release with the same certificate. macOS ties Screen Recording and Microphone permissions to it, so a release signed with another key makes every user grant those permissions again.
 
@@ -29,7 +29,7 @@ Sign every release with the same certificate. macOS ties Screen Recording and Mi
 4. Create a draft release with the DMG:
 
    ```bash
-   gh release create v6.0.0 dist/Ture-6.0.0-mac-arm64.dmg --repo nikosalonen/NewKap --draft --title "Ture 6.0.0" --notes-file release-notes.md
+   gh release create v6.0.0 dist/Ture-6.0.0-mac-arm64.dmg --repo nikosalonen/Ture --draft --title "Ture 6.0.0" --notes-file release-notes.md
    ```
 
    The release notes must say that the release needs an Apple Silicon Mac and the macOS version in `mac.minimumSystemVersion` (macOS 26 or later since Ture 6), and that the first launch needs **Open Anyway** in **System Settings -> Privacy & Security**.

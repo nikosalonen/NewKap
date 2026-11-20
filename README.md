@@ -6,15 +6,15 @@
 
 Ture is a lightweight macOS screen recorder and screenshot tool that lives in the menu bar, for Apple Silicon Macs. It started as a fork of [Kap](https://github.com/wulkano/Kap) and took its own name in version 6, when it moved to ScreenCaptureKit: Kap + Ture = Kapture, the name Kap gives every recording.
 
-[![Latest release](https://img.shields.io/github/v/release/nikosalonen/NewKap?label=release)](https://github.com/nikosalonen/NewKap/releases)
-[![CI](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml/badge.svg)](https://github.com/nikosalonen/NewKap/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/nikosalonen/Ture?label=release)](https://github.com/nikosalonen/Ture/releases)
+[![CI](https://github.com/nikosalonen/Ture/actions/workflows/ci.yml/badge.svg)](https://github.com/nikosalonen/Ture/actions/workflows/ci.yml)
 [![macOS](https://img.shields.io/badge/macOS-13%2B-blue)](#compatibility)
 [![Apple Silicon arm64](https://img.shields.io/badge/Apple%20Silicon-arm64-informational)](#download)
-[![License](https://img.shields.io/github/license/nikosalonen/NewKap)](LICENSE.md)
+[![License](https://img.shields.io/github/license/nikosalonen/Ture)](LICENSE.md)
 
 ## Download
 
-Download Ture from this fork's [GitHub Releases](https://github.com/nikosalonen/NewKap/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 26 or later, as `Ture-<version>-mac-arm64.dmg`. On macOS 13 to 15, use [Kap 5.2.3](https://github.com/nikosalonen/NewKap/releases/tag/v5.2.3).
+Download Ture from this fork's [GitHub Releases](https://github.com/nikosalonen/Ture/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 26 or later, as `Ture-<version>-mac-arm64.dmg`. On macOS 13 to 15, use [Kap 5.2.3](https://github.com/nikosalonen/Ture/releases/tag/v5.2.3).
 
 For an Intel Mac, use Kap 5.1.0 from the [upstream NewKap releases](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0), the last release with an Intel build. To check which Mac you have, open **Apple menu -> About This Mac**: Macs that show **Chip** are Apple Silicon.
 
@@ -95,7 +95,7 @@ Requirements:
 Install and run:
 
 ```bash
-git clone https://github.com/nikosalonen/NewKap.git
+git clone https://github.com/nikosalonen/Ture.git
 cd NewKap
 nvm use
 pnpm install --frozen-lockfile

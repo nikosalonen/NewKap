@@ -4,9 +4,9 @@
   "private": true,
   "description": "Ture records your screen on macOS. It started as a fork of Kap.",
   "license": "MIT",
-  "repository": "nikosalonen/NewKap",
-  "homepage": "https://github.com/nikosalonen/NewKap",
-  "author": "Kap Contributors (https://github.com/nikosalonen/NewKap)",
+  "repository": "nikosalonen/Ture",
+  "homepage": "https://github.com/nikosalonen/Ture",
+  "author": "Kap Contributors (https://github.com/nikosalonen/Ture)",
   "main": "./dist-js/index.js",
   "engines": {
     "node": ">=24 <25"

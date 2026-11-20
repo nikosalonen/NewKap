@@ -5,7 +5,7 @@ import semver from 'semver';
 import {getDisplayedMacosVersion, isMacosVersionAtLeast} from './utils/system-version';
 
 const REPO_OWNER = 'nikosalonen';
-const REPO_NAME = 'NewKap';
+const REPO_NAME = 'Ture';
 const RELEASES_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
 const LATEST_RELEASE_API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
 

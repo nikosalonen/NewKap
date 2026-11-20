@@ -4,7 +4,7 @@ Thanks for helping with this Kap fork. Bug reports and focused pull requests are
 
 ## Reporting bugs
 
-1. Search the [existing issues](https://github.com/nikosalonen/NewKap/issues) first.
+1. Search the [existing issues](https://github.com/nikosalonen/Ture/issues) first.
 2. Include your macOS version (`sw_vers`), the Ture version (**About Ture** in the menu bar icon's menu), whether you use a release or your own build, the steps to reproduce, and what you expected to happen.
 3. Logs help. Run `/Applications/Ture.app/Contents/MacOS/Ture` from Terminal and copy the output around the problem, or open Console.app and filter by "Ture".
 

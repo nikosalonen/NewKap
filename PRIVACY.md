@@ -18,6 +18,6 @@ Kap 5.1.0 and earlier sent crash reports to the original Kap project's Sentry ac
 
 ## Questions
 
-Open an issue at <https://github.com/nikosalonen/NewKap/issues>.
+Open an issue at <https://github.com/nikosalonen/Ture/issues>.
 
 *Updated November 14, 2026*
