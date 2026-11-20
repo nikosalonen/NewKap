@@ -2,8 +2,7 @@ import {hasMicrophoneAccess} from '../common/system-permissions';
 import {settings} from '../common/settings';
 import {defaultInputDeviceId} from '../common/constants';
 import {getAudioInputs, getAudioInputsSync} from './native-helper';
-
-const aperture = require('aperture');
+import {getRecorderAudioDevices} from './screen-recorder';
 
 let cachedDevices: Array<{id: string; name: string}> | undefined;
 let cacheTimestamp = 0;
@@ -35,10 +34,10 @@ export const getAudioDevices = async () => {
     return cachedDevices;
   } catch (error) {
     try {
-      const devices = await aperture.audioDevices();
+      const devices = await getRecorderAudioDevices();
 
       if (!Array.isArray(devices)) {
-        console.error('Audio device error:', error, 'aperture returned:', devices);
+        console.error('Audio device error:', error, 'kap-recorder returned:', devices);
         return cachedDevices ?? [];
       }
 

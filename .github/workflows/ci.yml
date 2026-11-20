@@ -70,6 +70,6 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
-      # Also builds native/build/kap-helper.
+      # Also builds native/build/kap-helper and kap-recorder.
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:main

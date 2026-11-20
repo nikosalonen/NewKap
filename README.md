@@ -14,7 +14,7 @@ Kap is a lightweight macOS screen recorder and screenshot tool that lives in the
 
 ## Download
 
-Download Kap from this fork's [GitHub Releases](https://github.com/nikosalonen/NewKap/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 13 Ventura or later, as `Kap-<version>-mac-arm64.dmg`.
+Download Kap from this fork's [GitHub Releases](https://github.com/nikosalonen/NewKap/releases). Its releases are for Apple Silicon Macs (M1 and newer) on macOS 26 or later, as `Kap-<version>-mac-arm64.dmg`. On macOS 13 to 15, use [Kap 5.2.3](https://github.com/nikosalonen/NewKap/releases/tag/v5.2.3).
 
 For an Intel Mac, use Kap 5.1.0 from the [upstream NewKap releases](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0), the last release with an Intel build. To check which Mac you have, open **Apple menu -> About This Mac**: Macs that show **Chip** are Apple Silicon.
 
@@ -73,25 +73,24 @@ For audio recording, grant Microphone permission and choose an input in Preferen
 
 ## Compatibility
 
-Kap 5.2 runs on Electron 45 and needs an Apple Silicon Mac (`arm64`) with macOS 13 Ventura or later. Electron 44 dropped macOS 12. Upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0) is the last release for Intel Macs and macOS 12.
+Kap 6 records with ScreenCaptureKit and needs an Apple Silicon Mac (`arm64`) with macOS 26 or later. Kap 5.2.3 is the last release for macOS 13 to 15. Upstream [Kap 5.1.0](https://github.com/jacobpowaza/NewKap/releases/tag/v5.1.0) is the last release for Intel Macs and macOS 12.
 
 Known limitations:
 
 - Kap is normally a menu-bar accessory app and intentionally stays out of the Dock while idle.
 - macOS may omit accessory apps from the standard Force Quit Applications window. Use Activity Monitor or Kap's tray menu.
 - System audio capture requires a loopback audio device.
-- Recording uses aperture's AVFoundation recorder, not ScreenCaptureKit. macOS 15 and later may ask from time to time whether Kap may keep recording the screen.
 - Releases are self-signed and not notarized, so each downloaded version needs **Open Anyway** once.
 
 ## Development
 
 Requirements:
 
-- macOS 13 or later, which Electron 45 requires.
+- macOS 26 or later, which the screen recorder targets.
 - Node 24, the version Electron 45 runs. `.nvmrc` pins the exact version; `package.json` `engines` allows any 24.x.
 - pnpm, at the version in `package.json` `packageManager`. Run `corepack enable` once to get it.
-- Xcode command-line tools.
-- An Apple Silicon Mac. `pnpm install` builds the native helper (`native/kap-helper.swift`) for arm64 with `swiftc` and downloads the gifsicle binary into `native/build` (`scripts/fetch-gifsicle.js` checks its SHA-256).
+- Xcode or its command-line tools, with the macOS 26 SDK.
+- An Apple Silicon Mac. `pnpm install` builds the native helper (`native/kap-helper.swift`) and the screen recorder (`native/recorder`, a Swift package) for arm64, and downloads the gifsicle binary into `native/build` (`scripts/fetch-gifsicle.js` checks its SHA-256).
 
 Install and run:
 

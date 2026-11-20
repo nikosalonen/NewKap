@@ -32,7 +32,7 @@ Sign every release with the same certificate. macOS ties Screen Recording and Mi
    gh release create v5.2.0 dist/Kap-5.2.0-mac-arm64.dmg --repo nikosalonen/NewKap --draft --title "Kap 5.2.0" --notes-file release-notes.md
    ```
 
-   The release notes must say that the release needs an Apple Silicon Mac and macOS 13 or later, and that the first launch needs **Open Anyway** in **System Settings -> Privacy & Security**.
+   The release notes must say that the release needs an Apple Silicon Mac and the macOS version in `mac.minimumSystemVersion` (macOS 26 or later since Kap 6), and that the first launch needs **Open Anyway** in **System Settings -> Privacy & Security**.
 5. Review the draft on GitHub and publish it.
 
 Kap's update check reads `releases/latest`, which skips drafts and pre-releases, and offers the asset whose name ends in `.dmg` and contains `mac-arm64`. Keep the file name that `pnpm dist` produces.

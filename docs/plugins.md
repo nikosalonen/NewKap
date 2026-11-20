@@ -295,7 +295,7 @@ The hook functions receive a `context` argument with some metadata and utility m
 
 - `.state`: An object that will be shared and passed to all hooks in the same recording process. It can be useful to persist data between the different hooks.
     - `state.persistedState`: An object under `state` which should only contain serializable fields. It will be passed to the `cleanUp` hook if Kap didn't shut down correctly last time it was run. Use this to store fields necessary to clean up remaining effects.
-- `.apertureOptions`: An object with the options passed to [Aperture](https://github.com/wulkano/aperture-node). The API is described [here](https://github.com/wulkano/aperture-node#options).
+- `.apertureOptions`: The recording options: `fps`, `cropArea` (`{x, y, width, height}` in points), `showCursor`, `highlightClicks`, `screenId` (the display ID), `audioDeviceId` and `videoCodec` (`h264`, `hevc`, `proRes422` or `proRes4444`). Since Kap 6, `cropArea.y` counts from the top of the screen. Kap 5 and older counted it from the bottom, as [aperture-node](https://github.com/wulkano/aperture-node#options) did.
 - `.config`: Get and set config for your plugin. It’s an instance of [`electron-store`](https://github.com/sindresorhus/electron-store#instance).
 - `.request()`: Do a network request, like uploading. It’s a wrapper around [`got` 11](https://github.com/sindresorhus/got/tree/v11.8.6).
   - Plugins written for got 9 still work. Kap translates `json: true`, `form: true`, `query`, `encoding: null` and `retry: {retries}`. It sends a request that has a body and no method as `POST`, drops `null` bodies and headers, and accepts streams that aren’t a core `stream.Readable`, such as `through2`.

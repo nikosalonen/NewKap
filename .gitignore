@@ -12,3 +12,6 @@ coverage
 /dist-js
 /native/build
 /renderer/next-env.d.ts
+
+# SwiftPM build output of the ScreenCaptureKit recorder
+native/recorder/.build/

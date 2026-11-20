@@ -36,7 +36,7 @@ const xoConfig = [
     },
     rules: {
       // Off before the xo 5 move too. Turning these on means typing the
-      // untyped code (plugins, aperture, IPC payloads) first.
+      // untyped code (plugins, IPC payloads) first.
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
@@ -149,7 +149,7 @@ const xoConfig = [
     rules: {
       // Kap is an Electron app in CommonJS, not a library: no exports map and
       // no `type: module` yet. postinstall builds the Swift helper, and exact
-      // versions pin packages on purpose (aperture is patched).
+      // versions pin packages on purpose (Electron, globals).
       'package-json/prefer-type-module': 'off',
       'package-json/prefer-exports': 'off',
       'package-json/no-install-scripts': 'off',

@@ -10,6 +10,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import {setTimeout as delay} from 'node:timers/promises';
 import {mark} from './utils/perf';
+import {listenToSignalFirst} from './utils/signals';
 import {setupRendererApi} from './renderer-api';
 
 mark('main module entered');
@@ -238,8 +239,11 @@ app.on('window-all-closed', () => {
 
     if (filesToOpen.length > 0) {
       require('./utils/open-files').openFiles(...filesToOpen);
-      require('./recording-history').hasActiveRecording().catch(console.error);
     }
+
+    // Offers a recording that a crash or an exit on a signal left behind. Upstream
+    // 50dae14 dropped this call from the startup without files, so it ran only with files.
+    require('./recording-history').hasActiveRecording().catch(console.error);
 
     if (app.isPackaged) {
       const {plugins} = require('./plugins');
@@ -301,12 +305,36 @@ app.on('before-quit', (event: any) => {
   });
 });
 
+let isExitingOnSignal = false;
+
+// A signal such as `kill` cleans up like a normal quit, including discarding an active
+// recording, but exits without the questions a normal quit can ask. The editor's
+// "discard this recording?" kept Kap running.
 const handleSignal = (signal: 'SIGTERM' | 'SIGINT') => () => {
+  // The when-exit package (through electron-store) sends the signal again after its own cleanup.
+  if (isExitingOnSignal) {
+    return;
+  }
+
+  isExitingOnSignal = true;
   console.log(`Received ${signal}, quitting...`);
   onExitCleanupComplete = true;
-  app.exit(0);
+
+  const forceExit = setTimeout(() => {
+    app.exit(0);
+  }, QUIT_TIMEOUT_MS);
+
+  performQuitCleanup().finally(() => {
+    clearTimeout(forceExit);
+    app.exit(0);
+  });
 };
 
-for (const signal of ['SIGTERM', 'SIGINT'] as const) {
-  process.on(signal, handleSignal(signal));
-}
+// Electron installs its own signal handlers while it starts, so take the signals over once it's ready.
+(async () => {
+  await app.whenReady();
+
+  for (const signal of ['SIGTERM', 'SIGINT'] as const) {
+    listenToSignalFirst(signal, handleSignal(signal));
+  }
+})();

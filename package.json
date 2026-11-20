@@ -20,7 +20,8 @@
     "test": "pnpm lint && pnpm test:main",
     "start": "tsc && node scripts/run-electron.js .",
     "build-main": "tsc",
-    "build-native": "mkdir -p native/build && swiftc -O -target arm64-apple-macos13.0 native/kap-helper.swift -o native/build/kap-helper",
+    "build-native": "mkdir -p native/build && swiftc -O -target arm64-apple-macos13.0 native/kap-helper.swift -o native/build/kap-helper && pnpm build-recorder",
+    "build-recorder": "swift build -c release --arch arm64 --package-path native/recorder && cp \"$(swift build -c release --arch arm64 --package-path native/recorder --show-bin-path)/kap-recorder\" native/build/kap-recorder",
     "fetch-gifsicle": "node scripts/fetch-gifsicle.js",
     "build-renderer": "next build renderer",
     "build": "pnpm build-native && pnpm fetch-gifsicle && pnpm build-main && pnpm build-renderer",
@@ -32,7 +33,6 @@
   },
   "dependencies": {
     "ajv": "^6.15.0",
-    "aperture": "6.1.2",
     "baseline-browser-mapping": "^2.11.36",
     "caniuse-lite": "^1.0.30001806",
     "classnames": "^2.5.1",
@@ -145,12 +145,16 @@
       {
         "from": "native/build/gifsicle",
         "to": "gifsicle"
+      },
+      {
+        "from": "native/build/kap-recorder",
+        "to": "kap-recorder"
       }
     ],
     "mac": {
       "icon": "build/icon.icns",
       "category": "public.app-category.productivity",
-      "minimumSystemVersion": "13.0.0",
+      "minimumSystemVersion": "26.0.0",
       "darkModeSupport": true,
       "hardenedRuntime": true,
       "entitlements": "./build/entitlements.mac.inherit.plist",

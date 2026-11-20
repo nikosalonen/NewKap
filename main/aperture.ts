@@ -9,6 +9,7 @@ import {setCropperShortcutAction} from './global-accelerators';
 import {settings} from './common/settings';
 import {plugins} from './plugins';
 import {getRecordingAudioDeviceId} from './utils/devices';
+import {ScreenRecorder, supportedVideoCodecs} from './utils/screen-recorder';
 import {showError} from './utils/errors';
 import {RecordServiceContext, type RecordServiceState} from './plugins/service-context';
 import {setCurrentRecording, updatePluginState, stopCurrentRecording} from './recording-history';
@@ -23,9 +24,7 @@ import {
   setOverallDuration,
 } from './utils/track-duration';
 
-const createAperture = require('aperture');
-
-let aperture = createAperture();
+let screenRecorder = new ScreenRecorder();
 const MAX_RECORDING_RETRIES = 2;
 const recordingCodecs = {
   standard: Encoding.h264,
@@ -98,9 +97,9 @@ export const startRecording = async (options: StartRecordingOptions) => {
   // Use starting tray state instead of disabling tray completely
   setStartingTray();
 
-  const {cropperBounds, screenBounds, displayId} = options;
-
-  cropperBounds.y = screenBounds.height - (cropperBounds.y + cropperBounds.height);
+  // ScreenCaptureKit takes the crop in points from the top-left corner of the screen,
+  // which is how the cropper reports it.
+  const {cropperBounds, displayId} = options;
 
   const {
     record60fps,
@@ -111,7 +110,7 @@ export const startRecording = async (options: StartRecordingOptions) => {
   } = settings.store;
 
   const requestedCodec = recordingCodecs[recordingQuality];
-  const videoCodec = createAperture.videoCodecs.has(requestedCodec) ? requestedCodec : Encoding.h264;
+  const videoCodec = supportedVideoCodecs.has(requestedCodec) ? requestedCodec : Encoding.h264;
 
   apertureOptions = {
     fps: record60fps ? 60 : 30,
@@ -151,7 +150,7 @@ export const startRecording = async (options: StartRecordingOptions) => {
   let lastError: any;
   for (let attempt = 1; attempt <= MAX_RECORDING_RETRIES; attempt++) {
     try {
-      const filePath = await aperture.startRecording(apertureOptions);
+      const filePath = await screenRecorder.startRecording(apertureOptions);
       setOverallDuration(0);
       setCurrentDurationStart(Date.now());
 
@@ -167,7 +166,7 @@ export const startRecording = async (options: StartRecordingOptions) => {
       lastError = error;
       if (error?.code === 'RECORDER_TIMEOUT' && attempt < MAX_RECORDING_RETRIES) {
         console.log(`Recording attempt ${attempt} timed out, retrying...`);
-        aperture = createAperture();
+        screenRecorder = new ScreenRecorder();
         continue;
       }
     }
@@ -188,12 +187,12 @@ export const startRecording = async (options: StartRecordingOptions) => {
   setCropperShortcutAction(stopRecording);
   past = Date.now();
 
-  aperture.recorder.catch((error: any) => {
+  screenRecorder.finished?.catch((error: unknown) => {
     if (!past) {
       return;
     }
 
-    showError(error, {title: 'Recording error'});
+    showError(error as Error, {title: 'Recording error'});
     past = undefined;
     cleanup();
   });
@@ -213,7 +212,7 @@ export const stopRecording = async () => {
   let filePath;
 
   try {
-    filePath = await aperture.stopRecording();
+    filePath = await screenRecorder.stopRecording();
     setOverallDuration(0);
     setCurrentDurationStart(0);
   } catch (error) {
@@ -246,7 +245,7 @@ export const stopRecordingWithNoEdit = async () => {
 
   try {
     await Promise.race([
-      aperture.stopRecording(),
+      screenRecorder.stopRecording(),
       new Promise((_resolve, reject) => {
         setTimeout(() => {
           reject(new Error('Stop recording timed out'));
@@ -274,12 +273,12 @@ export const pauseRecording = async () => {
   }
 
   try {
-    const isPaused = await aperture.isPaused();
+    const isPaused = await screenRecorder.isPaused();
     if (isPaused) {
       return;
     }
 
-    await aperture.pause();
+    await screenRecorder.pause();
     setOverallDuration(getOverallDuration() + (Date.now() - getCurrentDurationStart()));
     setCurrentDurationStart(0);
     setPausedTray();
@@ -296,12 +295,12 @@ export const resumeRecording = async () => {
   }
 
   try {
-    const isPaused = await aperture.isPaused();
+    const isPaused = await screenRecorder.isPaused();
     if (!isPaused) {
       return;
     }
 
-    await aperture.resume();
+    await screenRecorder.resume();
     setCurrentDurationStart(Date.now());
     setRecordingTray();
     console.log(`Resume recording after ${(Date.now() - past) / 1000}s`);
@@ -317,7 +316,7 @@ export const togglePauseRecording = async () => {
   }
 
   try {
-    await (await aperture.isPaused() ? resumeRecording() : pauseRecording());
+    await (await screenRecorder.isPaused() ? resumeRecording() : pauseRecording());
   } catch (error) {
     showError(error as any, {title: 'Recording error'});
     cleanup();

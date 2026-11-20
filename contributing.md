@@ -19,13 +19,13 @@ Thanks for helping with this Kap fork. Bug reports and focused pull requests are
 ### Project structure
 
     main/               Electron main process (TypeScript)
-      aperture.ts         Screen recording
+      aperture.ts         Screen recording: start, pause and stop
       index.ts            App entry point and lifecycle
       common/             Code shared with the renderer (permissions, settings)
       utils/              Helper modules (devices, errors, native helper)
     renderer/           Next.js renderer (React)
       pages/              App windows (cropper, editor, preferences, ...)
-    native/             Swift helper (kap-helper.swift)
+    native/             Swift helper (kap-helper.swift) and screen recorder (recorder/)
     scripts/            Build, packaging and signing scripts
     static/             Icons and static assets
     test/               AVA tests and fixtures
