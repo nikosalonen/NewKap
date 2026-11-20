@@ -362,12 +362,20 @@ const openCropperWindow = async () => {
       openSessionId += 1;
       const sessionId = openSessionId;
 
+      // Each cropper takes the mouse once its controls report ready for this session
+      // (handleControlsReady). Reset before waiting for the croppers, not after: a cropper
+      // that got ready during the wait lost the mouse again, and no area could be drawn on it.
+      for (const cropper of croppers.values()) {
+        if (!cropper.isDestroyed()) {
+          cropper.setIgnoreMouseEvents(true);
+        }
+      }
+
       const activeDisplayId = screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).id;
 
       await ensureCroppers(activeDisplayId, sessionId);
 
       for (const cropper of croppers.values()) {
-        cropper.setIgnoreMouseEvents(true);
         cropper.setVisibleOnAllWorkspaces(false);
         cropper.showInactive();
       }
